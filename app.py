@@ -16,7 +16,7 @@ def process_business_data(user_prompt):
     # For now, we use a Python string format to generate a simulated document instantly
     structured_document = f"""
     ==================================================
-    OMNI.AI AUTOMATED BUSINESS DOCUMENT
+    VEXT.AI AUTOMATED BUSINESS DOCUMENT
     ==================================================
     GENERATED FOR: Enterprise Client
     TIMESTAMP: {time.strftime("%Y-%m-%d %H:%M:%S")}
