@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VEXT.AI - Operations Dashboard</title>
+    <title>Vext - Operations Dashboard</title>
     <style>
         :root {
             --bg-dark: #0f172a;
@@ -149,7 +149,7 @@
             padding: 15px;
             font-size: 1rem;
             resize: none;
-            height: 100px;
+            height: 150px;
             font-family: inherit;
         }
 
@@ -208,7 +208,7 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="logo">OMNI.AI</div>
+        <div class="logo">VEXT</div>
         <div class="nav-item active">Dashboard</div>
         <div class="nav-item">AI Automations</div>
         <div class="nav-item">Client Leads</div>
@@ -219,65 +219,55 @@
     <!-- MAIN PLATFORM WINDOW -->
     <div class="main-content">
         <div class="header">
-            <h1>Business Operations Engine</h1>
-            <p>Welcome back, Founder. Your AI agents are actively monitoring transactions.</p>
+            <h1>Vext Business Engine</h1>
+            <p>Welcome back, Founder. Your proprietary AI agents are actively executing infrastructure commands.</p>
         </div>
 
         <!-- STATS BAR -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Hours Saved This Month</div>
-                <div class="stat-value" id="hoursSaved">42.5 hrs</div>
+                <div class="stat-value">42.5 hrs</div>
                 <div class="stat-change">+12% vs last month</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Leads Processed By AI</div>
+                <div class="stat-label">Leads Processed By Vext</div>
                 <div class="stat-value">1,248</div>
                 <div class="stat-change">99.4% response rate</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Subscription Tier</div>
-                <div class="stat-value" style="color: var(--accent-neon);">Enterprise</div>
-                <div class="stat-change">Billing active</div>
+                <div class="stat-label">System Gateway</div>
+                <div class="stat-value" style="color: var(--accent-neon);">ONLINE</div>
+                <div class="stat-change">Proprietary Build v1.0</div>
             </div>
         </div>
 
         <!-- LOWER WORKSPACE -->
         <div class="workspace">
-            <!-- Left Side: Interactive Command Panel -->
             <div class="panel">
-                <h3>Generate AI Document or Invoice</h3>
+                <h3>Generate Custom Operations Document</h3>
                 <div class="ai-input-group">
-                    <textarea id="promptInput" placeholder="Example: Draft a cleaning service contract for Acme Corp for $450/week starting next Monday..."></textarea>
+                    <textarea id="promptInput" placeholder="Example: Draft a commercial service proposal for Tesla Inc for $15,000..."></textarea>
                     <button class="action-btn" id="generateBtn">Run Automation Prompt</button>
                 </div>
                 <div class="output-box" id="aiOutput"></div>
             </div>
 
-            <!-- Right Side: Live Logs -->
             <div class="panel">
                 <h3>Live Operations Feed</h3>
                 <div id="activityLog">
                     <div class="activity-item">
-                        AI drafted custom proposal for New Client Lead #9402.
-                        <span class="activity-time">2 mins ago</span>
-                    </div>
-                    <div class="activity-item">
-                        System automatically generated invoice #1049.
-                        <span class="activity-time">14 mins ago</span>
-                    </div>
-                    <div class="activity-item">
-                        Late payment reminder dispatched to user 'Delta Ltd'.
-                        <span class="activity-time">1 hr ago</span>
+                        Vext core engine successfully initialized.
+                        <span class="activity-time">Just now</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT: Front-End UI Simulation Logic -->
+    <!-- JAVASCRIPT: Connects your web layout to your local Python gateway -->
     <script>
-        document.getElementById('generateBtn').addEventListener('click', function() {
+        document.getElementById('generateBtn').addEventListener('click', async function() {
             const input = document.getElementById('promptInput').value.trim();
             const outputBox = document.getElementById('aiOutput');
             const log = document.getElementById('activityLog');
@@ -287,27 +277,38 @@
                 return;
             }
 
-            // Simulate the button loading state
-            this.innerText = "Processing via Back-End Engine...";
+            // Show Loading State
+            this.innerText = "Processing via Vext Engine...";
             this.disabled = true;
+            outputBox.style.display = "block";
+            outputBox.innerText = "Routing secure packet to Vext local gateway...";
 
-            setTimeout(() => {
-                // Display the simulated structural response layout
-                outputBox.style.display = "block";
-                outputBox.innerHTML = `<strong>[VEXT AI ENGINE - SIMULATED PROPOSAL GENERATED]</strong>\n\nBased on your prompt: "${input}"\n\n<strong>STATUS:</strong> Document compiled successfully. Ready for back-end storage pipeline hooks.`;
-                
-                // Reset button
-                this.innerText = "Run Automation Prompt";
-                this.disabled = false;
+            try {
+                // Fire network request directly to your local Python server running on your computer
+                const response = await fetch('http://localhost:8000/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: input })
+                });
 
-                // Add a live log entry dynamically to the list
-                const newLog = document.createElement('div');
-                newLog.className = 'activity-item';
-                newLog.innerHTML = `AI processed prompt: "${input.substring(0, 30)}..." <span class="activity-time">Just now</span>`;
-                log.insertBefore(newLog, log.firstChild);
+                const data = await response.json();
 
-            }, 1200); // 1.2 second simulated machine delay
-        });
-    </script>
-</body>
-</html>
+                if (response.ok && data.status === "success") {
+                    // Inject the REAL custom text output directly onto the screen layout
+                    outputBox.innerHTML = `<strong>[VEXT LIVE OUTCOME]</strong>\n\n${data.document}`;
+                    
+                    // Push a live timestamped log entry to the UI feed card
+                    const newLog = document.createElement('div');
+                    newLog.className = 'activity-item';
+                    newLog.innerHTML = `Executed automation command: "${input.substring(0, 30)}..." <span class="activity-time">Just now</span>`;
+                    log.insertBefore(newLog, log.firstChild);
+                } else {
+                    outputBox.innerText = "Error: Backend processing failed. Check your API token or server connection logs.";
+                }
+
+            } catch (error) {
+                outputBox.innerText = "Connection Error: Could not reach local server. Make sure your local terminal is running 'python app.py' on port 8000.";
+                console.error(error);
+            }
+
+            // Reset Button State
