@@ -6,7 +6,7 @@ def process_business_data(user_prompt):
     This function simulates your SaaS back-end engine taking 
     the front-end input and preparing it for an AI model.
     """
-    print("\n[BACK-END] Connecting to OMNI AI Secure Gateway...")
+    print("\n[BACK-END] Connecting to VEXT AI Secure Gateway...")
     time.sleep(1) # Simulating network lag
     
     print("[BACK-END] Analyzing prompt security and formatting requirements...")
@@ -44,7 +44,7 @@ def process_business_data(user_prompt):
 # --- MAIN EXECUTION BLOCK ---
 if __name__ == "__main__":
     print("=============================================")
-    print("      OMNI.AI BACK-END ENGINE INITIALIZED    ")
+    print("      VEXT.AI BACK-END ENGINE INITIALIZED    ")
     print("=============================================")
     print("Status: Active and listening for front-end hooks...")
     
