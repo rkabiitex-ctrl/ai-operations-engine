@@ -131,6 +131,7 @@ th{color:var(--muted);font-weight:600}
  <button class="nav active" data-page="dashboard">◈ &nbsp; Dashboard</button>
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
  <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
+ <button class="nav" data-page="support">☏ &nbsp; Customer Support</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
@@ -265,6 +266,46 @@ th{color:var(--muted);font-weight:600}
  </div>
 </section>
 
+
+<section class="page" id="support">
+ <div class="card">
+  <h2>24/7 Customer Support Agent</h2>
+  <p class="muted small">Set up an AI assistant for customer questions and collect enquiries for follow-up.</p>
+  <div class="notice">Prototype stage: this workspace currently saves settings and enquiries in this browser. It is not yet an embeddable public website widget or shared cloud inbox. Keep customer data minimal until secure cloud storage is connected.</div>
+ </div>
+ <div class="grid">
+  <div class="card">
+   <h2>1. Configure your support assistant</h2>
+   <div class="field"><label for="supportBusiness">Business name</label><input id="supportBusiness" maxlength="100" placeholder="Your business name"></div>
+   <div class="field"><label for="supportGreeting">Welcome message</label><textarea id="supportGreeting" maxlength="500" placeholder="Hello! How can we help you today?"></textarea></div>
+   <div class="field"><label for="supportInstructions">What should the assistant know about your business?</label><textarea id="supportInstructions" maxlength="3000" placeholder="Describe your products, services, opening hours, delivery areas, prices or common questions. Do not add passwords or confidential information."></textarea></div>
+   <button class="primary" id="saveSupport">Save assistant settings</button>
+   <p class="chat-status" id="supportSaveStatus"></p>
+  </div>
+  <div class="card">
+   <h2>2. Capture a customer enquiry</h2>
+   <p class="muted small">Ask customers for permission before saving their contact details.</p>
+   <form id="supportLeadForm">
+    <div class="field"><label for="supportLeadName">Customer name *</label><input id="supportLeadName" required maxlength="100" placeholder="Full name"></div>
+    <div class="field"><label for="supportLeadEmail">Email address</label><input id="supportLeadEmail" type="email" maxlength="150" placeholder="name@example.com"></div>
+    <div class="field"><label for="supportLeadPhone">Phone number</label><input id="supportLeadPhone" maxlength="40" placeholder="+256..."></div>
+    <div class="field"><label for="supportLeadNeed">What do they need help with?</label><textarea id="supportLeadNeed" maxlength="1000" placeholder="Customer's question or request"></textarea></div>
+    <label class="small"><input id="supportLeadConsent" type="checkbox" style="width:auto;margin-right:8px" required> The customer agreed to be contacted about this enquiry.</label>
+    <button class="primary" type="submit" style="margin-top:14px">Save customer enquiry</button>
+   </form>
+  </div>
+ </div>
+ <div class="card">
+  <h2>3. Test your customer assistant</h2>
+  <div class="chat-messages" id="supportMessages" style="min-height:220px;max-height:360px"></div>
+  <div class="chat-compose">
+   <textarea id="supportInput" placeholder="Test a customer question, e.g. Do you deliver to Kampala?" maxlength="3000"></textarea>
+   <button class="primary" id="supportSend">Ask assistant</button>
+  </div>
+  <div class="chat-status" id="supportStatus">Test the answers before making the assistant available to customers.</div>
+ </div>
+</section>
+
 <section class="page" id="leads">
  <div class="card">
   <h2>Client Management</h2>
@@ -362,7 +403,7 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",analytics:"Business Analytics",settings:"Platform Settings"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Customer Support",analytics:"Business Analytics",settings:"Platform Settings"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
@@ -572,6 +613,73 @@ $("invoiceTable").addEventListener("click",e=>{
   w.document.close();
  }
 });
+
+const supportDefaults={business:localStorage.getItem(key+"business")||"Your Business",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
+function getSupportSettings(){
+ try{return {...supportDefaults,...JSON.parse(localStorage.getItem(key+"support_settings")||"{}")}}
+ catch{return supportDefaults}
+}
+function renderSupportChat(){
+ const area=$("supportMessages");area.replaceChildren();
+ const settings=getSupportSettings();
+ const welcome=document.createElement("div");
+ welcome.className="chat-message assistant";
+ const role=document.createElement("span");role.className="chat-role";role.textContent=settings.business||"CUSTOMER SUPPORT";
+ const body=document.createElement("div");body.textContent=settings.greeting||"Hello! How can we help?";
+ welcome.append(role,body);area.append(welcome);
+}
+function saveSupportSettings(){
+ const settings={business:$("supportBusiness").value.trim()||"Your Business",
+ greeting:$("supportGreeting").value.trim()||"Hello! How can we help you today?",
+ instructions:$("supportInstructions").value.trim()};
+ localStorage.setItem(key+"support_settings",JSON.stringify(settings));
+ $("supportSaveStatus").textContent="Assistant settings saved in this browser.";
+ renderSupportChat();
+}
+const initialSupport=getSupportSettings();
+$("supportBusiness").value=initialSupport.business;
+$("supportGreeting").value=initialSupport.greeting;
+$("supportInstructions").value=initialSupport.instructions;
+$("saveSupport").addEventListener("click",saveSupportSettings);
+renderSupportChat();
+$("supportLeadForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const email=$("supportLeadEmail").value.trim(),phone=$("supportLeadPhone").value.trim();
+ if(!email&&!phone){alert("Please enter an email address or phone number so the business can follow up.");return}
+ if(!$("supportLeadConsent").checked){alert("Please confirm the customer agreed to be contacted.");return}
+ const leads=read("leads");
+ leads.push({id:id(),name:$("supportLeadName").value.trim(),email,phone,
+ country:"",interest:$("supportLeadNeed").value.trim()||"Customer support enquiry",
+ source:"Customer Support Agent",created:new Date().toISOString()});
+ write("leads",leads);e.target.reset();log("New customer enquiry captured by Support Agent.");render();
+ $("supportStatus").textContent="Customer enquiry saved to Client Management.";
+});
+async function askSupportAssistant(){
+ const input=$("supportInput"),button=$("supportSend"),status=$("supportStatus");
+ const question=input.value.trim();if(!question)return;
+ const settings=getSupportSettings();
+ const area=$("supportMessages");
+ const add=(who,msg)=>{
+  const bubble=document.createElement("div");bubble.className="chat-message "+(who==="YOU"?"user":"assistant");
+  const label=document.createElement("span");label.className="chat-role";label.textContent=who;
+  const content=document.createElement("div");content.textContent=msg;bubble.append(label,content);area.append(bubble);area.scrollTop=area.scrollHeight;
+ };
+ add("YOU",question);input.value="";button.disabled=true;button.textContent="Thinking...";
+ status.textContent="Preparing a customer support response...";
+ const prompt="You are the customer support assistant for "+settings.business+". Answer politely, accurately and concisely. Use only the business information supplied below. If information is missing, say you will ask a human team member to confirm; never invent prices, policies, availability or promises. Do not request passwords or payment card details. Business information: "+(settings.instructions||"No business details have been supplied yet.")+" Customer question: "+question;
+ try{
+  const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:prompt})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
+  const reply=typeof data.reply==="string"?data.reply:"";
+  if(!reply)throw new Error("The AI service returned an empty response.");
+  add("ASSISTANT",reply);status.textContent="Test response received. Check its accuracy before launch.";
+ }catch(error){add("ASSISTANT","I couldn't reach the AI service. "+(error.message||"Please try again."));status.textContent="Connection problem. Check the AI backend."}
+ finally{button.disabled=false;button.textContent="Ask assistant";input.focus()}
+}
+$("supportSend").addEventListener("click",askSupportAssistant);
+$("supportInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();askSupportAssistant()}});
+
 let generated="";
 $("makeDoc").addEventListener("click",()=>{
  const prompt=$("docPrompt").value.trim();
