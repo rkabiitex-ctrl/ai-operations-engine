@@ -152,9 +152,17 @@ export default {
         const message = clean(body && body.message, 2000);
         if (!businessId || !message) return json({ error: "Business ID and message are required." }, 400, cors);
         const business = await env.VEXT_DB.prepare(
-          "SELECT name, instructions FROM businesses WHERE business_id = ?"
+          "SELECT name, instructions, website FROM businesses WHERE business_id = ?"
         ).bind(businessId).first();
         if (!business) return json({ error: "This business support assistant is not configured yet." }, 404, cors);
+        const origin = request.headers.get("Origin");
+        if (business.website && origin) {
+          try {
+            const allowedHost = new URL(business.website).hostname.replace(/^www\\./, "");
+            const requestHost = new URL(origin).hostname.replace(/^www\\./, "");
+            if (allowedHost !== requestHost) return json({ error: "This website is not registered for this business assistant." }, 403, cors);
+          } catch { return json({ error: "The business website setting is invalid." }, 400, cors); }
+        }
         const system = "You are the customer support assistant for " + business.name + ". Use only the business information below. Be polite, concise and accurate. Never invent prices, stock, policies, opening hours or delivery promises. If information is missing, say a team member must confirm it. Never request passwords, one-time codes or full payment-card details. Business information: " + business.instructions;
         const reply = await callAI(env, system, message);
         return json({ reply }, 200, cors);
