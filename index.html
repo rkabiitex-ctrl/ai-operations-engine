@@ -21,6 +21,8 @@ button{cursor:pointer}
 .app{display:flex;min-height:100vh}
 .sidebar{width:250px;background:#0b1426;border-right:1px solid var(--line);
  padding:26px 17px;flex-shrink:0}
+.brand-link{display:block;width:100%;max-width:220px;margin:0 0 25px;text-decoration:none}
+.brand-logo{display:block;width:100%;height:auto;object-fit:contain;border-radius:8px}
 .brand{font-size:27px;font-weight:900;letter-spacing:-1px;
  color:var(--blue);margin-bottom:7px}
 .brand span{color:white}
@@ -147,8 +149,9 @@ th{color:var(--muted);font-weight:600}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand">VEXT<span> AI</span></div>
- <div class="tagline">GLOBAL BUSINESS ENGINE</div>
+ <a class="brand-link" href="#" aria-label="VEXT AI home">
+  <img class="brand-logo" src="assets/vext-ai-logo.png" alt="VEXT AI — Global Business Engine">
+ </a>
  <div class="nav-label">WORKSPACE</div>
  <button class="nav active" data-page="dashboard">◈ &nbsp; Dashboard</button>
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
