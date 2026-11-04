@@ -91,6 +91,20 @@ th{color:var(--muted);font-weight:600}
 .output{background:#091426;border:1px solid var(--line);padding:18px;
  border-radius:9px;white-space:pre-wrap;overflow-wrap:anywhere;
  line-height:1.65;font-size:13px}
+
+.chat-shell{display:flex;flex-direction:column;min-height:560px;max-height:72vh}
+.chat-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.chat-messages{flex:1;overflow-y:auto;min-height:320px;max-height:55vh;padding:14px;background:#091426;border:1px solid var(--line);border-radius:10px}
+.chat-message{max-width:82%;padding:12px 14px;margin:10px 0;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:13px}
+.chat-message.user{margin-left:auto;background:#123b55;border:1px solid #236184}
+.chat-message.assistant{margin-right:auto;background:#17243a;border:1px solid #2b405c}
+.chat-message .chat-role{display:block;font-size:10px;letter-spacing:1px;color:var(--cyan);margin-bottom:6px;font-weight:700}
+.chat-compose{display:flex;gap:10px;align-items:flex-end;margin-top:14px}
+.chat-compose textarea{min-height:54px;max-height:150px;flex:1}
+.chat-compose button{min-width:100px;height:48px}
+.chat-status{font-size:11px;color:var(--muted);margin-top:9px;min-height:16px}
+@media(max-width:600px){.chat-message{max-width:94%}.chat-compose{align-items:stretch;flex-direction:column}.chat-compose button{width:100%}.chat-shell{max-height:none}}
+
 .notice{padding:13px;background:#122b3c;border:1px solid #23506a;
  border-radius:9px;color:#bae6fd;font-size:12px;line-height:1.5}
 .footer{padding:25px 0;color:var(--muted);font-size:11px;text-align:center}
@@ -116,6 +130,7 @@ th{color:var(--muted);font-weight:600}
  <div class="nav-label">WORKSPACE</div>
  <button class="nav active" data-page="dashboard">◈ &nbsp; Dashboard</button>
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
+ <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
@@ -228,6 +243,28 @@ th{color:var(--muted);font-weight:600}
  </div>
 </section>
 
+
+<section class="page" id="chat">
+ <div class="card">
+  <div class="chat-top">
+   <div>
+    <h2>◉ VEXT AI Assistant</h2>
+    <p class="muted small">Your dedicated AI workspace, connected to the VEXT AI backend.</p>
+   </div>
+   <button class="secondary" id="clearChat">Clear conversation</button>
+  </div>
+  <div class="chat-shell">
+   <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
+   <div class="chat-compose">
+    <textarea id="chatInput" maxlength="8000" placeholder="Ask VEXT AI anything about your business..." aria-label="Message VEXT AI"></textarea>
+    <button class="primary" id="sendChat">Send message</button>
+   </div>
+   <div class="chat-status" id="chatStatus">Connected to VEXT AI service when you send a message.</div>
+  </div>
+  <p class="muted small">Do not enter passwords, payment card details or confidential legal/customer records into this early prototype.</p>
+ </div>
+</section>
+
 <section class="page" id="leads">
  <div class="card">
   <h2>Client Management</h2>
@@ -325,10 +362,93 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",analytics:"Business Analytics",settings:"Platform Settings"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",analytics:"Business Analytics",settings:"Platform Settings"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
+
+const VEXT_CHAT_ENDPOINT="https://flat-star-50c3.rkabiitex.workers.dev/";
+function loadChatHistory(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(key+"chat_history")||"[]");
+  return Array.isArray(saved)?saved:[];
+ }catch{return []}
+}
+function saveChatHistory(items){
+ try{localStorage.setItem(key+"chat_history",JSON.stringify(items.slice(-60)))}catch{}
+}
+function addChatMessage(role,message){
+ const area=$("chatMessages");
+ const bubble=document.createElement("div");
+ bubble.className="chat-message "+(role==="user"?"user":"assistant");
+ const label=document.createElement("span");
+ label.className="chat-role";
+ label.textContent=role==="user"?"YOU":"VEXT AI";
+ const body=document.createElement("div");
+ body.textContent=message;
+ bubble.append(label,body);
+ area.appendChild(bubble);
+ area.scrollTop=area.scrollHeight;
+}
+function renderChatHistory(){
+ const area=$("chatMessages");
+ area.replaceChildren();
+ const history=loadChatHistory();
+ if(!history.length){
+  addChatMessage("assistant","Hello! I'm VEXT AI. How can I help you with your business today?");
+  return;
+ }
+ history.forEach(item=>addChatMessage(item.role,item.content));
+}
+async function sendChatMessage(){
+ const input=$("chatInput"),button=$("sendChat"),status=$("chatStatus");
+ const message=input.value.trim();
+ if(!message)return;
+ const history=loadChatHistory();
+ addChatMessage("user",message);
+ history.push({role:"user",content:message});
+ saveChatHistory(history);
+ input.value="";
+ button.disabled=true;
+ button.textContent="Thinking...";
+ status.textContent="VEXT AI is preparing a response...";
+ try{
+  const response=await fetch(VEXT_CHAT_ENDPOINT,{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({message})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
+  const reply=typeof data.reply==="string"?data.reply:
+   (typeof data.output_text==="string"?data.output_text:"");
+  if(!reply)throw new Error("The AI service returned an empty response.");
+  addChatMessage("assistant",reply);
+  history.push({role:"assistant",content:reply});
+  saveChatHistory(history);
+  status.textContent="Response received.";
+ }catch(error){
+  const messageText="I couldn't reach the AI service. "+(error.message||"Please try again.");
+  addChatMessage("assistant",messageText);
+  status.textContent="Connection problem. Check the backend and try again.";
+ }finally{
+  button.disabled=false;
+  button.textContent="Send message";
+  input.focus();
+ }
+}
+$("sendChat").addEventListener("click",sendChatMessage);
+$("chatInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage()}
+});
+$("clearChat").addEventListener("click",()=>{
+ if(!confirm("Clear this conversation from this browser?"))return;
+ localStorage.removeItem(key+"chat_history");
+ renderChatHistory();
+ $("chatStatus").textContent="Conversation cleared.";
+});
+renderChatHistory();
+
 function renderActivity(){
  const logs=read("logs");
  $("activityFeed").innerHTML=logs.length?logs.map(x=>
