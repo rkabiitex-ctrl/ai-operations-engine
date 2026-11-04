@@ -321,6 +321,8 @@ th{color:var(--muted);font-weight:600}
     <div class="field"><label for="supportLeadNeed">What do they need help with?</label><textarea id="supportLeadNeed" maxlength="1000" placeholder="Customer's question or request"></textarea></div>
     <label class="small"><input id="supportLeadConsent" type="checkbox" style="width:auto;margin-right:8px" required> The customer agreed to be contacted about this enquiry.</label>
     <button class="primary" type="submit" style="margin-top:14px">Save test enquiry locally</button>
+    <button class="secondary" type="button" id="sendCloudTestLead" style="margin-top:14px;margin-left:8px">Send test enquiry to cloud</button>
+    <div class="chat-status" id="cloudTestLeadStatus" role="status"></div>
    </form>
   </div>
  </div>
@@ -740,6 +742,27 @@ $("supportLeadForm").addEventListener("submit",e=>{
  source:"Customer Support Agent",created:new Date().toISOString()});
  write("leads",leads);e.target.reset();log("New client registered by support test form.");render();
  $("supportStatus").textContent="Test enquiry saved locally to Client Management.";
+});
+$("sendCloudTestLead").addEventListener("click",async()=>{
+ const name=$("supportLeadName").value.trim();
+ const email=$("supportLeadEmail").value.trim();
+ const phone=$("supportLeadPhone").value.trim();
+ const message=$("supportLeadNeed").value.trim();
+ const consent=$("supportLeadConsent").checked;
+ const status=$("cloudTestLeadStatus");
+ if(!name){status.textContent="Enter the test customer's name first.";return}
+ if(!email&&!phone){status.textContent="Enter an email address or phone number.";return}
+ if(!consent){status.textContent="Tick the consent box before sending this test enquiry.";return}
+ const button=$("sendCloudTestLead");
+ button.disabled=true;button.textContent="Sending...";
+ status.textContent="Sending test enquiry securely to Cloudflare...";
+ try{
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/public/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({businessId:supportBusinessId,name,email,phone,message,consent:true})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
+  status.textContent="Success! Test enquiry saved in Cloudflare. Now click Load cloud enquiries above to verify the email and phone.";
+ }catch(error){status.textContent="Cloud test failed: "+(error.message||"Please check the Worker and database setup.") }
+ finally{button.disabled=false;button.textContent="Send test enquiry to cloud"}
 });
 async function askSupportAssistant(){
  const input=$("supportInput"),button=$("supportSend"),status=$("supportStatus");
