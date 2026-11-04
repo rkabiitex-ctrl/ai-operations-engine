@@ -270,39 +270,59 @@ th{color:var(--muted);font-weight:600}
 <section class="page" id="support">
  <div class="card">
   <h2>24/7 Customer Support Agent</h2>
-  <p class="muted small">Set up an AI assistant for customer questions and collect enquiries for follow-up.</p>
-  <div class="notice">Prototype stage: this workspace currently saves settings and enquiries in this browser. It is not yet an embeddable public website widget or shared cloud inbox. Keep customer data minimal until secure cloud storage is connected.</div>
+  <p class="muted small">Configure an AI assistant, add it to a business website and collect customer enquiries in Cloudflare D1.</p>
+  <div class="notice">Cloud mode requires the Cloudflare Worker update, a D1 database binding named VEXT_DB, and a Worker secret named VEXT_ADMIN_TOKEN. Until those setup steps are complete, cloud saving and the public website widget will not work. Never put the admin token in the website embed code.</div>
  </div>
  <div class="grid">
   <div class="card">
-   <h2>1. Configure your support assistant</h2>
+   <h2>1. Configure your business assistant</h2>
    <div class="field"><label for="supportBusiness">Business name</label><input id="supportBusiness" maxlength="100" placeholder="Your business name"></div>
+   <div class="field"><label for="supportWebsite">Business website (optional, for domain checking)</label><input id="supportWebsite" maxlength="300" placeholder="https://example.com"></div>
    <div class="field"><label for="supportGreeting">Welcome message</label><textarea id="supportGreeting" maxlength="500" placeholder="Hello! How can we help you today?"></textarea></div>
-   <div class="field"><label for="supportInstructions">What should the assistant know about your business?</label><textarea id="supportInstructions" maxlength="3000" placeholder="Describe your products, services, opening hours, delivery areas, prices or common questions. Do not add passwords or confidential information."></textarea></div>
-   <button class="primary" id="saveSupport">Save assistant settings</button>
+   <div class="field"><label for="supportInstructions">What should the assistant know about your business?</label><textarea id="supportInstructions" maxlength="5000" placeholder="Describe your products, services, opening hours, delivery areas, prices and common questions. Never add passwords, payment secrets or private customer information."></textarea></div>
+   <div class="field"><label for="supportAdminToken">Cloudflare admin token (keep private)</label><input id="supportAdminToken" type="password" autocomplete="off" placeholder="Enter your VEXT_ADMIN_TOKEN secret"></div>
+   <p class="muted small">Your business ID: <code id="supportBusinessId"></code></p>
+   <button class="primary" id="saveSupport">Save assistant to cloud</button>
    <p class="chat-status" id="supportSaveStatus"></p>
   </div>
   <div class="card">
-   <h2>2. Capture a customer enquiry</h2>
-   <p class="muted small">Ask customers for permission before saving their contact details.</p>
+   <h2>2. Add the assistant to your website</h2>
+   <p class="muted small">Save the business configuration first. Then copy this installation code into your website's HTML, just before the closing body tag.</p>
+   <textarea id="supportWidgetCode" rows="5" readonly placeholder="Your website widget code will appear here after you save the cloud configuration."></textarea>
+   <div class="action-row"><button class="secondary" id="copySupportWidget" type="button">Copy website code</button></div>
+   <p class="muted small">The public widget code contains only a public business ID, never your admin token or OpenAI API key.</p>
+  </div>
+ </div>
+ <div class="card">
+  <div class="action-row" style="justify-content:space-between;align-items:center">
+   <div><h2>3. Cloud customer enquiries</h2><p class="muted small">Load enquiries submitted through the website widget, then import them into Client Management on this browser.</p></div>
+   <div class="action-row"><button class="secondary" id="loadSupportLeads" type="button">Load cloud enquiries</button><button class="primary" id="importSupportLeads" type="button">Import into clients</button></div>
+  </div>
+  <div id="supportCloudLeadTable" class="empty">No cloud enquiries loaded yet.</div>
+  <div class="chat-status" id="supportCloudStatus"></div>
+ </div>
+ <div class="grid">
+  <div class="card">
+   <h2>4. Test your customer assistant</h2>
+   <div class="chat-messages" id="supportMessages" style="min-height:220px;max-height:360px"></div>
+   <div class="chat-compose">
+    <textarea id="supportInput" placeholder="Test a customer question, e.g. Do you deliver to Kampala?" maxlength="3000"></textarea>
+    <button class="primary" id="supportSend">Ask assistant</button>
+   </div>
+   <div class="chat-status" id="supportStatus">Test the answers before making the assistant available to customers.</div>
+  </div>
+  <div class="card">
+   <h2>5. Try capturing an enquiry</h2>
+   <p class="muted small">This is a local dashboard test form. Real customer enquiries from your website widget are stored in the cloud database.</p>
    <form id="supportLeadForm">
     <div class="field"><label for="supportLeadName">Customer name *</label><input id="supportLeadName" required maxlength="100" placeholder="Full name"></div>
     <div class="field"><label for="supportLeadEmail">Email address</label><input id="supportLeadEmail" type="email" maxlength="150" placeholder="name@example.com"></div>
     <div class="field"><label for="supportLeadPhone">Phone number</label><input id="supportLeadPhone" maxlength="40" placeholder="+256..."></div>
     <div class="field"><label for="supportLeadNeed">What do they need help with?</label><textarea id="supportLeadNeed" maxlength="1000" placeholder="Customer's question or request"></textarea></div>
     <label class="small"><input id="supportLeadConsent" type="checkbox" style="width:auto;margin-right:8px" required> The customer agreed to be contacted about this enquiry.</label>
-    <button class="primary" type="submit" style="margin-top:14px">Save customer enquiry</button>
+    <button class="primary" type="submit" style="margin-top:14px">Save test enquiry locally</button>
    </form>
   </div>
- </div>
- <div class="card">
-  <h2>3. Test your customer assistant</h2>
-  <div class="chat-messages" id="supportMessages" style="min-height:220px;max-height:360px"></div>
-  <div class="chat-compose">
-   <textarea id="supportInput" placeholder="Test a customer question, e.g. Do you deliver to Kampala?" maxlength="3000"></textarea>
-   <button class="primary" id="supportSend">Ask assistant</button>
-  </div>
-  <div class="chat-status" id="supportStatus">Test the answers before making the assistant available to customers.</div>
  </div>
 </section>
 
@@ -614,11 +634,19 @@ $("invoiceTable").addEventListener("click",e=>{
  }
 });
 
-const supportDefaults={business:localStorage.getItem(key+"business")||"Your Business",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
+const supportDefaults={business:localStorage.getItem(key+"business")||"Your Business",website:"",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
 function getSupportSettings(){
  try{return {...supportDefaults,...JSON.parse(localStorage.getItem(key+"support_settings")||"{}")}}
  catch{return supportDefaults}
 }
+function getSupportBusinessId(){
+ let value=localStorage.getItem(key+"support_business_id");
+ if(!value){value=(crypto&&crypto.randomUUID)?crypto.randomUUID():"vext-"+Date.now()+"-"+Math.random().toString(36).slice(2);localStorage.setItem(key+"support_business_id",value)}
+ return value;
+}
+const supportBusinessId=getSupportBusinessId();
+let cloudSupportLeads=[];
+$("supportBusinessId").textContent=supportBusinessId;
 function renderSupportChat(){
  const area=$("supportMessages");area.replaceChildren();
  const settings=getSupportSettings();
@@ -628,19 +656,78 @@ function renderSupportChat(){
  const body=document.createElement("div");body.textContent=settings.greeting||"Hello! How can we help?";
  welcome.append(role,body);area.append(welcome);
 }
-function saveSupportSettings(){
+function buildSupportWidgetCode(){
+ $("supportWidgetCode").value='<script src="https://rkabiitex-ctrl.github.io/ai-operations-engine/customer-widget.js" data-api-base="https://flat-star-50c3.rkabiitex.workers.dev" data-business-id="'+supportBusinessId+'" async><\\/script>';
+}
+async function saveSupportSettings(){
  const settings={business:$("supportBusiness").value.trim()||"Your Business",
+ website:$("supportWebsite").value.trim(),
  greeting:$("supportGreeting").value.trim()||"Hello! How can we help you today?",
  instructions:$("supportInstructions").value.trim()};
  localStorage.setItem(key+"support_settings",JSON.stringify(settings));
- $("supportSaveStatus").textContent="Assistant settings saved in this browser.";
  renderSupportChat();
+ const token=$("supportAdminToken").value.trim();
+ if(!token){$("supportSaveStatus").textContent="Saved locally only. Enter your Cloudflare VEXT_ADMIN_TOKEN after completing the Worker and D1 setup to publish to cloud.";return}
+ $("saveSupport").disabled=true;$("supportSaveStatus").textContent="Saving business configuration to Cloudflare...";
+ try{
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/business",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({businessId:supportBusinessId,name:settings.business,website:settings.website,greeting:settings.greeting,instructions:settings.instructions})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Cloud save failed ("+response.status+")"));
+  buildSupportWidgetCode();
+  $("supportSaveStatus").textContent="Business assistant saved to Cloudflare. Your website embed code is ready.";
+ }catch(error){$("supportSaveStatus").textContent="Not saved to cloud: "+(error.message||"Check Worker and D1 setup.")+" Your settings are still saved in this browser."}
+ finally{$("saveSupport").disabled=false}
 }
 const initialSupport=getSupportSettings();
 $("supportBusiness").value=initialSupport.business;
+$("supportWebsite").value=initialSupport.website||"";
 $("supportGreeting").value=initialSupport.greeting;
 $("supportInstructions").value=initialSupport.instructions;
 $("saveSupport").addEventListener("click",saveSupportSettings);
+$("copySupportWidget").addEventListener("click",async()=>{
+ const value=$("supportWidgetCode").value;
+ if(!value){$("supportSaveStatus").textContent="Save the assistant to cloud first to generate the website code.";return}
+ try{await navigator.clipboard.writeText(value);$("supportSaveStatus").textContent="Website embed code copied."}
+ catch{$("supportWidgetCode").focus();$("supportWidgetCode").select();$("supportSaveStatus").textContent="Code selected. Press Ctrl+C to copy."}
+});
+function getSupportAdminToken(){return $("supportAdminToken").value.trim()}
+async function loadSupportCloudLeads(){
+ const token=getSupportAdminToken(),status=$("supportCloudStatus"),container=$("supportCloudLeadTable");
+ if(!token){status.textContent="Enter the Cloudflare admin token first.";return}
+ status.textContent="Loading cloud enquiries...";
+ try{
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/leads?businessId="+encodeURIComponent(supportBusinessId),{headers:{"Authorization":"Bearer "+token}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
+  cloudSupportLeads=Array.isArray(data.leads)?data.leads:[];
+  container.replaceChildren();
+  if(!cloudSupportLeads.length){container.textContent="No website enquiries have arrived yet.";status.textContent="Cloud inbox checked.";return}
+  const table=document.createElement("table");
+  const head=document.createElement("thead"),hr=document.createElement("tr");
+  ["Customer","Contact","Enquiry","Received"].forEach(label=>{const th=document.createElement("th");th.textContent=label;hr.append(th)});
+  head.append(hr);table.append(head);
+  const body=document.createElement("tbody");
+  cloudSupportLeads.forEach(lead=>{
+   const tr=document.createElement("tr");
+   [lead.customer_name,[lead.email,lead.phone].filter(Boolean).join(" · "),lead.message,new Date(lead.created_at).toLocaleString()].forEach(value=>{const td=document.createElement("td");td.textContent=value||"—";tr.append(td)});
+   body.append(tr);
+  });
+  table.append(body);const wrap=document.createElement("div");wrap.className="table-wrap";wrap.append(table);container.append(wrap);
+  status.textContent=cloudSupportLeads.length+" cloud enquiries loaded.";
+ }catch(error){status.textContent="Could not load cloud enquiries: "+(error.message||"Check your Worker, D1 binding and admin token.")}
+}
+$("loadSupportLeads").addEventListener("click",loadSupportCloudLeads);
+$("importSupportLeads").addEventListener("click",()=>{
+ if(!cloudSupportLeads.length){$("supportCloudStatus").textContent="Load cloud enquiries first.";return}
+ const leads=read("leads");
+ let added=0;
+ cloudSupportLeads.forEach(item=>{
+  const duplicate=leads.some(existing=>(item.email&&existing.email===item.email)||(item.phone&&existing.phone===item.phone));
+  if(!duplicate){leads.push({id:item.id||id(),name:item.customer_name,email:item.email||"",phone:item.phone||"",country:"",interest:item.message||"Website enquiry",source:"VEXT AI Website Widget",created:item.created_at||new Date().toISOString()});added++}
+ });
+ write("leads",leads);log(added+" website enquiries imported.");render();
+ $("supportCloudStatus").textContent=added+" new enquiries imported into Client Management. Existing matching contacts were skipped.";
+});
 renderSupportChat();
 $("supportLeadForm").addEventListener("submit",e=>{
  e.preventDefault();
@@ -651,8 +738,8 @@ $("supportLeadForm").addEventListener("submit",e=>{
  leads.push({id:id(),name:$("supportLeadName").value.trim(),email,phone,
  country:"",interest:$("supportLeadNeed").value.trim()||"Customer support enquiry",
  source:"Customer Support Agent",created:new Date().toISOString()});
- write("leads",leads);e.target.reset();log("New customer enquiry captured by Support Agent.");render();
- $("supportStatus").textContent="Customer enquiry saved to Client Management.";
+ write("leads",leads);e.target.reset();log("New client registered by support test form.");render();
+ $("supportStatus").textContent="Test enquiry saved locally to Client Management.";
 });
 async function askSupportAssistant(){
  const input=$("supportInput"),button=$("supportSend"),status=$("supportStatus");
@@ -673,7 +760,7 @@ async function askSupportAssistant(){
   if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
   const reply=typeof data.reply==="string"?data.reply:"";
   if(!reply)throw new Error("The AI service returned an empty response.");
-  add("ASSISTANT",reply);status.textContent="Test response received. Check its accuracy before launch.";
+  add("ASSISTANT",reply);status.textContent="Response received. Confirm the information before launch.";
  }catch(error){add("ASSISTANT","I couldn't reach the AI service. "+(error.message||"Please try again."));status.textContent="Connection problem. Check the AI backend."}
  finally{button.disabled=false;button.textContent="Ask assistant";input.focus()}
 }
