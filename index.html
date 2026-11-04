@@ -124,7 +124,7 @@ th{color:var(--muted);font-weight:600}
 .billing-switch{display:inline-flex;gap:5px;padding:5px;background:#0b1528;border:1px solid var(--line);border-radius:10px}
 .billing-switch button{border:0;border-radius:7px;padding:9px 13px;background:transparent;color:var(--muted);font-size:12px;font-weight:700}
 .billing-switch button.active{background:#1d3a55;color:white}
-.pricing-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:stretch}
 .plan-card{position:relative;background:linear-gradient(160deg,#14243b,#0e192b);border:1px solid var(--line);border-radius:15px;padding:21px;display:flex;flex-direction:column;min-width:0}
 .plan-card.featured{border-color:var(--blue);box-shadow:0 0 0 1px #38bdf833}
 .plan-tag{font-size:10px;color:var(--cyan);letter-spacing:1.5px;font-weight:800;text-transform:uppercase}
@@ -424,7 +424,7 @@ th{color:var(--muted);font-weight:600}
    <div>
     <div class="billing-switch" role="group" aria-label="Billing period">
      <button type="button" class="active" data-billing="monthly">Monthly</button>
-     <button type="button" data-billing="yearly">Yearly · Save up to 2 months</button>
+     <button type="button" data-billing="yearly">Yearly · 2 months free</button>
     </div>
    </div>
   </div>
@@ -432,25 +432,25 @@ th{color:var(--muted);font-weight:600}
    <article class="plan-card">
     <span class="plan-tag">Try VEXT AI</span>
     <div class="plan-name">Starter</div>
-    <div class="plan-description">Explore VEXT AI with a one-day trial, then continue with the tools your business needs.</div>
-    <div class="plan-price" data-monthly="$90" data-yearly="$900">$90</div>
-    <div class="plan-period">per month after 1-day free trial</div>
-    <div class="plan-save">1-day free trial included</div>
+    <div class="plan-description">A simple starting point for small businesses ready to organise everyday operations.</div>
+    <div class="plan-price" data-monthly="$19" data-yearly="$190">$19</div>
+    <div class="plan-period">per month after 7-day free trial</div>
+    <div class="plan-save">7-day free trial included</div>
     <ul class="plan-features">
      <li>Business dashboard</li>
      <li>AI workspace access</li>
      <li>Client and invoice management</li>
      <li>Business activity overview</li>
     </ul>
-    <button class="secondary" type="button" data-plan="Starter">Start 1-day free trial</button>
+    <button class="secondary" type="button" data-plan="Starter">Start 7-day free trial</button>
    </article>
    <article class="plan-card featured">
     <span class="plan-tag">Advanced business tools</span>
     <div class="plan-name">Professional</div>
     <div class="plan-description">For growing businesses that need advanced AI assistance and customer workflows.</div>
-    <div class="plan-price" data-monthly="$400" data-yearly="$4,000">$400</div>
+    <div class="plan-price" data-monthly="$49" data-yearly="$490">$49</div>
     <div class="plan-period">per month</div>
-    <div class="plan-save" data-saving="Annual billing: $4,000 per year"> </div>
+    <div class="plan-save" data-saving="Annual billing: $490 per year — save $98"> </div>
     <ul class="plan-features">
      <li>Everything in Starter</li>
      <li>AI customer support tools</li>
@@ -463,7 +463,7 @@ th{color:var(--muted);font-weight:600}
    <article class="plan-card">
     <span class="plan-tag">For larger organisations</span>
     <div class="plan-name">Enterprise</div>
-    <div class="plan-description">Tailored deployment, team requirements and support for larger organisations.</div>
+    <div class="plan-description">For larger organisations that need tailored deployment, integrations and support.</div>
     <div class="plan-price" data-monthly="Custom" data-yearly="Custom">Custom</div>
     <div class="plan-period">Talk to our team</div>
     <div class="plan-save">Tailored to your organisation</div>
@@ -476,7 +476,7 @@ th{color:var(--muted);font-weight:600}
     <button class="secondary" type="button" data-plan="Enterprise">Contact sales</button>
    </article>
   </div>
-  <div class="pricing-footnote"><strong>Launch pricing preview:</strong> Starter includes a one-day free trial, then $90/month. Professional is $400/month. Annual display prices are illustrative and billing is not active yet. Plan limits, trial rules, payment processing and subscription management must be configured before customers can sign up or be charged.</div>
+  <div class="pricing-footnote"><strong>Proposed launch pricing:</strong> Starter is $19/month after a 7-day free trial, or $190/year. Professional is $49/month, or $490/year. Annual plans are priced at 10 months, giving 2 months free. Enterprise pricing is customised. Secure checkout, plan limits, trial rules and subscription management must be connected before customers can sign up or be charged.</div>
   <p class="muted small" id="pricingActionStatus" role="status" style="margin-top:14px">Select a plan to see the next step. Secure checkout will be added after payment integration.</p>
  </div>
  <div class="pricing-faq">
@@ -533,7 +533,7 @@ document.querySelectorAll("[data-billing]").forEach(button=>button.addEventListe
  document.querySelectorAll("[data-billing]").forEach(item=>item.classList.toggle("active",item===button));
  document.querySelectorAll(".plan-price").forEach(price=>{price.textContent=price.dataset[pricingBilling]});
  document.querySelectorAll("[data-saving]").forEach(note=>{note.textContent=pricingBilling==="yearly"?note.dataset.saving:""});
- document.querySelectorAll(".plan-period").forEach((period,index)=>{if(index===0)period.textContent=pricingBilling==="yearly"?"per year after 1-day free trial":"per month after 1-day free trial";else if(index===1)period.textContent=pricingBilling==="yearly"?"per year":"per month";});
+ document.querySelectorAll(".plan-period").forEach((period,index)=>{if(index===0)period.textContent=pricingBilling==="yearly"?"per year after 7-day free trial":"per month after 7-day free trial";else if(index===1)period.textContent=pricingBilling==="yearly"?"per year":"per month";});
 }));
 document.querySelector("#pricing").addEventListener("click",event=>{
  const button=event.target.closest("[data-plan]");
