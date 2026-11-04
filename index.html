@@ -120,6 +120,28 @@ th{color:var(--muted);font-weight:600}
  .stat-number{font-size:21px}
 }
 @media(max-width:380px){.stats{grid-template-columns:1fr}}
+.pricing-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+.billing-switch{display:inline-flex;gap:5px;padding:5px;background:#0b1528;border:1px solid var(--line);border-radius:10px}
+.billing-switch button{border:0;border-radius:7px;padding:9px 13px;background:transparent;color:var(--muted);font-size:12px;font-weight:700}
+.billing-switch button.active{background:#1d3a55;color:white}
+.pricing-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+.plan-card{position:relative;background:linear-gradient(160deg,#14243b,#0e192b);border:1px solid var(--line);border-radius:15px;padding:21px;display:flex;flex-direction:column;min-width:0}
+.plan-card.featured{border-color:var(--blue);box-shadow:0 0 0 1px #38bdf833}
+.plan-tag{font-size:10px;color:var(--cyan);letter-spacing:1.5px;font-weight:800;text-transform:uppercase}
+.plan-name{font-size:20px;font-weight:800;margin:12px 0 7px}
+.plan-description{font-size:12px;color:var(--muted);line-height:1.55;min-height:38px}
+.plan-price{font-size:34px;font-weight:900;letter-spacing:-1.5px;margin:18px 0 3px}
+.plan-period{font-size:11px;color:var(--muted)}
+.plan-save{font-size:11px;color:var(--green);min-height:17px;margin-top:5px}
+.plan-features{list-style:none;padding:0;margin:19px 0;flex:1}
+.plan-features li{font-size:12px;color:#d7e3f1;padding:9px 0;border-bottom:1px solid #263750;line-height:1.4}
+.plan-features li:before{content:"✓";color:var(--green);font-weight:900;margin-right:8px}
+.plan-card .primary,.plan-card .secondary{width:100%;margin-top:8px}
+.pricing-footnote{margin-top:16px;padding:14px 16px;border:1px solid #66502b;background:#2b2417;color:#f5d9a5;border-radius:10px;font-size:12px;line-height:1.6}
+.pricing-faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.pricing-faq .card{margin:0}
+@media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.pricing-grid,.pricing-faq{grid-template-columns:1fr}.plan-description{min-height:0}}
 </style>
 </head>
 <body>
@@ -137,6 +159,7 @@ th{color:var(--muted);font-weight:600}
  <div class="nav-label">MANAGEMENT</div>
  <button class="nav" data-page="analytics">▥ &nbsp; Analytics</button>
  <button class="nav" data-page="settings">⚙ &nbsp; Settings</button>
+ <button class="nav" data-page="pricing">＄ &nbsp; Pricing</button>
  <div class="sidebar-bottom">
   <span class="pill">● SYSTEM ACTIVE</span>
   <p>VEXT AI Global Edition</p>
@@ -390,6 +413,95 @@ th{color:var(--muted);font-weight:600}
  </div>
 </section>
 
+<section class="page" id="pricing">
+ <div class="card">
+  <div class="pricing-intro">
+   <div>
+    <span class="plan-tag">Simple, transparent plans</span>
+    <h2 style="font-size:25px;margin:10px 0">Choose the right engine for your business.</h2>
+    <p class="muted small">Start small, grow with confidence, and upgrade when your operations need more power.</p>
+   </div>
+   <div>
+    <div class="billing-switch" role="group" aria-label="Billing period">
+     <button type="button" class="active" data-billing="monthly">Monthly</button>
+     <button type="button" data-billing="yearly">Yearly · Save up to 2 months</button>
+    </div>
+   </div>
+  </div>
+  <div class="pricing-grid">
+   <article class="plan-card">
+    <span class="plan-tag">Get started</span>
+    <div class="plan-name">Free</div>
+    <div class="plan-description">Explore the VEXT AI workspace and organise your first business workflows.</div>
+    <div class="plan-price" data-monthly="$0" data-yearly="$0">$0</div>
+    <div class="plan-period">per user / month</div>
+    <div class="plan-save">Always free</div>
+    <ul class="plan-features">
+     <li>Business dashboard</li>
+     <li>Basic client and invoice tools</li>
+     <li>Limited AI workspace access</li>
+     <li>Community-level support</li>
+    </ul>
+    <button class="secondary" type="button" data-plan="Free">Start free</button>
+   </article>
+   <article class="plan-card">
+    <span class="plan-tag">For individuals</span>
+    <div class="plan-name">Starter</div>
+    <div class="plan-description">For freelancers and small teams ready to bring daily work into one place.</div>
+    <div class="plan-price" data-monthly="$19" data-yearly="$190">$19</div>
+    <div class="plan-period">per user / month</div>
+    <div class="plan-save" data-saving="Save $38 per year"> </div>
+    <ul class="plan-features">
+     <li>Everything in Free</li>
+     <li>Expanded AI workspace</li>
+     <li>Client and invoice management</li>
+     <li>Business activity overview</li>
+    </ul>
+    <button class="secondary" type="button" data-plan="Starter">Choose Starter</button>
+   </article>
+   <article class="plan-card featured">
+    <span class="plan-tag">Most popular</span>
+    <div class="plan-name">Professional</div>
+    <div class="plan-description">For growing businesses that need customer support and stronger workflows.</div>
+    <div class="plan-price" data-monthly="$49" data-yearly="$490">$49</div>
+    <div class="plan-period">per user / month</div>
+    <div class="plan-save" data-saving="Save $98 per year"> </div>
+    <ul class="plan-features">
+     <li>Everything in Starter</li>
+     <li>AI customer support tools</li>
+     <li>Cloud enquiry collection</li>
+     <li>Business analytics</li>
+     <li>Priority support (planned)</li>
+    </ul>
+    <button class="primary" type="button" data-plan="Professional">Choose Professional</button>
+   </article>
+   <article class="plan-card">
+    <span class="plan-tag">For larger teams</span>
+    <div class="plan-name">Enterprise</div>
+    <div class="plan-description">For organisations that need tailored deployment, controls and assistance.</div>
+    <div class="plan-price" data-monthly="Custom" data-yearly="Custom">Custom</div>
+    <div class="plan-period">Talk to our team</div>
+    <div class="plan-save">Tailored to your organisation</div>
+    <ul class="plan-features">
+     <li>Everything in Professional</li>
+     <li>Custom onboarding (planned)</li>
+     <li>Team and access controls (planned)</li>
+     <li>Custom usage and support options</li>
+    </ul>
+    <button class="secondary" type="button" data-plan="Enterprise">Contact sales</button>
+   </article>
+  </div>
+  <div class="pricing-footnote"><strong>Launch pricing preview:</strong> These are proposed USD prices for the VEXT AI pricing page, not active subscriptions or a payment offer. Plan limits, feature access and billing still need to be configured before customers can be charged. Annual prices shown are equivalent to 10 monthly payments.</div>
+  <p class="muted small" id="pricingActionStatus" role="status" style="margin-top:14px">Select a plan to see the next step. Secure checkout will be added after payment integration.</p>
+ </div>
+ <div class="pricing-faq">
+  <div class="card"><h3>Can I change plans later?</h3><p class="muted small">The intended plan structure will allow businesses to upgrade as their needs grow. Plan changes will become available when subscriptions are implemented.</p></div>
+  <div class="card"><h3>Which currency are prices in?</h3><p class="muted small">The proposed public prices are in US dollars (USD), with international billing options to be confirmed before launch.</p></div>
+  <div class="card"><h3>Can my organisation get a custom plan?</h3><p class="muted small">Yes. The Enterprise tier is designed for tailored requirements. A sales contact workflow still needs to be connected.</p></div>
+  <div class="card"><h3>Are payments enabled now?</h3><p class="muted small">Not yet. Payment processing, recurring billing, receipts and subscription management are future implementation steps.</p></div>
+ </div>
+</section>
+
 <div class="footer">VEXT AI © <span id="year"></span> · Global Business Engine · Prototype Edition</div>
 </main>
 </div>
@@ -425,10 +537,28 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Customer Support",analytics:"Business Analytics",settings:"Platform Settings"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Customer Support",analytics:"Business Analytics",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
+
+let pricingBilling="monthly";
+document.querySelectorAll("[data-billing]").forEach(button=>button.addEventListener("click",()=>{
+ pricingBilling=button.dataset.billing;
+ document.querySelectorAll("[data-billing]").forEach(item=>item.classList.toggle("active",item===button));
+ document.querySelectorAll(".plan-price").forEach(price=>{price.textContent=price.dataset[pricingBilling]});
+ document.querySelectorAll("[data-saving]").forEach(note=>{note.textContent=pricingBilling==="yearly"?note.dataset.saving:""});
+ document.querySelectorAll(".plan-period").forEach((period,index)=>{if(index<3)period.textContent=pricingBilling==="yearly"?"billed annually":"per user / month"});
+}));
+document.querySelector("#pricing").addEventListener("click",event=>{
+ const button=event.target.closest("[data-plan]");
+ if(!button)return;
+ const plan=button.dataset.plan;
+ $("pricingActionStatus").textContent=plan==="Enterprise"
+  ?"Enterprise selected. A sales contact form will be connected before launch."
+  :plan+" selected. Account registration and secure checkout are not connected yet; no payment has been taken.";
+});
+
 
 const VEXT_CHAT_ENDPOINT="https://flat-star-50c3.rkabiitex.workers.dev/";
 function loadChatHistory(){
