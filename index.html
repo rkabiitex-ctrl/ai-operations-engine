@@ -430,42 +430,27 @@ th{color:var(--muted);font-weight:600}
   </div>
   <div class="pricing-grid">
    <article class="plan-card">
-    <span class="plan-tag">Get started</span>
-    <div class="plan-name">Free</div>
-    <div class="plan-description">Explore the VEXT AI workspace and organise your first business workflows.</div>
-    <div class="plan-price" data-monthly="$0" data-yearly="$0">$0</div>
-    <div class="plan-period">per user / month</div>
-    <div class="plan-save">Always free</div>
+    <span class="plan-tag">Try VEXT AI</span>
+    <div class="plan-name">Starter</div>
+    <div class="plan-description">Explore VEXT AI with a one-day trial, then continue with the tools your business needs.</div>
+    <div class="plan-price" data-monthly="$90" data-yearly="$900">$90</div>
+    <div class="plan-period">per month after 1-day free trial</div>
+    <div class="plan-save">1-day free trial included</div>
     <ul class="plan-features">
      <li>Business dashboard</li>
-     <li>Basic client and invoice tools</li>
-     <li>Limited AI workspace access</li>
-     <li>Community-level support</li>
-    </ul>
-    <button class="secondary" type="button" data-plan="Free">Start free</button>
-   </article>
-   <article class="plan-card">
-    <span class="plan-tag">For individuals</span>
-    <div class="plan-name">Starter</div>
-    <div class="plan-description">For freelancers and small teams ready to bring daily work into one place.</div>
-    <div class="plan-price" data-monthly="$19" data-yearly="$190">$19</div>
-    <div class="plan-period">per user / month</div>
-    <div class="plan-save" data-saving="Save $38 per year"> </div>
-    <ul class="plan-features">
-     <li>Everything in Free</li>
-     <li>Expanded AI workspace</li>
+     <li>AI workspace access</li>
      <li>Client and invoice management</li>
      <li>Business activity overview</li>
     </ul>
-    <button class="secondary" type="button" data-plan="Starter">Choose Starter</button>
+    <button class="secondary" type="button" data-plan="Starter">Start 1-day free trial</button>
    </article>
    <article class="plan-card featured">
-    <span class="plan-tag">Most popular</span>
+    <span class="plan-tag">Advanced business tools</span>
     <div class="plan-name">Professional</div>
-    <div class="plan-description">For growing businesses that need customer support and stronger workflows.</div>
-    <div class="plan-price" data-monthly="$49" data-yearly="$490">$49</div>
-    <div class="plan-period">per user / month</div>
-    <div class="plan-save" data-saving="Save $98 per year"> </div>
+    <div class="plan-description">For growing businesses that need advanced AI assistance and customer workflows.</div>
+    <div class="plan-price" data-monthly="$400" data-yearly="$4,000">$400</div>
+    <div class="plan-period">per month</div>
+    <div class="plan-save" data-saving="Annual billing: $4,000 per year"> </div>
     <ul class="plan-features">
      <li>Everything in Starter</li>
      <li>AI customer support tools</li>
@@ -476,9 +461,9 @@ th{color:var(--muted);font-weight:600}
     <button class="primary" type="button" data-plan="Professional">Choose Professional</button>
    </article>
    <article class="plan-card">
-    <span class="plan-tag">For larger teams</span>
+    <span class="plan-tag">For larger organisations</span>
     <div class="plan-name">Enterprise</div>
-    <div class="plan-description">For organisations that need tailored deployment, controls and assistance.</div>
+    <div class="plan-description">Tailored deployment, team requirements and support for larger organisations.</div>
     <div class="plan-price" data-monthly="Custom" data-yearly="Custom">Custom</div>
     <div class="plan-period">Talk to our team</div>
     <div class="plan-save">Tailored to your organisation</div>
@@ -491,7 +476,7 @@ th{color:var(--muted);font-weight:600}
     <button class="secondary" type="button" data-plan="Enterprise">Contact sales</button>
    </article>
   </div>
-  <div class="pricing-footnote"><strong>Launch pricing preview:</strong> These are proposed USD prices for the VEXT AI pricing page, not active subscriptions or a payment offer. Plan limits, feature access and billing still need to be configured before customers can be charged. Annual prices shown are equivalent to 10 monthly payments.</div>
+  <div class="pricing-footnote"><strong>Launch pricing preview:</strong> Starter includes a one-day free trial, then $90/month. Professional is $400/month. Annual display prices are illustrative and billing is not active yet. Plan limits, trial rules, payment processing and subscription management must be configured before customers can sign up or be charged.</div>
   <p class="muted small" id="pricingActionStatus" role="status" style="margin-top:14px">Select a plan to see the next step. Secure checkout will be added after payment integration.</p>
  </div>
  <div class="pricing-faq">
@@ -548,7 +533,7 @@ document.querySelectorAll("[data-billing]").forEach(button=>button.addEventListe
  document.querySelectorAll("[data-billing]").forEach(item=>item.classList.toggle("active",item===button));
  document.querySelectorAll(".plan-price").forEach(price=>{price.textContent=price.dataset[pricingBilling]});
  document.querySelectorAll("[data-saving]").forEach(note=>{note.textContent=pricingBilling==="yearly"?note.dataset.saving:""});
- document.querySelectorAll(".plan-period").forEach((period,index)=>{if(index<3)period.textContent=pricingBilling==="yearly"?"billed annually":"per user / month"});
+ document.querySelectorAll(".plan-period").forEach((period,index)=>{if(index===0)period.textContent=pricingBilling==="yearly"?"per year after 1-day free trial":"per month after 1-day free trial";else if(index===1)period.textContent=pricingBilling==="yearly"?"per year":"per month";});
 }));
 document.querySelector("#pricing").addEventListener("click",event=>{
  const button=event.target.closest("[data-plan]");
