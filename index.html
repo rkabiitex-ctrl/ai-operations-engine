@@ -142,9 +142,20 @@ th{color:var(--muted);font-weight:600}
 .pricing-faq .card{margin:0}
 @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.pricing-grid,.pricing-faq{grid-template-columns:1fr}.plan-description{min-height:0}}
+
+/* VEXT AI account access */
+#vextAuthGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#12345a 0,#07111f 48%,#050b14 100%);font-family:inherit;color:#edf6ff}
+#vextAuthGate[hidden]{display:none!important}#vextAuthCard{width:min(100%,430px);padding:30px;border:1px solid #24466a;border-radius:20px;background:#0c1b2c;box-shadow:0 24px 80px #0009}
+#vextAuthCard h2{margin:0 0 8px;font-size:27px;color:#fff}#vextAuthCard p{color:#9eb4ca;line-height:1.55}#vextAuthCard label{display:block;margin:14px 0 6px;color:#c7d8e8;font-size:13px}
+#vextAuthCard input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #294966;border-radius:10px;background:#071321;color:#fff;font:inherit;outline:none}#vextAuthCard input:focus{border-color:#39c6e8;box-shadow:0 0 0 3px #39c6e822}
+#vextAuthSubmit{width:100%;margin-top:20px;padding:13px;border:0;border-radius:10px;background:linear-gradient(90deg,#087eaa,#16b8c9);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+#vextAuthSwitch,#vextAuthForgot{border:0;background:none;color:#5bd5e9;cursor:pointer;font:inherit;padding:10px 0}#vextAuthMessage{min-height:22px;margin-top:12px;font-size:13px;color:#9de7d3}
+#vextAuthActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#vextAuthUser{color:#a9c2d9;font-size:12px}#vextAuthLogout{border:1px solid #31516e;border-radius:8px;background:#10243a;color:#d9efff;padding:8px 12px;cursor:pointer}@media(max-width:520px){#vextAuthCard{padding:23px}}
 </style>
 </head>
 <body>
+
+<div id="vextAuthGate"><div id="vextAuthCard"><div style="font-weight:800;letter-spacing:1px;color:#65d9ed;margin-bottom:20px">VEXT<span style="color:#fff"> AI</span></div><h2 id="vextAuthHeading">Welcome back</h2><p id="vextAuthIntro">Sign in to access your VEXT AI workspace.</p><form id="vextAuthForm"><label for="vextAuthEmail">Email address</label><input id="vextAuthEmail" type="email" autocomplete="email" required placeholder="you@example.com"><label for="vextAuthPassword">Password</label><input id="vextAuthPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"><button id="vextAuthSubmit" type="submit">Sign in</button></form><button id="vextAuthForgot" type="button">Forgot your password?</button><div id="vextAuthMessage" role="status" aria-live="polite"></div><p style="margin-bottom:0"><span id="vextAuthSwitchText">New to VEXT AI?</span> <button id="vextAuthSwitch" type="button">Create an account</button></p></div></div>
 <div class="app">
 <aside class="sidebar">
  <div class="brand">VEXT<span> AI</span></div>
@@ -491,6 +502,7 @@ th{color:var(--muted);font-weight:600}
 </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -947,6 +959,21 @@ $("exportCSV").addEventListener("click",()=>{
 });
 $("year").textContent=new Date().getFullYear();
 render();
+</script>
+
+<script>
+(()=>{ "use strict";
+ const client=window.supabase.createClient("https://nakydtwssxlbtpocxmwh.supabase.co","sb_publishable_jOxJl50SORuiYbTZ2Gq7yw_KiySZ56e");
+ const gate=document.getElementById("vextAuthGate"),form=document.getElementById("vextAuthForm"),email=document.getElementById("vextAuthEmail"),password=document.getElementById("vextAuthPassword"),message=document.getElementById("vextAuthMessage"),submit=document.getElementById("vextAuthSubmit");let mode="signin";
+ function say(t,bad=false){message.textContent=t;message.style.color=bad?"#ffaaa5":"#9de7d3"}
+ function setMode(m){mode=m;const up=m==="signup";document.getElementById("vextAuthHeading").textContent=up?"Create your account":"Welcome back";document.getElementById("vextAuthIntro").textContent=up?"Create a secure account to access your VEXT AI workspace.":"Sign in to access your VEXT AI workspace.";submit.textContent=up?"Create account":"Sign in";document.getElementById("vextAuthSwitchText").textContent=up?"Already have an account?":"New to VEXT AI?";document.getElementById("vextAuthSwitch").textContent=up?"Sign in":"Create an account";document.getElementById("vextAuthForgot").hidden=up;password.autocomplete=up?"new-password":"current-password";say("")}
+ function showUser(user){let box=document.getElementById("vextAuthActions");if(!box){box=document.createElement("div");box.id="vextAuthActions";document.querySelector(".top-actions")?.appendChild(box)}if(box){box.replaceChildren();const who=document.createElement("span");who.id="vextAuthUser";who.textContent=user.email||"Signed in";const out=document.createElement("button");out.id="vextAuthLogout";out.type="button";out.textContent="Sign out";out.onclick=async()=>{const {error}=await client.auth.signOut();if(error)alert(error.message)};box.append(who,out)}}
+ function apply(session){gate.hidden=!!session;if(session)showUser(session.user);else document.getElementById("vextAuthActions")?.remove()}
+ document.getElementById("vextAuthSwitch").onclick=()=>setMode(mode==="signin"?"signup":"signin");
+ form.onsubmit=async e=>{e.preventDefault();submit.disabled=true;submit.textContent=mode==="signup"?"Creating account…":"Signing in…";say("");try{let result;if(mode==="signup"){result=await client.auth.signUp({email:email.value.trim(),password:password.value,options:{emailRedirectTo:location.origin+location.pathname}});if(result.error)throw result.error;say(result.data.session?"Account created. Opening workspace…":"Account created. Check your email and confirm your address before signing in.")}else{result=await client.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(result.error)throw result.error;say("Signed in successfully.")}}catch(err){say(err.message||"Please try again.",true)}finally{submit.disabled=false;submit.textContent=mode==="signup"?"Create account":"Sign in"}};
+ document.getElementById("vextAuthForgot").onclick=async()=>{const mail=email.value.trim();if(!mail){say("Enter your email address first.",true);email.focus();return}say("Sending reset email…");const {error}=await client.auth.resetPasswordForEmail(mail,{redirectTo:location.origin+location.pathname});say(error?error.message:"If an account exists, a password reset email has been sent.",!!error)};
+ client.auth.onAuthStateChange((_event,session)=>apply(session));client.auth.getSession().then(({data,error})=>{if(error)say(error.message,true);apply(data?.session||null)});
+})();
 </script>
 </body>
 </html>
