@@ -1,11 +1,16 @@
 const DASHBOARD_ORIGIN = "https://rkabiitex-ctrl.github.io";
+const SUPABASE_URL = "https://nakydtwssxlbtpocxmwh.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jOxJl50SORuiYbTZ2Gq7yw_KiySZ56e";
 const DEFAULT_MODEL = "gpt-6-astra";
 
-function headersFor(request, path) {
-  const origin = request.headers.get("Origin") || "*";
-  const admin = path.startsWith("/api/admin/");
+function isDashboardPath(path) {
+  return path === "/" || path === "/api/chat" || path.startsWith("/api/admin/");
+}
+
+function headersFor(path) {
+  const dashboard = isDashboardPath(path);
   return {
-    "Access-Control-Allow-Origin": admin ? DASHBOARD_ORIGIN : "*",
+    "Access-Control-Allow-Origin": dashboard ? DASHBOARD_ORIGIN : "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "86400",
@@ -31,6 +36,21 @@ async function readJson(request) {
 
 function clean(value, max) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+async function authenticateUser(request) {
+  const accessToken = getToken(request);
+  if (!accessToken) return null;
+  const response = await fetch(SUPABASE_URL + "/auth/v1/user", {
+    method: "GET",
+    headers: {
+      "apikey": SUPABASE_PUBLISHABLE_KEY,
+      "Authorization": "Bearer " + accessToken
+    }
+  });
+  if (!response.ok) return null;
+  const user = await response.json().catch(() => null);
+  return user && typeof user.id === "string" ? user : null;
 }
 
 async function callAI(env, instructions, message) {
@@ -65,14 +85,28 @@ async function callAI(env, instructions, message) {
   return reply.trim();
 }
 
+function checkWebsiteOrigin(request, website) {
+  const origin = request.headers.get("Origin");
+  if (!website || !origin) return null;
+  try {
+    const allowedHost = new URL(website).hostname.replace(/^www\./, "");
+    const requestHost = new URL(origin).hostname.replace(/^www\./, "");
+    if (allowedHost !== requestHost) return "This website is not registered for this business assistant.";
+    return null;
+  } catch {
+    return "The business website setting is invalid.";
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/+$/, "") || "/";
-    const cors = headersFor(request, path);
+    const cors = headersFor(path);
+    const dashboard = isDashboardPath(path);
 
     if (request.method === "OPTIONS") {
-      if (path.startsWith("/api/admin/") && request.headers.get("Origin") !== DASHBOARD_ORIGIN) {
+      if (dashboard && request.headers.get("Origin") !== DASHBOARD_ORIGIN) {
         return json({ error: "Origin not allowed." }, 403, cors);
       }
       return new Response(null, { status: 204, headers: cors });
@@ -83,7 +117,17 @@ export default {
         return json({ ok: true, service: "VEXT AI Support API" }, 200, cors);
       }
 
-      // Backward-compatible endpoint used by the existing VEXT AI Chat page.
+      const needsUser = ((path === "/" || path === "/api/chat") && request.method === "POST")
+        || path.startsWith("/api/admin/");
+      let user = null;
+      if (needsUser) {
+        if (request.headers.get("Origin") !== DASHBOARD_ORIGIN) {
+          return json({ error: "Dashboard origin not allowed." }, 403, cors);
+        }
+        user = await authenticateUser(request);
+        if (!user) return json({ error: "Your VEXT AI session is missing or expired. Please sign in again." }, 401, cors);
+      }
+
       if ((path === "/" || path === "/api/chat") && request.method === "POST") {
         const body = await readJson(request);
         const message = clean(body && body.message, 8000);
@@ -96,14 +140,7 @@ export default {
         return json({ reply }, 200, cors);
       }
 
-      if (path.startsWith("/api/admin/") && request.headers.get("Origin") !== DASHBOARD_ORIGIN) {
-        return json({ error: "Admin access is only allowed from the VEXT AI dashboard." }, 403, cors);
-      }
-
       if (path.startsWith("/api/admin/")) {
-        if (!env.VEXT_ADMIN_TOKEN || getToken(request) !== env.VEXT_ADMIN_TOKEN) {
-          return json({ error: "Admin token is missing or incorrect." }, 401, cors);
-        }
         if (!env.VEXT_DB) return json({ error: "D1 database binding VEXT_DB is not configured." }, 503, cors);
 
         if (path === "/api/admin/business" && request.method === "POST") {
@@ -116,20 +153,28 @@ export default {
           if (!businessId || !name || !instructions) {
             return json({ error: "Business ID, business name and business information are required." }, 400, cors);
           }
-          await env.VEXT_DB.prepare(
-            "INSERT INTO businesses (business_id, name, greeting, instructions, website, updated_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(business_id) DO UPDATE SET name=excluded.name, greeting=excluded.greeting, instructions=excluded.instructions, website=excluded.website, updated_at=CURRENT_TIMESTAMP"
-          ).bind(businessId, name, greeting || "Hello! How can we help you today?", instructions, website).run();
+          const saved = await env.VEXT_DB.prepare(
+            "INSERT INTO businesses (business_id, owner_user_id, name, greeting, instructions, website, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(business_id) DO UPDATE SET name=excluded.name, greeting=excluded.greeting, instructions=excluded.instructions, website=excluded.website, updated_at=CURRENT_TIMESTAMP WHERE businesses.owner_user_id = excluded.owner_user_id"
+          ).bind(businessId, user.id, name, greeting || "Hello! How can we help you today?", instructions, website).run();
+          if (saved.meta && saved.meta.changes === 0) {
+            return json({ error: "This business ID is already in use or belongs to an older unowned record. Refresh your VEXT AI dashboard to create a new account-owned business ID." }, 409, cors);
+          }
           return json({ ok: true, businessId }, 200, cors);
         }
 
         if (path === "/api/admin/leads" && request.method === "GET") {
           const businessId = clean(url.searchParams.get("businessId"), 80);
           if (!businessId) return json({ error: "Business ID is required." }, 400, cors);
+          const ownedBusiness = await env.VEXT_DB.prepare(
+            "SELECT business_id FROM businesses WHERE business_id = ? AND owner_user_id = ?"
+          ).bind(businessId, user.id).first();
+          if (!ownedBusiness) return json({ error: "This business assistant does not belong to your VEXT AI account." }, 404, cors);
           const result = await env.VEXT_DB.prepare(
             "SELECT id, customer_name, email, phone, message, created_at FROM support_leads WHERE business_id = ? ORDER BY created_at DESC LIMIT 200"
           ).bind(businessId).all();
           return json({ leads: result.results || [] }, 200, cors);
         }
+        return json({ error: "Route not found." }, 404, cors);
       }
 
       if (!env.VEXT_DB) {
@@ -140,7 +185,7 @@ export default {
         const businessId = clean(url.searchParams.get("businessId"), 80);
         if (!businessId) return json({ error: "Business ID is required." }, 400, cors);
         const business = await env.VEXT_DB.prepare(
-          "SELECT business_id, name, greeting, instructions FROM businesses WHERE business_id = ?"
+          "SELECT business_id, name, greeting FROM businesses WHERE business_id = ?"
         ).bind(businessId).first();
         if (!business) return json({ error: "Business was not found. Ask the business owner to finish setup." }, 404, cors);
         return json({ business }, 200, cors);
@@ -155,14 +200,8 @@ export default {
           "SELECT name, instructions, website FROM businesses WHERE business_id = ?"
         ).bind(businessId).first();
         if (!business) return json({ error: "This business support assistant is not configured yet." }, 404, cors);
-        const origin = request.headers.get("Origin");
-        if (business.website && origin) {
-          try {
-            const allowedHost = new URL(business.website).hostname.replace(/^www\\./, "");
-            const requestHost = new URL(origin).hostname.replace(/^www\\./, "");
-            if (allowedHost !== requestHost) return json({ error: "This website is not registered for this business assistant." }, 403, cors);
-          } catch { return json({ error: "The business website setting is invalid." }, 400, cors); }
-        }
+        const originError = checkWebsiteOrigin(request, business.website);
+        if (originError) return json({ error: originError }, 403, cors);
         const system = "You are the customer support assistant for " + business.name + ". Use only the business information below. Be polite, concise and accurate. Never invent prices, stock, policies, opening hours or delivery promises. If information is missing, say a team member must confirm it. Never request passwords, one-time codes or full payment-card details. Business information: " + business.instructions;
         const reply = await callAI(env, system, message);
         return json({ reply }, 200, cors);
@@ -170,7 +209,7 @@ export default {
 
       if (path === "/api/public/leads" && request.method === "POST") {
         const body = await readJson(request);
-        if (clean(body && body.website, 200)) return json({ ok: true }, 200, cors); // honeypot
+        if (clean(body && body.website, 200)) return json({ ok: true }, 200, cors);
         const businessId = clean(body && body.businessId, 80);
         const name = clean(body && body.name, 100);
         const email = clean(body && body.email, 150);
@@ -184,15 +223,8 @@ export default {
           "SELECT website FROM businesses WHERE business_id = ?"
         ).bind(businessId).first();
         if (!business) return json({ error: "Business not found." }, 404, cors);
-        // When the owner configures a website, only accept widget enquiries from that domain.
-        const origin = request.headers.get("Origin");
-        if (business.website && origin) {
-          try {
-            const allowedHost = new URL(business.website).hostname.replace(/^www\./, "");
-            const requestHost = new URL(origin).hostname.replace(/^www\./, "");
-            if (allowedHost !== requestHost) return json({ error: "This website is not registered for this business assistant." }, 403, cors);
-          } catch { return json({ error: "The business website setting is invalid." }, 400, cors); }
-        }
+        const originError = checkWebsiteOrigin(request, business.website);
+        if (originError) return json({ error: originError }, 403, cors);
         const id = crypto.randomUUID();
         await env.VEXT_DB.prepare(
           "INSERT INTO support_leads (id, business_id, customer_name, email, phone, message, consent, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)"
