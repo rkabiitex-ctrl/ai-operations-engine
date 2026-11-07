@@ -240,7 +240,7 @@ th{color:var(--muted);font-weight:600}
    <hr style="border-color:var(--line);margin:25px 0">
    <h3>Platform capabilities</h3>
    <p class="muted small">Customer records, invoices, business documents and analytics.</p>
-   <div class="notice">Your data is stored locally in this browser. This prototype does not yet sync data between different users or devices.</div>
+   <div class="notice">Your workspace records are stored in this browser and separated by signed-in account. Cloud sync across devices is not yet enabled.</div>
   </div>
   <div class="card">
    <h2>Recent activity</h2>
@@ -305,7 +305,7 @@ th{color:var(--muted);font-weight:600}
  <div class="card">
   <h2>24/7 Customer Support Agent</h2>
   <p class="muted small">Configure an AI assistant, add it to a business website and collect customer enquiries in Cloudflare D1.</p>
-  <div class="notice">Cloud mode requires the Cloudflare Worker update, a D1 database binding named VEXT_DB, and a Worker secret named VEXT_ADMIN_TOKEN. Until those setup steps are complete, cloud saving and the public website widget will not work. Never put the admin token in the website embed code.</div>
+  <div class="notice">Cloud mode requires the updated Cloudflare Worker, the VEXT_DB database binding, and the one-time business-ownership database migration. Dashboard requests use your signed-in VEXT AI account; no shared admin token is needed.</div>
  </div>
  <div class="grid">
   <div class="card">
@@ -314,7 +314,7 @@ th{color:var(--muted);font-weight:600}
    <div class="field"><label for="supportWebsite">Business website (optional, for domain checking)</label><input id="supportWebsite" maxlength="300" placeholder="https://example.com"></div>
    <div class="field"><label for="supportGreeting">Welcome message</label><textarea id="supportGreeting" maxlength="500" placeholder="Hello! How can we help you today?"></textarea></div>
    <div class="field"><label for="supportInstructions">What should the assistant know about your business?</label><textarea id="supportInstructions" maxlength="5000" placeholder="Describe your products, services, opening hours, delivery areas, prices and common questions. Never add passwords, payment secrets or private customer information."></textarea></div>
-   <div class="field"><label for="supportAdminToken">Cloudflare admin token (keep private)</label><input id="supportAdminToken" type="password" autocomplete="off" placeholder="Enter your VEXT_ADMIN_TOKEN secret"></div>
+   <p class="muted small">Cloud access is authorized through your signed-in VEXT AI account.</p>
    <p class="muted small">Your business ID: <code id="supportBusinessId"></code></p>
    <button class="primary" id="saveSupport">Save assistant to cloud</button>
    <p class="chat-status" id="supportSaveStatus"></p>
@@ -507,7 +507,7 @@ th{color:var(--muted);font-weight:600}
 "use strict";
 const $=id=>document.getElementById(id);
 const currencies=["USD","UGX","EUR","GBP","KES","NGN","ZAR","CAD","AUD","INR","JPY","AED","GHS","TZS"];
-const key="vext_global_";
+let key="vext_guest_";
 function read(k, fallback=[]){
  try{
   const value=JSON.parse(localStorage.getItem(key+k));
@@ -558,6 +558,10 @@ document.querySelector("#pricing").addEventListener("click",event=>{
 
 
 const VEXT_CHAT_ENDPOINT="https://flat-star-50c3.rkabiitex.workers.dev/";
+async function getVextAccessToken(){
+ if(typeof window.vextGetAccessToken!=="function")throw new Error("Your VEXT AI sign-in is not ready. Refresh the page and sign in again.");
+ return window.vextGetAccessToken();
+}
 function loadChatHistory(){
  try{
   const saved=JSON.parse(localStorage.getItem(key+"chat_history")||"[]");
@@ -603,9 +607,10 @@ async function sendChatMessage(){
  button.textContent="Thinking...";
  status.textContent="VEXT AI is preparing a response...";
  try{
+  const accessToken=await getVextAccessToken();
   const response=await fetch(VEXT_CHAT_ENDPOINT,{
    method:"POST",
-   headers:{"Content-Type":"application/json"},
+   headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},
    body:JSON.stringify({message})
   });
   const data=await response.json().catch(()=>({}));
@@ -763,17 +768,17 @@ $("invoiceTable").addEventListener("click",e=>{
  }
 });
 
-const supportDefaults={business:localStorage.getItem(key+"business")||"Your Business",website:"",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
 function getSupportSettings(){
- try{return {...supportDefaults,...JSON.parse(localStorage.getItem(key+"support_settings")||"{}")}}
- catch{return supportDefaults}
+ const defaults={business:localStorage.getItem(key+"business")||"Your Business",website:"",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
+ try{return {...defaults,...JSON.parse(localStorage.getItem(key+"support_settings")||"{}")}}
+ catch{return defaults}
 }
 function getSupportBusinessId(){
  let value=localStorage.getItem(key+"support_business_id");
  if(!value){value=(crypto&&crypto.randomUUID)?crypto.randomUUID():"vext-"+Date.now()+"-"+Math.random().toString(36).slice(2);localStorage.setItem(key+"support_business_id",value)}
  return value;
 }
-const supportBusinessId=getSupportBusinessId();
+let supportBusinessId=getSupportBusinessId();
 let cloudSupportLeads=[];
 $("supportBusinessId").textContent=supportBusinessId;
 function renderSupportChat(){
@@ -795,11 +800,10 @@ async function saveSupportSettings(){
  instructions:$("supportInstructions").value.trim()};
  localStorage.setItem(key+"support_settings",JSON.stringify(settings));
  renderSupportChat();
- const token=$("supportAdminToken").value.trim();
- if(!token){$("supportSaveStatus").textContent="Saved locally only. Enter your Cloudflare VEXT_ADMIN_TOKEN after completing the Worker and D1 setup to publish to cloud.";return}
  $("saveSupport").disabled=true;$("supportSaveStatus").textContent="Saving business configuration to Cloudflare...";
  try{
-  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/business",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({businessId:supportBusinessId,name:settings.business,website:settings.website,greeting:settings.greeting,instructions:settings.instructions})});
+  const accessToken=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/business",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},body:JSON.stringify({businessId:supportBusinessId,name:settings.business,website:settings.website,greeting:settings.greeting,instructions:settings.instructions})});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Cloud save failed ("+response.status+")"));
   buildSupportWidgetCode();
@@ -812,6 +816,25 @@ $("supportBusiness").value=initialSupport.business;
 $("supportWebsite").value=initialSupport.website||"";
 $("supportGreeting").value=initialSupport.greeting;
 $("supportInstructions").value=initialSupport.instructions;
+window.vextActivateUserData=function(user){
+ if(!user||!user.id)return;
+ key="vext_user_"+user.id+"_";
+ $("currency").value=read("currency","USD");
+ $("invCurrency").value=currentCurrency();
+ $("businessName").value=localStorage.getItem(key+"business")||"VEXT AI";
+ $("businessCountry").value=localStorage.getItem(key+"country")||"";
+ const settings=getSupportSettings();
+ $("supportBusiness").value=settings.business;
+ $("supportWebsite").value=settings.website||"";
+ $("supportGreeting").value=settings.greeting;
+ $("supportInstructions").value=settings.instructions;
+ supportBusinessId=getSupportBusinessId();
+ $("supportBusinessId").textContent=supportBusinessId;
+ $("supportWidgetCode").value="";
+ renderChatHistory();
+ renderSupportChat();
+ render();
+};
 $("saveSupport").addEventListener("click",saveSupportSettings);
 $("copySupportWidget").addEventListener("click",async()=>{
  const value=$("supportWidgetCode").value;
@@ -821,11 +844,11 @@ $("copySupportWidget").addEventListener("click",async()=>{
 });
 function getSupportAdminToken(){return $("supportAdminToken").value.trim()}
 async function loadSupportCloudLeads(){
- const token=getSupportAdminToken(),status=$("supportCloudStatus"),container=$("supportCloudLeadTable");
- if(!token){status.textContent="Enter the Cloudflare admin token first.";return}
+ const status=$("supportCloudStatus"),container=$("supportCloudLeadTable");
  status.textContent="Loading cloud enquiries...";
  try{
-  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/leads?businessId="+encodeURIComponent(supportBusinessId),{headers:{"Authorization":"Bearer "+token}});
+  const accessToken=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/leads?businessId="+encodeURIComponent(supportBusinessId),{headers:{"Authorization":"Bearer "+accessToken}});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
   cloudSupportLeads=Array.isArray(data.leads)?data.leads:[];
@@ -905,7 +928,8 @@ async function askSupportAssistant(){
  status.textContent="Preparing a customer support response...";
  const prompt="You are the customer support assistant for "+settings.business+". Answer politely, accurately and concisely. Use only the business information supplied below. If information is missing, say you will ask a human team member to confirm; never invent prices, policies, availability or promises. Do not request passwords or payment card details. Business information: "+(settings.instructions||"No business details have been supplied yet.")+" Customer question: "+question;
  try{
-  const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:prompt})});
+  const accessToken=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},body:JSON.stringify({message:prompt})});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
   const reply=typeof data.reply==="string"?data.reply:"";
@@ -968,7 +992,8 @@ render();
  function say(t,bad=false){message.textContent=t;message.style.color=bad?"#ffaaa5":"#9de7d3"}
  function setMode(m){mode=m;const up=m==="signup";document.getElementById("vextAuthHeading").textContent=up?"Create your account":"Welcome back";document.getElementById("vextAuthIntro").textContent=up?"Create a secure account to access your VEXT AI workspace.":"Sign in to access your VEXT AI workspace.";submit.textContent=up?"Create account":"Sign in";document.getElementById("vextAuthSwitchText").textContent=up?"Already have an account?":"New to VEXT AI?";document.getElementById("vextAuthSwitch").textContent=up?"Sign in":"Create an account";document.getElementById("vextAuthForgot").hidden=up;password.autocomplete=up?"new-password":"current-password";say("")}
  function showUser(user){let box=document.getElementById("vextAuthActions");if(!box){box=document.createElement("div");box.id="vextAuthActions";document.querySelector(".top-actions")?.appendChild(box)}if(box){box.replaceChildren();const who=document.createElement("span");who.id="vextAuthUser";who.textContent=user.email||"Signed in";const out=document.createElement("button");out.id="vextAuthLogout";out.type="button";out.textContent="Sign out";out.onclick=async()=>{const {error}=await client.auth.signOut();if(error)alert(error.message)};box.append(who,out)}}
- function apply(session){gate.hidden=!!session;if(session)showUser(session.user);else document.getElementById("vextAuthActions")?.remove()}
+ window.vextGetAccessToken=async function(){const {data,error}=await client.auth.getSession();if(error)throw error;if(!data.session?.access_token)throw new Error("Your session has expired. Please sign in again.");return data.session.access_token};
+ function apply(session){gate.hidden=!!session;if(session){window.vextActivateUserData?.(session.user);showUser(session.user)}else document.getElementById("vextAuthActions")?.remove()}
  document.getElementById("vextAuthSwitch").onclick=()=>setMode(mode==="signin"?"signup":"signin");
  form.onsubmit=async e=>{e.preventDefault();submit.disabled=true;submit.textContent=mode==="signup"?"Creating account…":"Signing in…";say("");try{let result;if(mode==="signup"){result=await client.auth.signUp({email:email.value.trim(),password:password.value,options:{emailRedirectTo:location.origin+location.pathname}});if(result.error)throw result.error;say(result.data.session?"Account created. Opening workspace…":"Account created. Check your email and confirm your address before signing in.")}else{result=await client.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(result.error)throw result.error;say("Signed in successfully.")}}catch(err){say(err.message||"Please try again.",true)}finally{submit.disabled=false;submit.textContent=mode==="signup"?"Create account":"Sign in"}};
  document.getElementById("vextAuthForgot").onclick=async()=>{const mail=email.value.trim();if(!mail){say("Enter your email address first.",true);email.focus();return}say("Sending reset email…");const {error}=await client.auth.resetPasswordForEmail(mail,{redirectTo:location.origin+location.pathname});say(error?error.message:"If an account exists, a password reset email has been sent.",!!error)};
