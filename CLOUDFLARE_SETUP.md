@@ -30,7 +30,7 @@ Do not put an OpenAI API key or the VEXT admin token in a website embed snippet,
 5. Do not remove your existing `OPENAI_API_KEY` secret.
 6. Save/deploy the Worker after completing the bindings and secrets below.
 
-The new Worker keeps the existing `POST /` chat endpoint working for the VEXT AI Chat page and adds the customer-support API routes.
+The new Worker requires a verified Supabase user access token for the VEXT AI dashboard chat and all dashboard administration routes. Public customer-widget routes remain public. The Worker verifies tokens with the project's Supabase Auth endpoint and uses the verified user ID to enforce business ownership.
 
 ## 3. Add the D1 binding
 
@@ -44,16 +44,18 @@ In the Worker settings:
 
 The binding name must be exactly `VEXT_DB` because the Worker source uses `env.VEXT_DB`.
 
-## 4. Add the private admin token
+## 4. Apply the business-ownership migration
 
-In the Worker settings, open **Variables and Secrets**:
+The existing D1 database needs one migration so every business record can be tied to its Supabase account.
 
-1. Add a secret named exactly `VEXT_ADMIN_TOKEN`.
-2. Use a long, unique random value (at least 32 random characters). Generate it in a password manager.
-3. Save it as a **Secret**, not a plain text variable.
-4. Keep it private. Do not send it to ChatGPT or add it to GitHub.
+1. Open the `vext-ai-db` D1 database and choose **Console**.
+2. Open `business-ownership-migration.sql` in this repository.
+3. Copy the complete SQL file into the D1 Console and run it **once only**.
+4. Confirm that the `businesses` table now has an `owner_user_id` column.
 
-Keep your existing `OPENAI_API_KEY` secret. The Worker uses it on the server and never places it in the customer website code. The model defaults to `gpt-6-astra`; you can override that with a Worker variable named `OPENAI_MODEL` if your account uses a different model.
+Older business rows will have an empty owner and will not be accessible through the new dashboard API. The updated dashboard creates a fresh, account-specific business ID when each user signs in and saves their assistant. Do not manually assign an owner to an old row based only on its public widget ID.
+
+Keep your existing `OPENAI_API_KEY` secret. The Worker uses it on the server and never places it in customer-facing code. The model defaults to `gpt-6-astra`; you can override that with a Worker variable named `OPENAI_MODEL` if your account uses a different model. The old `VEXT_ADMIN_TOKEN` is no longer used by the updated Worker; keep it until the new flow has been tested, then you may delete it.
 
 ## 5. Deploy and check the Worker
 
@@ -83,7 +85,7 @@ Paste the copied script tag into the business website HTML just before the closi
 - provide their name and an email address or phone number;
 - explicitly agree to be contacted about their enquiry.
 
-The widget sends enquiries to D1. In VEXT AI, enter the admin token again, select **Load cloud enquiries**, and then **Import into clients** to copy new enquiries into the current browser's Client Management records.
+The widget sends enquiries to D1. In VEXT AI, sign in with the owning account, select **Load cloud enquiries**, and then **Import into clients** to copy new enquiries into that account's current browser Client Management records.
 
 ## Important launch safeguards
 
@@ -93,7 +95,7 @@ This is an initial cloud-connected prototype, not a finished enterprise support 
 - Publish a clear privacy notice explaining what customer details are collected, why they are used, who can access them, and how long they are kept.
 - Test the registered website domain check, customer consent flow, and lead retrieval.
 - Do not collect passwords, payment-card details, national ID numbers, or sensitive legal/medical information through this widget.
-- Keep the admin token private and only enter it on a trusted device. The current static dashboard has not yet been upgraded with a full user-login and role-based access system.
+- Dashboard chat and business-owner routes require a verified Supabase user session. Local dashboard records are separated by account in the browser but are not yet synced across devices; move customer, invoice and other business records into owner-scoped cloud tables with database-level policies before production.
 - Have a person review uncertain answers and handle complaints, refunds, emergencies, and other sensitive matters.
 
-The website widget is public by design. Only the dashboard admin routes require the admin token. The website domain check is a useful basic control, not strong authentication; add Cloudflare abuse protection before a public launch.
+The website widget is public by design. Only the dashboard admin routes require the admin token. The website domain check is a useful basic control, not strong authentication; it does not prevent a non-browser client from spoofing an Origin header. Add Cloudflare abuse protection before a public launch.
