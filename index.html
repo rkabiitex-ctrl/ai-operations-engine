@@ -842,7 +842,6 @@ $("copySupportWidget").addEventListener("click",async()=>{
  try{await navigator.clipboard.writeText(value);$("supportSaveStatus").textContent="Website embed code copied."}
  catch{$("supportWidgetCode").focus();$("supportWidgetCode").select();$("supportSaveStatus").textContent="Code selected. Press Ctrl+C to copy."}
 });
-function getSupportAdminToken(){return $("supportAdminToken").value.trim()}
 async function loadSupportCloudLeads(){
  const status=$("supportCloudStatus"),container=$("supportCloudLeadTable");
  status.textContent="Loading cloud enquiries...";
