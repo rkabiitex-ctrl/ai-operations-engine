@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS businesses (
   business_id TEXT PRIMARY KEY,
+  owner_user_id TEXT NOT NULL,
   name TEXT NOT NULL,
   greeting TEXT NOT NULL DEFAULT 'Hello! How can we help you today?',
   instructions TEXT NOT NULL,
