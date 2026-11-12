@@ -23,3 +23,13 @@ CREATE TABLE IF NOT EXISTS support_leads (
 
 CREATE INDEX IF NOT EXISTS idx_support_leads_business_created
 ON support_leads (business_id, created_at DESC);
+
+
+CREATE TABLE IF NOT EXISTS workspace_data (
+  owner_user_id TEXT PRIMARY KEY,
+  data_json TEXT NOT NULL DEFAULT '{}',
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_workspace_data_updated
+ON workspace_data (updated_at);
