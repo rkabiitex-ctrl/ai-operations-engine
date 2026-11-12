@@ -143,6 +143,56 @@ export default {
       if (path.startsWith("/api/admin/")) {
         if (!env.VEXT_DB) return json({ error: "D1 database binding VEXT_DB is not configured." }, 503, cors);
 
+        if (path === "/api/admin/workspace" && request.method === "GET") {
+          const row = await env.VEXT_DB.prepare(
+            "SELECT data_json, updated_at FROM workspace_data WHERE owner_user_id = ?"
+          ).bind(user.id).first();
+          let workspace = {};
+          if (row && typeof row.data_json === "string") {
+            try { workspace = JSON.parse(row.data_json) || {}; } catch { workspace = {}; }
+          }
+          return json({ workspace, updatedAt: row ? row.updated_at : null }, 200, cors);
+        }
+
+        if (path === "/api/admin/workspace" && request.method === "PUT") {
+          const contentLength = Number(request.headers.get("Content-Length") || 0);
+          if (contentLength > 500000) return json({ error: "Workspace data is too large (500 KB maximum)." }, 413, cors);
+          const body = await readJson(request);
+          if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
+            return json({ error: "A workspace object is required." }, 400, cors);
+          }
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history"];
+          const workspace = {};
+          for (const key of allowed) {
+            if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
+            const value = body.workspace[key];
+            if (["leads", "invoices", "logs", "chat_history"].includes(key)) {
+              if (!Array.isArray(value)) return json({ error: key + " must be an array." }, 400, cors);
+              const maxItems = key === "chat_history" ? 60 : 5000;
+              if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
+              workspace[key] = value;
+            } else if (key === "support_settings") {
+              if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "support_settings must be an object." }, 400, cors);
+              workspace[key] = {
+                business: clean(value.business, 100),
+                website: clean(value.website, 300),
+                greeting: clean(value.greeting, 500),
+                instructions: clean(value.instructions, 5000)
+              };
+            } else {
+              if (typeof value !== "string") return json({ error: key + " must be text." }, 400, cors);
+              const limit = key === "business" ? 100 : key === "country" ? 100 : key === "currency" ? 5 : 80;
+              workspace[key] = clean(value, limit);
+            }
+          }
+          const serialized = JSON.stringify(workspace);
+          if (serialized.length > 450000) return json({ error: "Workspace data is too large (450 KB maximum)." }, 413, cors);
+          await env.VEXT_DB.prepare(
+            "INSERT INTO workspace_data (owner_user_id, data_json, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(owner_user_id) DO UPDATE SET data_json=excluded.data_json, updated_at=CURRENT_TIMESTAMP"
+          ).bind(user.id, serialized).run();
+          return json({ ok: true, updatedAt: new Date().toISOString() }, 200, cors);
+        }
+
         if (path === "/api/admin/business" && request.method === "POST") {
           const body = await readJson(request);
           const businessId = clean(body && body.businessId, 80);
