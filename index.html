@@ -185,6 +185,7 @@ th{color:var(--muted);font-weight:600}
   <div class="muted small">Your business. One intelligent workspace.</div>
  </div>
  <div class="top-actions">
+  <span id="workspaceSyncStatus" class="muted small" role="status" aria-live="polite">Secure cloud storage ready</span>
   <select class="currency" id="currency" aria-label="Display currency">
    <option value="USD">🇺🇸 USD — Dollar</option>
    <option value="UGX">🇺🇬 UGX — Shilling</option>
@@ -508,13 +509,72 @@ th{color:var(--muted);font-weight:600}
 const $=id=>document.getElementById(id);
 const currencies=["USD","UGX","EUR","GBP","KES","NGN","ZAR","CAD","AUD","INR","JPY","AED","GHS","TZS"];
 let key="vext_guest_";
+let vextWorkspaceUserId=null;
+let vextWorkspaceReady=false;
+let vextWorkspaceSyncTimer=null;
+let vextWorkspaceSyncBusy=false;
+let vextWorkspaceSyncQueued=false;
+let vextWorkspaceLoadPromise=null;
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history"];
+function workspaceSnapshot(){
+ return {
+  leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
+  currency:localStorage.getItem(key+"currency")||"USD",
+  business:localStorage.getItem(key+"business")||"VEXT AI",
+  country:localStorage.getItem(key+"country")||"",
+  support_settings:read("support_settings",{}),
+  support_business_id:localStorage.getItem(key+"support_business_id")||"",
+  chat_history:read("chat_history",[])
+ };
+}
+function setWorkspaceSyncStatus(value,bad=false){
+ const el=$("workspaceSyncStatus");
+ if(el){el.textContent=value;el.style.color=bad?"#fb7185":""}
+}
+async function syncWorkspaceNow(){
+ if(!vextWorkspaceUserId||!vextWorkspaceReady)return;
+ if(vextWorkspaceSyncBusy){vextWorkspaceSyncQueued=true;return}
+ vextWorkspaceSyncBusy=true;
+ setWorkspaceSyncStatus("Syncing securely…");
+ try{
+  const accessToken=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/workspace",{
+   method:"PUT",
+   headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},
+   body:JSON.stringify({workspace:workspaceSnapshot()})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Cloud sync failed ("+response.status+")"));
+  setWorkspaceSyncStatus("Cloud synced");
+ }catch(error){
+  setWorkspaceSyncStatus("Saved on this device · cloud sync needs attention",true);
+  console.error("VEXT AI cloud sync:",error);
+ }finally{
+  vextWorkspaceSyncBusy=false;
+  if(vextWorkspaceSyncQueued){vextWorkspaceSyncQueued=false;scheduleWorkspaceSync(150)}
+ }
+}
+function scheduleWorkspaceSync(delay=900){
+ if(!vextWorkspaceUserId||!vextWorkspaceReady)return;
+ clearTimeout(vextWorkspaceSyncTimer);
+ setWorkspaceSyncStatus("Changes saved · syncing…");
+ vextWorkspaceSyncTimer=setTimeout(()=>syncWorkspaceNow(),delay);
+}
+function applyWorkspaceSnapshot(workspace){
+ const rawKeys=["currency","business","country","support_business_id"];
+ VEXT_WORKSPACE_KEYS.forEach(name=>{
+  if(!Object.prototype.hasOwnProperty.call(workspace,name)){localStorage.removeItem(key+name);return}
+  const value=workspace[name];
+  localStorage.setItem(key+name,rawKeys.includes(name)?String(value??""):JSON.stringify(value));
+ });
+}
 function read(k, fallback=[]){
  try{
   const value=JSON.parse(localStorage.getItem(key+k));
   return value===null?fallback:value;
  }catch{return fallback}
 }
-function write(k,v){localStorage.setItem(key+k,JSON.stringify(v))}
+function write(k,v){localStorage.setItem(key+k,JSON.stringify(v));scheduleWorkspaceSync()}
 function id(){return crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function currentCurrency(){return $("currency").value}
@@ -569,7 +629,7 @@ function loadChatHistory(){
  }catch{return []}
 }
 function saveChatHistory(items){
- try{localStorage.setItem(key+"chat_history",JSON.stringify(items.slice(-60)))}catch{}
+ try{localStorage.setItem(key+"chat_history",JSON.stringify(items.slice(-60)));scheduleWorkspaceSync()}catch{}
 }
 function addChatMessage(role,message){
  const area=$("chatMessages");
@@ -639,6 +699,7 @@ $("chatInput").addEventListener("keydown",e=>{
 $("clearChat").addEventListener("click",()=>{
  if(!confirm("Clear this conversation from this browser?"))return;
  localStorage.removeItem(key+"chat_history");
+ scheduleWorkspaceSync();
  renderChatHistory();
  $("chatStatus").textContent="Conversation cleared.";
 });
@@ -775,7 +836,7 @@ function getSupportSettings(){
 }
 function getSupportBusinessId(){
  let value=localStorage.getItem(key+"support_business_id");
- if(!value){value=(crypto&&crypto.randomUUID)?crypto.randomUUID():"vext-"+Date.now()+"-"+Math.random().toString(36).slice(2);localStorage.setItem(key+"support_business_id",value)}
+ if(!value){value=(crypto&&crypto.randomUUID)?crypto.randomUUID():"vext-"+Date.now()+"-"+Math.random().toString(36).slice(2);localStorage.setItem(key+"support_business_id",value);scheduleWorkspaceSync()}
  return value;
 }
 let supportBusinessId=getSupportBusinessId();
@@ -799,6 +860,7 @@ async function saveSupportSettings(){
  greeting:$("supportGreeting").value.trim()||"Hello! How can we help you today?",
  instructions:$("supportInstructions").value.trim()};
  localStorage.setItem(key+"support_settings",JSON.stringify(settings));
+ scheduleWorkspaceSync();
  renderSupportChat();
  $("saveSupport").disabled=true;$("supportSaveStatus").textContent="Saving business configuration to Cloudflare...";
  try{
@@ -816,24 +878,56 @@ $("supportBusiness").value=initialSupport.business;
 $("supportWebsite").value=initialSupport.website||"";
 $("supportGreeting").value=initialSupport.greeting;
 $("supportInstructions").value=initialSupport.instructions;
-window.vextActivateUserData=function(user){
+window.vextActivateUserData=async function(user){
  if(!user||!user.id)return;
+ if(vextWorkspaceUserId===user.id&&vextWorkspaceReady)return;
+ if(vextWorkspaceUserId===user.id&&vextWorkspaceLoadPromise)return vextWorkspaceLoadPromise;
+ vextWorkspaceUserId=user.id;
+ vextWorkspaceReady=false;
  key="vext_user_"+user.id+"_";
- $("currency").value=read("currency","USD");
- $("invCurrency").value=currentCurrency();
- $("businessName").value=localStorage.getItem(key+"business")||"VEXT AI";
- $("businessCountry").value=localStorage.getItem(key+"country")||"";
- const settings=getSupportSettings();
- $("supportBusiness").value=settings.business;
- $("supportWebsite").value=settings.website||"";
- $("supportGreeting").value=settings.greeting;
- $("supportInstructions").value=settings.instructions;
+ clearTimeout(vextWorkspaceSyncTimer);
  supportBusinessId=getSupportBusinessId();
- $("supportBusinessId").textContent=supportBusinessId;
- $("supportWidgetCode").value="";
- renderChatHistory();
- renderSupportChat();
- render();
+ setWorkspaceSyncStatus("Loading your secure workspace…");
+ vextWorkspaceLoadPromise=(async()=>{
+  const accessToken=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/workspace",{
+   headers:{"Authorization":"Bearer "+accessToken}
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Workspace load failed ("+response.status+")"));
+  const remote=data.workspace&&typeof data.workspace==="object"?data.workspace:{};
+  const hasRemote=Object.keys(remote).length>0;
+  if(hasRemote)applyWorkspaceSnapshot(remote);
+  vextWorkspaceReady=true;
+  $("currency").value=read("currency","USD");
+  $("invCurrency").value=currentCurrency();
+  $("businessName").value=localStorage.getItem(key+"business")||"VEXT AI";
+  $("businessCountry").value=localStorage.getItem(key+"country")||"";
+  const settings=getSupportSettings();
+  $("supportBusiness").value=settings.business;
+  $("supportWebsite").value=settings.website||"";
+  $("supportGreeting").value=settings.greeting;
+  $("supportInstructions").value=settings.instructions;
+  supportBusinessId=getSupportBusinessId();
+  $("supportBusinessId").textContent=supportBusinessId;
+  $("supportWidgetCode").value="";
+  renderChatHistory();renderSupportChat();render();
+  if(!hasRemote)await syncWorkspaceNow();
+  else setWorkspaceSyncStatus("Cloud synced");
+ })();
+ try{await vextWorkspaceLoadPromise}
+ catch(error){
+  vextWorkspaceReady=false;
+  setWorkspaceSyncStatus("Saved locally · cloud connection needs attention",true);
+  console.error("VEXT AI workspace load:",error);
+ }
+ finally{vextWorkspaceLoadPromise=null}
+};
+window.vextDeactivateUserData=function(){
+ clearTimeout(vextWorkspaceSyncTimer);
+ vextWorkspaceUserId=null;vextWorkspaceReady=false;vextWorkspaceLoadPromise=null;
+ key="vext_guest_";
+ setWorkspaceSyncStatus("Signed out");
 };
 $("saveSupport").addEventListener("click",saveSupportSettings);
 $("copySupportWidget").addEventListener("click",async()=>{
@@ -968,6 +1062,7 @@ $("saveSettings").addEventListener("click",()=>{
  if(!name){alert("Enter your business name.");return}
  localStorage.setItem(key+"business",name);
  localStorage.setItem(key+"country",$("businessCountry").value.trim());
+ scheduleWorkspaceSync();
  log("Business settings saved.");alert("Settings saved.");
 });
 $("exportData").addEventListener("click",()=>{
@@ -992,11 +1087,22 @@ render();
  function setMode(m){mode=m;const up=m==="signup";document.getElementById("vextAuthHeading").textContent=up?"Create your account":"Welcome back";document.getElementById("vextAuthIntro").textContent=up?"Create a secure account to access your VEXT AI workspace.":"Sign in to access your VEXT AI workspace.";submit.textContent=up?"Create account":"Sign in";document.getElementById("vextAuthSwitchText").textContent=up?"Already have an account?":"New to VEXT AI?";document.getElementById("vextAuthSwitch").textContent=up?"Sign in":"Create an account";document.getElementById("vextAuthForgot").hidden=up;password.autocomplete=up?"new-password":"current-password";say("")}
  function showUser(user){let box=document.getElementById("vextAuthActions");if(!box){box=document.createElement("div");box.id="vextAuthActions";document.querySelector(".top-actions")?.appendChild(box)}if(box){box.replaceChildren();const who=document.createElement("span");who.id="vextAuthUser";who.textContent=user.email||"Signed in";const out=document.createElement("button");out.id="vextAuthLogout";out.type="button";out.textContent="Sign out";out.onclick=async()=>{const {error}=await client.auth.signOut();if(error)alert(error.message)};box.append(who,out)}}
  window.vextGetAccessToken=async function(){const {data,error}=await client.auth.getSession();if(error)throw error;if(!data.session?.access_token)throw new Error("Your session has expired. Please sign in again.");return data.session.access_token};
- function apply(session){gate.hidden=!!session;if(session){window.vextActivateUserData?.(session.user);showUser(session.user)}else document.getElementById("vextAuthActions")?.remove()}
+ async function apply(session){
+  if(session){
+   gate.hidden=false;
+   showUser(session.user);
+   try{await window.vextActivateUserData?.(session.user);gate.hidden=true}
+   catch(error){gate.hidden=false;say("Could not load your secure workspace: "+(error.message||"Please refresh and try again."),true)}
+  }else{
+   window.vextDeactivateUserData?.();
+   gate.hidden=false;
+   document.getElementById("vextAuthActions")?.remove();
+  }
+ }
  document.getElementById("vextAuthSwitch").onclick=()=>setMode(mode==="signin"?"signup":"signin");
  form.onsubmit=async e=>{e.preventDefault();submit.disabled=true;submit.textContent=mode==="signup"?"Creating account…":"Signing in…";say("");try{let result;if(mode==="signup"){result=await client.auth.signUp({email:email.value.trim(),password:password.value,options:{emailRedirectTo:location.origin+location.pathname}});if(result.error)throw result.error;say(result.data.session?"Account created. Opening workspace…":"Account created. Check your email and confirm your address before signing in.")}else{result=await client.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(result.error)throw result.error;say("Signed in successfully.")}}catch(err){say(err.message||"Please try again.",true)}finally{submit.disabled=false;submit.textContent=mode==="signup"?"Create account":"Sign in"}};
  document.getElementById("vextAuthForgot").onclick=async()=>{const mail=email.value.trim();if(!mail){say("Enter your email address first.",true);email.focus();return}say("Sending reset email…");const {error}=await client.auth.resetPasswordForEmail(mail,{redirectTo:location.origin+location.pathname});say(error?error.message:"If an account exists, a password reset email has been sent.",!!error)};
- client.auth.onAuthStateChange((_event,session)=>apply(session));client.auth.getSession().then(({data,error})=>{if(error)say(error.message,true);apply(data?.session||null)});
+ client.auth.onAuthStateChange((_event,session)=>{void apply(session)});client.auth.getSession().then(({data,error})=>{if(error)say(error.message,true);void apply(data?.session||null)});
 })();
 </script>
 </body>
