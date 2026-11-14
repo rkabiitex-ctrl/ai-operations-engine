@@ -432,17 +432,17 @@ th{color:var(--muted);font-weight:600}
  </div>
  <div class="grid">
   <div class="card">
-   <h2>4. Test your Sales Agent</h2>
+   <h2>4. Preview your Sales Agent</h2>
    <div class="chat-messages" id="supportMessages" style="min-height:220px;max-height:360px"></div>
    <div class="chat-compose">
     <textarea id="supportInput" placeholder="Test a buyer question, e.g. Which plan is right for a small agency?" maxlength="3000"></textarea>
     <button class="primary" id="supportSend">Ask assistant</button>
    </div>
-   <div class="chat-status" id="supportStatus">Test the answers before making the assistant available to customers.</div>
+   <div class="chat-status" id="supportStatus">Internal response preview only. It does not create cloud enquiries. Install the website widget to test the complete customer journey and automatic lead capture.</div>
   </div>
   <div class="card">
    <h2>5. Try capturing an enquiry</h2>
-   <p class="muted small">This is a local dashboard test form. Real customer enquiries from your website widget are stored in the cloud database.</p>
+   <p class="muted small">Manual storage test only. This checks Cloudflare lead storage; it does not test the website chat or automatic AI qualification.</p>
    <form id="supportLeadForm">
     <div class="field"><label for="supportLeadName">Customer name *</label><input id="supportLeadName" required maxlength="100" placeholder="Full name"></div>
     <div class="field"><label for="supportLeadEmail">Email address</label><input id="supportLeadEmail" type="email" maxlength="150" placeholder="name@example.com"></div>
@@ -688,7 +688,7 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Customer Support",analytics:"Business Analytics",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent",analytics:"Business Analytics",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
