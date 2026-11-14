@@ -353,6 +353,41 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .dashboard-client-date{font-size:10px;color:#8299b2;white-space:nowrap}
 @media(max-width:900px){.dashboard-insights{grid-template-columns:1fr}}
 
+
+/* VEXT CRM workspace */
+.crm-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;flex-wrap:wrap;margin:2px 0 18px}
+.crm-heading h2{font-size:25px;margin:7px 0}
+.crm-heading p{margin:0}
+.crm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.crm-stat{padding:17px 19px;border:1px solid rgba(123,157,190,.18);border-radius:14px;background:linear-gradient(145deg,#13243b,#0c192b)}
+.crm-stat span,.crm-stat small{display:block;color:#91a7c0;font-size:11px}
+.crm-stat strong{display:block;font-size:27px;letter-spacing:-.8px;margin:8px 0 5px}
+.crm-layout{grid-template-columns:minmax(260px,.72fr) minmax(0,1.5fr);align-items:start}
+.crm-card-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}
+.crm-card-heading h2{margin:0 0 6px}
+.crm-card-heading p{margin:0}
+.crm-directory-count{font-size:10px;color:#9eb4ca;white-space:nowrap}
+.crm-directory-card #leadSearch{margin-bottom:14px}
+.crm-profile-panel{margin-top:18px;scroll-margin-top:18px}
+.crm-profile-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;margin-bottom:18px}
+.crm-profile-head h2{font-size:23px;margin:7px 0}
+.crm-profile-head p{margin:0}
+.crm-profile-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.crm-detail{padding:13px;border:1px solid rgba(123,157,190,.16);border-radius:11px;background:#0b182a;min-width:0}
+.crm-detail span{display:block;color:#91a7c0;font-size:10px;margin-bottom:7px}
+.crm-detail strong{font-size:12px;overflow-wrap:anywhere}
+.crm-edit-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:13px}
+.crm-history-heading{margin:24px 0 10px}
+.crm-history-heading h3{font-size:16px;margin:0 0 5px}
+.crm-history-heading p{margin:0}
+.crm-history-item{padding:15px 0;border-top:1px solid rgba(123,157,190,.15)}
+.crm-history-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.crm-history-top strong{font-size:12px}
+.crm-history-item p{font-size:13px;line-height:1.6;color:#d9e5f2;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
+.crm-history-meta{font-size:10px;color:#91a7c0;line-height:1.6;margin-top:5px}
+@media(max-width:1000px){.crm-layout{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.crm-stats{grid-template-columns:1fr 1fr}.crm-edit-grid{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:1fr 1fr}.crm-stat{padding:14px}.crm-stat strong{font-size:23px}}
+
 </style>
 </head>
 <body>
@@ -683,21 +718,35 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="leads">
- <div class="card">
-  <h2>Client Management</h2>
-  <form id="leadForm">
-   <div class="field"><label>Full name / Company</label><input id="leadName" required maxlength="100" placeholder="Customer or company name"></div>
-   <div class="field"><label>Email</label><input id="leadEmail" type="email" maxlength="150" placeholder="customer@example.com"></div>
-   <div class="field"><label>Phone</label><input id="leadPhone" maxlength="40" placeholder="+1, +256, +44..."></div>
-   <div class="field"><label>Country</label><input id="leadCountry" maxlength="80" placeholder="Country"></div>
-   <div class="field"><label>Business interest</label><input id="leadInterest" maxlength="200" placeholder="Product or service required"></div>
-   <button class="primary">Save Client</button>
-  </form>
+ <div class="crm-heading">
+  <div><span class="dashboard-eyebrow">CUSTOMER RELATIONSHIP MANAGEMENT</span><h2>Client Management</h2><p class="muted small">Keep customer details, conversations and follow-ups organized in one place.</p></div>
+  <span class="pill">CUSTOMER CRM</span>
  </div>
- <div class="card">
-  <h2>Customer Directory</h2>
-  <input id="leadSearch" placeholder="Search customers...">
-  <div class="table-wrap" id="leadTable"></div>
+ <div class="crm-stats">
+  <div class="crm-stat"><span>Total clients</span><strong id="crmTotal">0</strong><small>All saved customer records</small></div>
+  <div class="crm-stat"><span>With website enquiries</span><strong id="crmEnquiries">0</strong><small>Customers with saved conversations</small></div>
+  <div class="crm-stat"><span>Follow-ups to plan</span><strong id="crmFollowups">0</strong><small>Customers with a next action</small></div>
+ </div>
+ <div class="grid crm-layout">
+  <div class="card">
+   <div class="crm-card-heading"><div><h2>Add a client</h2><p class="muted small">Create a customer profile manually.</p></div></div>
+   <form id="leadForm">
+    <div class="field"><label for="leadName">Full name / Company</label><input id="leadName" required maxlength="100" placeholder="Customer or company name"></div>
+    <div class="field"><label for="leadEmail">Email</label><input id="leadEmail" type="email" maxlength="150" placeholder="customer@example.com"></div>
+    <div class="field"><label for="leadPhone">Phone</label><input id="leadPhone" maxlength="40" placeholder="+1, +256, +44..."></div>
+    <div class="field"><label for="leadCountry">Country</label><input id="leadCountry" maxlength="80" placeholder="Country"></div>
+    <div class="field"><label for="leadInterest">Business interest</label><input id="leadInterest" maxlength="200" placeholder="Product or service required"></div>
+    <button class="primary" type="submit">Save client profile</button>
+   </form>
+  </div>
+  <div class="card crm-directory-card">
+   <div class="crm-card-heading"><div><h2>Customer directory</h2><p class="muted small">Search and open a customer profile.</p></div><span class="crm-directory-count" id="crmDirectoryCount">0 records</span></div>
+   <input id="leadSearch" aria-label="Search customers" placeholder="Search by name, email, phone, country or interest...">
+   <div class="table-wrap" id="leadTable"></div>
+  </div>
+ </div>
+ <div class="card crm-profile-panel" id="clientProfilePanel" hidden>
+  <div id="clientProfileContent"></div>
  </div>
 </section>
 
@@ -1035,13 +1084,48 @@ function renderLeads(){
  const leads=read("leads");
  const q=$("leadSearch").value.toLowerCase();
  const filtered=leads.filter(x=>
- [x.name,x.email,x.phone,x.country,x.interest].join(" ").toLowerCase().includes(q));
+ [x.name,x.email,x.phone,x.country,x.interest,x.salesStage,x.nextAction].join(" ").toLowerCase().includes(q));
+ $("crmTotal").textContent=leads.length;
+ $("crmEnquiries").textContent=leads.filter(x=>Array.isArray(x.enquiryHistory)&&x.enquiryHistory.length).length;
+ $("crmFollowups").textContent=leads.filter(x=>String(x.nextAction||"").trim()).length;
+ $("crmDirectoryCount").textContent=filtered.length+" record"+(filtered.length===1?"":"s");
  $("leadTable").innerHTML=filtered.length?
- `<table><thead><tr><th>Client</th><th>Contact</th><th>Country</th><th>Action</th></tr></thead><tbody>
- ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;return `<tr><td>${esc(x.name)}<br><small>${esc(x.interest)}</small>${historyCount?`<br><small>${historyCount} saved website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
- <td>${esc(x.email||x.phone||"—")}</td><td>${esc(x.country||"—")}</td>
- <td><button class="danger" data-delete-lead="${esc(x.id)}">Delete</button></td></tr>`}).join("")}
- </tbody></table>`:'<div class="empty">No matching clients yet.</div>';
+ `<table><thead><tr><th>Customer</th><th>Contact</th><th>Sales status</th><th>Profile</th></tr></thead><tbody>
+ ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;const stage=x.salesStage||x.enquiryHistory?.at(-1)?.salesStage||"New";return `<tr>
+ <td><strong>${esc(x.name||"Unnamed client")}</strong><br><small>${esc(x.interest||"No interest recorded")}</small>${historyCount?`<br><small>${historyCount} website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
+ <td>${esc(x.email||x.phone||"—")}</td><td><span class="pill">${esc(stage)}</span></td>
+ <td><button class="secondary" data-open-client="${esc(x.id)}">View profile</button></td></tr>`}).join("")}
+ </tbody></table>`:'<div class="empty">No matching clients yet. Add a client or import website enquiries from the Sales Agent.</div>';
+ const selected=$("clientProfilePanel").dataset.clientId;
+ if(selected&&leads.some(x=>x.id===selected))renderClientProfile(selected);
+ else if(selected)closeClientProfile();
+}
+function renderClientProfile(clientId){
+ const client=read("leads").find(x=>x.id===clientId);if(!client)return;
+ $("clientProfilePanel").hidden=false;$("clientProfilePanel").dataset.clientId=clientId;
+ const history=Array.isArray(client.enquiryHistory)?client.enquiryHistory:[];
+ const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
+ const currentStage=client.salesStage||history.at(-1)?.salesStage||"New";
+ $("clientProfileContent").innerHTML=`
+  <div class="crm-profile-head"><div><span class="dashboard-eyebrow">CUSTOMER PROFILE</span><h2>${esc(client.name||"Unnamed client")}</h2><p class="muted small">${esc(client.interest||"No business interest recorded")}</p></div><button class="secondary" id="closeClientProfile" type="button">Close profile</button></div>
+  <div class="crm-profile-grid">
+   <div class="crm-detail"><span>Email</span><strong>${esc(client.email||"Not provided")}</strong></div>
+   <div class="crm-detail"><span>Phone</span><strong>${esc(client.phone||"Not provided")}</strong></div>
+   <div class="crm-detail"><span>Country</span><strong>${esc(client.country||"Not provided")}</strong></div>
+   <div class="crm-detail"><span>Source</span><strong>${esc(client.source||"Manually added")}</strong></div>
+  </div>
+  <div class="crm-edit-grid">
+   <div class="field"><label for="clientSalesStage">Sales status</label><select id="clientSalesStage">${stages.map(s=>`<option value="${s}" ${s===currentStage?"selected":""}>${s}</option>`).join("")}</select></div>
+   <div class="field"><label for="clientNextAction">Next follow-up action</label><input id="clientNextAction" maxlength="300" value="${esc(client.nextAction||"")}" placeholder="e.g. Contact customer with a quote"></div>
+  </div>
+  <div class="field"><label for="clientNotes">Internal notes</label><textarea id="clientNotes" maxlength="2000" rows="3" placeholder="Add useful context for your team...">${esc(client.notes||"")}</textarea></div>
+  <div class="action-row"><button class="primary" id="saveClientProfile" type="button">Save profile updates</button><span class="chat-status" id="clientProfileStatus" role="status"></span></div>
+  <div class="crm-history-heading"><div><h3>Enquiry history</h3><p class="muted small">${history.length} saved website ${history.length===1?"enquiry":"enquiries"}</p></div></div>
+  ${history.length?history.slice().reverse().map((entry,index)=>`<div class="crm-history-item"><div class="crm-history-top"><strong>Website enquiry ${history.length-index}</strong><span class="pill">${esc(entry.salesStage||"New")}</span></div><p>${esc(entry.message||"No enquiry message")}</p><div class="crm-history-meta">${esc(entry.receivedAt?new Date(entry.receivedAt).toLocaleString():"Date not recorded")} · Intent: ${esc(entry.intent||"Not classified")}${entry.leadScore? " · Lead score: "+esc(entry.leadScore):""}</div>${entry.nextAction?`<div class="crm-history-meta">Next action: ${esc(entry.nextAction)}</div>`:""}</div>`).join(""):'<div class="empty">No website enquiries are linked to this client yet.</div>'}`;
+}
+function closeClientProfile(){
+ $("clientProfilePanel").hidden=true;$("clientProfilePanel").dataset.clientId="";
+ $("clientProfileContent").innerHTML="";
 }
 function renderInvoices(){
  const invoices=read("invoices");
@@ -1118,6 +1202,21 @@ $("leadForm").addEventListener("submit",e=>{
  write("leads",leads);e.target.reset();log("New client registered.");render();
 });
 $("leadSearch").addEventListener("input",renderLeads);
+$("leadTable").addEventListener("click",e=>{
+ const open=e.target.closest("[data-open-client]");
+ if(open){renderClientProfile(open.dataset.openClient);$("clientProfilePanel").scrollIntoView({behavior:"smooth",block:"start"});}
+});
+$("clientProfileContent").addEventListener("click",e=>{
+ if(e.target.id==="closeClientProfile"){closeClientProfile();return}
+ if(e.target.id!=="saveClientProfile")return;
+ const all=read("leads"),client=all.find(x=>x.id===$("clientProfilePanel").dataset.clientId);if(!client)return;
+ client.salesStage=$("clientSalesStage").value;
+ client.nextAction=$("clientNextAction").value.trim();
+ client.notes=$("clientNotes").value.trim();
+ write("leads",all);log("Client profile updated for "+(client.name||"customer")+".");
+ $("clientProfileStatus").textContent="Profile updates saved.";
+ renderLeads();
+});
 $("leadTable").addEventListener("click",e=>{
  const b=e.target.closest("[data-delete-lead]");if(!b)return;
  if(!confirm("Delete this client?"))return;
