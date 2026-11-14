@@ -49,6 +49,7 @@
   const input = chatForm.querySelector("textarea");
   let config = { name: "Sales Assistant", greeting: "Hello! What are you looking for today?" };
   const conversation = [];
+  let lastSalesAssessment = { intent: "unknown", score: 0, nextAction: "human_followup" };
 
   function bubble(text, who) {
     const el = document.createElement("div");
@@ -105,6 +106,7 @@
       if (!r.ok) throw new Error(data.error || "The assistant could not reply.");
       bubble(data.reply, "assistant");
       conversation.push({ role: "assistant", content: data.reply });
+      lastSalesAssessment = { intent: data.intent || "unknown", score: Number.isInteger(data.score) ? Math.max(0, Math.min(5, data.score)) : 0, nextAction: data.nextAction || "human_followup" };
       status.textContent = data.intent === "high" ? "Ready to help you take the next step." : "";
     } catch (e) { bubble("Sorry, I couldn't connect just now. Please try again or request a callback."); status.textContent = e.message || "Connection problem."; }
     finally { button.disabled = false; input.focus(); }
@@ -119,7 +121,7 @@
     try {
       const r = await fetch(api + "/api/public/leads", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessId, name: values.name, email: values.email, phone: values.phone, message: values.message, consent: leadForm.querySelector('[name="consent"]').checked, website: values.website })
+        body: JSON.stringify({ businessId, name: values.name, email: values.email, phone: values.phone, message: values.message, consent: leadForm.querySelector('[name="consent"]').checked, website: values.website, salesIntent: lastSalesAssessment.intent, leadScore: lastSalesAssessment.score, nextAction: lastSalesAssessment.nextAction })
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "We could not save your enquiry.");
