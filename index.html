@@ -1489,7 +1489,7 @@ $("importSupportLeads").addEventListener("click",()=>{
  leads.forEach(client=>{
   client.enquiryHistory=uniqueHistory(Array.isArray(client.enquiryHistory)?client.enquiryHistory:[]);
   const latest=client.enquiryHistory[client.enquiryHistory.length-1];
-  if(!client.salesStage&&latest?.salesStage)client.salesStage=latest.salesStage.charAt(0).toUpperCase()+latest.salesStage.slice(1);
+  if(latest?.salesStage)client.salesStage=latest.salesStage.charAt(0).toUpperCase()+latest.salesStage.slice(1);
   if(!client.nextAction&&latest?.nextAction)client.nextAction=latest.nextAction;
  });
  write("leads",leads);
