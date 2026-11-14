@@ -258,7 +258,7 @@ th{color:var(--muted);font-weight:600}
  <button class="nav active" data-page="dashboard">◈ &nbsp; Dashboard</button>
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
  <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
- <button class="nav" data-page="support">☏ &nbsp; Customer Support</button>
+ <button class="nav" data-page="support">✧ &nbsp; Sales Agent</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
@@ -398,25 +398,25 @@ th{color:var(--muted);font-weight:600}
 
 <section class="page" id="support">
  <div class="card">
-  <h2>24/7 Customer Support Agent</h2>
-  <p class="muted small">Configure an AI assistant, add it to a business website and collect customer enquiries in Cloudflare D1.</p>
+  <h2>VEXT AI Sales Agent</h2>
+  <p class="muted small">Turn website conversations into qualified sales opportunities. Answer product questions, capture enquiries and manage follow-up in one place.</p>
   <div class="notice">Cloud mode requires the updated Cloudflare Worker, the VEXT_DB database binding, and the one-time business-ownership database migration. Dashboard requests use your signed-in VEXT AI account; no shared admin token is needed.</div>
  </div>
  <div class="grid">
   <div class="card">
-   <h2>1. Configure your business assistant</h2>
+   <h2>1. Train your Sales Agent</h2>
    <div class="field"><label for="supportBusiness">Business name</label><input id="supportBusiness" maxlength="100" placeholder="Your business name"></div>
    <div class="field"><label for="supportWebsite">Business website (optional, for domain checking)</label><input id="supportWebsite" maxlength="300" placeholder="https://example.com"></div>
    <div class="field"><label for="supportGreeting">Welcome message</label><textarea id="supportGreeting" maxlength="500" placeholder="Hello! How can we help you today?"></textarea></div>
-   <div class="field"><label for="supportInstructions">What should the assistant know about your business?</label><textarea id="supportInstructions" maxlength="5000" placeholder="Describe your products, services, opening hours, delivery areas, prices and common questions. Never add passwords, payment secrets or private customer information."></textarea></div>
+   <div class="field"><label for="supportInstructions">What should the Sales Agent know about your business?</label><textarea id="supportInstructions" maxlength="5000" placeholder="Describe your products, services, opening hours, delivery areas, prices and common questions. Never add passwords, payment secrets or private customer information."></textarea></div>
    <p class="muted small">Cloud access is authorized through your signed-in VEXT AI account.</p>
    <p class="muted small">Your business ID: <code id="supportBusinessId"></code></p>
    <button class="primary" id="saveSupport">Save assistant to cloud</button>
    <p class="chat-status" id="supportSaveStatus"></p>
   </div>
   <div class="card">
-   <h2>2. Add the assistant to your website</h2>
-   <p class="muted small">Save the business configuration first. Then copy this installation code into your website's HTML, just before the closing body tag.</p>
+   <h2>2. Install the Sales Agent on your website</h2>
+   <p class="muted small">Save your business information first. Then copy this installation code into your website's HTML, just before the closing body tag.</p>
    <textarea id="supportWidgetCode" rows="5" readonly placeholder="Your website widget code will appear here after you save the cloud configuration."></textarea>
    <div class="action-row"><button class="secondary" id="copySupportWidget" type="button">Copy website code</button></div>
    <p class="muted small">The public widget code contains only a public business ID, never your admin token or OpenAI API key.</p>
@@ -424,7 +424,7 @@ th{color:var(--muted);font-weight:600}
  </div>
  <div class="card">
   <div class="action-row" style="justify-content:space-between;align-items:center">
-   <div><h2>3. Cloud customer enquiries</h2><p class="muted small">Load enquiries submitted through the website widget, then import them into Client Management on this browser.</p></div>
+   <div><h2>3. Sales pipeline</h2><p class="muted small">Review website enquiries, assign a sales stage and record the next follow-up action.</p></div>
    <div class="action-row"><button class="secondary" id="loadSupportLeads" type="button">Load cloud enquiries</button><button class="primary" id="importSupportLeads" type="button">Import into clients</button></div>
   </div>
   <div id="supportCloudLeadTable" class="empty">No cloud enquiries loaded yet.</div>
@@ -432,10 +432,10 @@ th{color:var(--muted);font-weight:600}
  </div>
  <div class="grid">
   <div class="card">
-   <h2>4. Test your customer assistant</h2>
+   <h2>4. Test your Sales Agent</h2>
    <div class="chat-messages" id="supportMessages" style="min-height:220px;max-height:360px"></div>
    <div class="chat-compose">
-    <textarea id="supportInput" placeholder="Test a customer question, e.g. Do you deliver to Kampala?" maxlength="3000"></textarea>
+    <textarea id="supportInput" placeholder="Test a buyer question, e.g. Which plan is right for a small agency?" maxlength="3000"></textarea>
     <button class="primary" id="supportSend">Ask assistant</button>
    </div>
    <div class="chat-status" id="supportStatus">Test the answers before making the assistant available to customers.</div>
@@ -1043,16 +1043,36 @@ async function loadSupportCloudLeads(){
   if(!cloudSupportLeads.length){container.textContent="No website enquiries have arrived yet.";status.textContent="Cloud inbox checked.";return}
   const table=document.createElement("table");
   const head=document.createElement("thead"),hr=document.createElement("tr");
-  ["Customer","Contact","Enquiry","Received"].forEach(label=>{const th=document.createElement("th");th.textContent=label;hr.append(th)});
+  ["Customer","Contact","Enquiry","Received","Sales stage","Next action"].forEach(label=>{const th=document.createElement("th");th.textContent=label;hr.append(th)});
   head.append(hr);table.append(head);
   const body=document.createElement("tbody");
   cloudSupportLeads.forEach(lead=>{
    const tr=document.createElement("tr");
    [lead.customer_name,[lead.email,lead.phone].filter(Boolean).join(" · "),lead.message,new Date(lead.created_at).toLocaleString()].forEach(value=>{const td=document.createElement("td");td.textContent=value||"—";tr.append(td)});
+   const stageCell=document.createElement("td");
+   const stage=document.createElement("select");
+   [["new","New"],["qualified","Qualified"],["contacted","Contacted"],["proposal","Proposal"],["won","Won"],["lost","Lost"]].forEach(([value,label])=>{const option=document.createElement("option");option.value=value;option.textContent=label;stage.append(option)});
+   stage.value=lead.status||"new";stageCell.append(stage);tr.append(stageCell);
+   const actionCell=document.createElement("td");
+   const action=document.createElement("input");action.type="text";action.maxLength=500;action.placeholder="e.g. Call tomorrow";action.value=lead.next_action||"";action.style.minWidth="150px";
+   const save=document.createElement("button");save.type="button";save.className="secondary";save.textContent="Save";
+   save.addEventListener("click",async()=>{
+    save.disabled=true;save.textContent="Saving...";
+    try{
+     const accessToken=await getVextAccessToken();
+     const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/leads",{method:"PATCH",headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},body:JSON.stringify({businessId:supportBusinessId,leadId:lead.id,status:stage.value,nextAction:action.value.trim()})});
+     const result=await response.json().catch(()=>({}));
+     if(!response.ok)throw new Error(result.error||"Could not update this lead.");
+     lead.status=stage.value;lead.next_action=action.value.trim();
+     status.textContent="Sales stage and next action saved.";
+    }catch(error){status.textContent="Could not save lead: "+(error.message||"Please try again.");}
+    finally{save.disabled=false;save.textContent="Save";}
+   });
+   actionCell.append(action,document.createTextNode(" "),save);tr.append(actionCell);
    body.append(tr);
   });
   table.append(body);const wrap=document.createElement("div");wrap.className="table-wrap";wrap.append(table);container.append(wrap);
-  status.textContent=cloudSupportLeads.length+" cloud enquiries loaded.";
+  status.textContent=cloudSupportLeads.length+" sales opportunities loaded.";
  }catch(error){status.textContent="Could not load cloud enquiries: "+(error.message||"Check your Worker, D1 binding and admin token.")}
 }
 $("loadSupportLeads").addEventListener("click",loadSupportCloudLeads);
