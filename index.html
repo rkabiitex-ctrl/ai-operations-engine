@@ -812,9 +812,9 @@ function renderLeads(){
  [x.name,x.email,x.phone,x.country,x.interest].join(" ").toLowerCase().includes(q));
  $("leadTable").innerHTML=filtered.length?
  `<table><thead><tr><th>Client</th><th>Contact</th><th>Country</th><th>Action</th></tr></thead><tbody>
- ${filtered.map(x=>`<tr><td>${esc(x.name)}<br><small>${esc(x.interest)}</small></td>
+ ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;return `<tr><td>${esc(x.name)}<br><small>${esc(x.interest)}</small>${historyCount?`<br><small>${historyCount} saved website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
  <td>${esc(x.email||x.phone||"—")}</td><td>${esc(x.country||"—")}</td>
- <td><button class="danger" data-delete-lead="${esc(x.id)}">Delete</button></td></tr>`).join("")}
+ <td><button class="danger" data-delete-lead="${esc(x.id)}">Delete</button></td></tr>`}).join("")}
  </tbody></table>`:'<div class="empty">No matching clients yet.</div>';
 }
 function renderInvoices(){
@@ -1083,13 +1083,46 @@ $("loadSupportLeads").addEventListener("click",loadSupportCloudLeads);
 $("importSupportLeads").addEventListener("click",()=>{
  if(!cloudSupportLeads.length){$("supportCloudStatus").textContent="Load cloud enquiries first.";return}
  const leads=read("leads");
- let added=0;
+ let created=0,updated=0,alreadyLinked=0;
  cloudSupportLeads.forEach(item=>{
-  const duplicate=leads.some(existing=>(item.email&&existing.email===item.email)||(item.phone&&existing.phone===item.phone));
-  if(!duplicate){leads.push({id:item.id||id(),name:item.customer_name,email:item.email||"",phone:item.phone||"",country:"",interest:item.message||"Website enquiry",source:"VEXT AI Website Widget",created:item.created_at||new Date().toISOString()});added++}
+  const email=String(item.email||"").trim().toLowerCase();
+  const phone=String(item.phone||"").replace(/\\D/g,"");
+  let client=leads.find(existing=>{
+   const existingEmail=String(existing.email||"").trim().toLowerCase();
+   const existingPhone=String(existing.phone||"").replace(/\\D/g,"");
+   return (email&&existingEmail===email)||(phone&&existingPhone===phone);
+  });
+  if(!client){
+   client={id:id(),name:item.customer_name||"Website customer",email:item.email||"",phone:item.phone||"",country:"",interest:item.message||"Website enquiry",source:"VEXT AI Website Widget",created:item.created_at||new Date().toISOString(),enquiryHistory:[]};
+   leads.push(client);created++;
+  }else{
+   updated++;
+   if(!client.email&&item.email)client.email=item.email;
+   if(!client.phone&&item.phone)client.phone=item.phone;
+   if(!client.name&&item.customer_name)client.name=item.customer_name;
+   if(!client.interest)client.interest=item.message||"Website enquiry";
+   if(!client.source)client.source="VEXT AI Website Widget";
+   if(!client.created)client.created=item.created_at||new Date().toISOString();
+  }
+  if(!Array.isArray(client.enquiryHistory))client.enquiryHistory=[];
+  if(item.id&&client.enquiryHistory.some(entry=>entry.cloudLeadId===item.id)){
+   alreadyLinked++;return;
+  }
+  client.enquiryHistory.push({
+   cloudLeadId:item.id||"",
+   message:item.message||"Website enquiry",
+   receivedAt:item.created_at||new Date().toISOString(),
+   intent:item.intent||"unknown",
+   leadScore:Number(item.lead_score)||0,
+   salesStage:item.status||"new",
+   nextAction:item.next_action||"",
+   consent:true
+  });
  });
- write("leads",leads);log(added+" website enquiries imported.");render();
- $("supportCloudStatus").textContent=added+" new enquiries imported into Client Management. Existing matching contacts were skipped.";
+ write("leads",leads);
+ log(created+" new clients created; "+updated+" existing clients updated from website enquiries.");
+ render();
+ $("supportCloudStatus").textContent=created+" new clients created; "+updated+" existing clients updated; "+alreadyLinked+" enquiries were already linked. All imported enquiries are kept in client history.";
 });
 renderSupportChat();
 $("supportLeadForm").addEventListener("submit",e=>{
