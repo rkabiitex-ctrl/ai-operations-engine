@@ -308,6 +308,9 @@ export default {
         const phone = clean(body && body.phone, 40);
         const message = clean(body && body.message, 1200);
         const consent = body && body.consent === true;
+        const intent = ["low", "medium", "high"].includes(body && body.salesIntent) ? body.salesIntent : "unknown";
+        const leadScore = Number.isInteger(body && body.leadScore) && body.leadScore >= 0 && body.leadScore <= 5 ? body.leadScore : 0;
+        const nextAction = clean(body && body.nextAction, 40);
         if (!businessId || !name || (!email && !phone) || !consent) {
           return json({ error: "Name, email or phone, and permission to be contacted are required." }, 400, cors);
         }
@@ -319,8 +322,8 @@ export default {
         if (originError) return json({ error: originError }, 403, cors);
         const id = crypto.randomUUID();
         await env.VEXT_DB.prepare(
-          "INSERT INTO support_leads (id, business_id, customer_name, email, phone, message, consent, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP)"
-        ).bind(id, businessId, name, email, phone, message).run();
+          "INSERT INTO support_leads (id, business_id, customer_name, email, phone, message, consent, status, intent, lead_score, next_action, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, 'new', ?, ?, ?, CURRENT_TIMESTAMP)"
+        ).bind(id, businessId, name, email, phone, message, intent, leadScore, nextAction).run();
         return json({ ok: true, id }, 201, cors);
       }
 
