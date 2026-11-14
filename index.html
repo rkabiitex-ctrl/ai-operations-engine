@@ -1080,6 +1080,14 @@ function renderActivity(){
  `<div class="activity">${esc(x.message)}<small>${esc(x.time)}</small></div>`
  ).join(""):'<div class="empty">No activity recorded yet.</div>';
 }
+function crmInterestSummary(client){
+ const raw=String(client.interest||client.enquiryHistory?.at(-1)?.message||"No interest recorded").trim();
+ if(!raw)return "No interest recorded";
+ // Keep the directory scannable while leaving the complete original enquiry in the profile.
+ const firstSentence=(raw.match(/^[\\s\\S]*?[.!?](?=\\s|$)/)||[raw])[0].trim();
+ const summary=firstSentence.length<=92?firstSentence:firstSentence.slice(0,89).trimEnd()+"…";
+ return summary.replace(/\\s+/g," ");
+}
 function renderLeads(){
  const leads=read("leads");
  const q=$("leadSearch").value.toLowerCase();
@@ -1092,7 +1100,7 @@ function renderLeads(){
  $("leadTable").innerHTML=filtered.length?
  `<table><thead><tr><th>Customer</th><th>Contact</th><th>Sales status</th><th>Profile</th></tr></thead><tbody>
  ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;const stage=x.salesStage||x.enquiryHistory?.at(-1)?.salesStage||"New";return `<tr>
- <td><strong>${esc(x.name||"Unnamed client")}</strong><br><small>${esc(x.interest||"No interest recorded")}</small>${historyCount?`<br><small>${historyCount} website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
+ <td><strong>${esc(x.name||"Unnamed client")}</strong><br><small>${esc(crmInterestSummary(x))}</small>${historyCount?`<br><small>${historyCount} website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
  <td>${esc(x.email||x.phone||"—")}</td><td><span class="pill">${esc(stage)}</span></td>
  <td><button class="secondary" data-open-client="${esc(x.id)}">View profile</button></td></tr>`}).join("")}
  </tbody></table>`:'<div class="empty">No matching clients yet. Add a client or import website enquiries from the Sales Agent.</div>';
