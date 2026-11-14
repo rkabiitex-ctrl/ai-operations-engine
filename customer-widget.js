@@ -34,12 +34,12 @@
   const launch = document.createElement("button");
   launch.className = "vext-widget-launch";
   launch.type = "button";
-  launch.textContent = "Chat with us";
-  launch.setAttribute("aria-label", "Open customer support chat");
+  launch.textContent = "Talk to our Sales Agent";
+  launch.setAttribute("aria-label", "Open VEXT AI Sales Agent");
 
   const panel = document.createElement("section");
   panel.className = "vext-widget-panel";
-  panel.innerHTML = '<div class="vext-widget-head"><div><div class="vext-widget-title">Customer Support</div><div class="vext-widget-sub">AI assistant · usually replies quickly</div></div><button class="vext-widget-close" type="button" aria-label="Close">×</button></div><div class="vext-widget-messages" aria-live="polite"></div><div class="vext-widget-actions"><button class="vext-widget-link" type="button">Request a callback</button></div><div class="vext-widget-status"></div><form class="vext-widget-form"><textarea maxlength="2000" aria-label="Your message" placeholder="Type your question..."></textarea><button type="submit">Send</button></form><form class="vext-widget-lead"><strong>Request a callback</strong><input name="name" maxlength="100" required placeholder="Your name"><input name="email" maxlength="150" type="email" placeholder="Email address"><input name="phone" maxlength="40" placeholder="Phone number"><textarea name="message" maxlength="1200" placeholder="What would you like us to help with?"></textarea><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true"><label><input name="consent" type="checkbox" required> I agree to be contacted about this enquiry.</label><button type="submit">Send enquiry</button><button class="vext-widget-link vext-widget-cancel" type="button">Back to chat</button></form>';
+  panel.innerHTML = '<div class="vext-widget-head"><div><div class="vext-widget-title">VEXT AI Sales Agent</div><div class="vext-widget-sub">Product guidance · sales assistance</div></div><button class="vext-widget-close" type="button" aria-label="Close">×</button></div><div class="vext-widget-messages" aria-live="polite"></div><div class="vext-widget-actions"><button class="vext-widget-link" type="button">Talk to our sales team</button></div><div class="vext-widget-status"></div><form class="vext-widget-form"><textarea maxlength="2000" aria-label="Your message" placeholder="Type your question..."></textarea><button type="submit">Send</button></form><form class="vext-widget-lead"><strong>Request a callback</strong><input name="name" maxlength="100" required placeholder="Your name"><input name="email" maxlength="150" type="email" placeholder="Email address"><input name="phone" maxlength="40" placeholder="Phone number"><textarea name="message" maxlength="1200" placeholder="What would you like us to help with?"></textarea><input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true"><label><input name="consent" type="checkbox" required> I agree to be contacted about this enquiry.</label><button type="submit">Send enquiry</button><button class="vext-widget-link vext-widget-cancel" type="button">Back to chat</button></form>';
   document.body.append(launch, panel);
 
   const messages = panel.querySelector(".vext-widget-messages");
@@ -47,7 +47,8 @@
   const chatForm = panel.querySelector(".vext-widget-form");
   const leadForm = panel.querySelector(".vext-widget-lead");
   const input = chatForm.querySelector("textarea");
-  let config = { name: "Customer Support", greeting: "Hello! How can we help you today?" };
+  let config = { name: "Sales Assistant", greeting: "Hello! What are you looking for today?" };
+  const conversation = [];
 
   function bubble(text, who) {
     const el = document.createElement("div");
@@ -76,7 +77,8 @@
       if (!r.ok || !data.business) throw new Error(data.error || "Assistant is not configured.");
       config = data.business;
       panel.querySelector(".vext-widget-title").textContent = config.name || "Customer Support";
-      bubble(config.greeting || "Hello! How can we help you today?");
+      bubble(config.greeting || "Hello! What are you looking for today?");
+      conversation.push({ role: "assistant", content: config.greeting || "Hello! What are you looking for today?" });
     } catch (e) {
       bubble("This support assistant is not available yet. Please contact the business directly.");
       status.textContent = e.message || "Setup incomplete.";
@@ -88,17 +90,22 @@
     event.preventDefault();
     const message = input.value.trim();
     if (!message) return;
-    bubble(message, "user"); input.value = "";
+    bubble(message, "user");
+    conversation.push({ role: "user", content: message });
+    input.value = "";
     const button = chatForm.querySelector("button");
     button.disabled = true; status.textContent = "Thinking...";
     try {
-      const r = await fetch(api + "/api/public/chat", {
+      const conversationText = conversation.slice(-10).map(item => (item.role === "user" ? "Visitor: " : "Sales Agent: ") + item.content).join("\n");
+      const r = await fetch(api + "/api/public/sales-chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessId, message })
+        body: JSON.stringify({ businessId, message: conversationText })
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "The assistant could not reply.");
-      bubble(data.reply, "assistant"); status.textContent = "";
+      bubble(data.reply, "assistant");
+      conversation.push({ role: "assistant", content: data.reply });
+      status.textContent = data.intent === "high" ? "Ready to help you take the next step." : "";
     } catch (e) { bubble("Sorry, I couldn't connect just now. Please try again or request a callback."); status.textContent = e.message || "Connection problem."; }
     finally { button.disabled = false; input.focus(); }
   });
