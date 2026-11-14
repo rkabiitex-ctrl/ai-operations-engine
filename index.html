@@ -1043,12 +1043,16 @@ async function loadSupportCloudLeads(){
   if(!cloudSupportLeads.length){container.textContent="No website enquiries have arrived yet.";status.textContent="Cloud inbox checked.";return}
   const table=document.createElement("table");
   const head=document.createElement("thead"),hr=document.createElement("tr");
-  ["Customer","Contact","Enquiry","Received","Sales stage","Next action"].forEach(label=>{const th=document.createElement("th");th.textContent=label;hr.append(th)});
+  ["Customer","Contact","Enquiry","Received","Buying signal","Sales stage","Next action"].forEach(label=>{const th=document.createElement("th");th.textContent=label;hr.append(th)});
   head.append(hr);table.append(head);
   const body=document.createElement("tbody");
   cloudSupportLeads.forEach(lead=>{
    const tr=document.createElement("tr");
    [lead.customer_name,[lead.email,lead.phone].filter(Boolean).join(" · "),lead.message,new Date(lead.created_at).toLocaleString()].forEach(value=>{const td=document.createElement("td");td.textContent=value||"—";tr.append(td)});
+   const signalCell=document.createElement("td");
+   const intentLabel=lead.intent&&lead.intent!=="unknown"?lead.intent.charAt(0).toUpperCase()+lead.intent.slice(1):"Not assessed";
+   signalCell.textContent=intentLabel+" · "+(Number(lead.lead_score)||0)+"/5";
+   tr.append(signalCell);
    const stageCell=document.createElement("td");
    const stage=document.createElement("select");
    [["new","New"],["qualified","Qualified"],["contacted","Contacted"],["proposal","Proposal"],["won","Won"],["lost","Lost"]].forEach(([value,label])=>{const option=document.createElement("option");option.value=value;option.textContent=label;stage.append(option)});
