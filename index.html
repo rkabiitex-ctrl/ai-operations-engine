@@ -4,8 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080e1d">
-<meta name="description" content="VEXT AI - Global business management, analytics and automation platform.">
-<title>VEXT AI | Global Business Engine</title>
+<meta name="description" content="VEXT AI helps small businesses manage customer enquiries, clients, invoices and business performance in one AI-powered workspace.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://rkabiitex-ctrl.github.io/ai-operations-engine/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VEXT AI | Run and grow your business with one intelligent workspace">
+<meta property="og:description" content="Manage customer enquiries, clients, invoices and business performance with VEXT AI.">
+<meta property="og:url" content="https://rkabiitex-ctrl.github.io/ai-operations-engine/">
+<meta name="twitter:card" content="summary">
+<title>VEXT AI | AI Business Operating System</title>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"VEXT AI","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"An AI-powered workspace for managing customer enquiries, clients, invoices and business performance.","url":"https://rkabiitex-ctrl.github.io/ai-operations-engine/"}
+</script>
 <style>
 :root {
  --bg:#080e1d;--panel:#111c30;--panel2:#17243a;
@@ -151,11 +161,95 @@ th{color:var(--muted);font-weight:600}
 #vextAuthSubmit{width:100%;margin-top:20px;padding:13px;border:0;border-radius:10px;background:linear-gradient(90deg,#087eaa,#16b8c9);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
 #vextAuthSwitch,#vextAuthForgot{border:0;background:none;color:#5bd5e9;cursor:pointer;font:inherit;padding:10px 0}#vextAuthMessage{min-height:22px;margin-top:12px;font-size:13px;color:#9de7d3}
 #vextAuthActions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#vextAuthUser{color:#a9c2d9;font-size:12px}#vextAuthLogout{border:1px solid #31516e;border-radius:8px;background:#10243a;color:#d9efff;padding:8px 12px;cursor:pointer}@media(max-width:520px){#vextAuthCard{padding:23px}}
+
+/* Public VEXT AI landing page */
+#vextAuthGate{display:block;overflow-y:auto;padding:24px clamp(16px,5vw,72px);background:radial-gradient(ellipse at 12% 8%,#12345a 0,transparent 42%),radial-gradient(ellipse at 88% 30%,#123b48 0,transparent 34%),#050b14}
+.vext-landing-shell{max-width:1180px;margin:0 auto}
+.vext-landing-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0 34px}
+.vext-landing-brand{font-size:25px;font-weight:900;letter-spacing:-1px;color:#65d9ed}
+.vext-landing-brand span{color:#fff}
+.vext-landing-nav-actions{display:flex;align-items:center;gap:10px}
+.vext-landing-nav button,.vext-landing-cta{border:1px solid #31516e;border-radius:9px;padding:11px 16px;background:#10243a;color:#e8f7ff;font-weight:700}
+.vext-landing-nav .vext-landing-primary,.vext-landing-cta{border:0;background:linear-gradient(90deg,#38bdf8,#22d3ee);color:#071323}
+.vext-landing-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(310px,.85fr);gap:clamp(28px,5vw,72px);align-items:center;padding:30px 0 46px}
+.vext-landing-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid #28516a;border-radius:99px;background:#10243a;color:#8de5f2;font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase}
+.vext-landing-hero h1{max-width:680px;margin:19px 0 17px;font-size:clamp(38px,6vw,68px);line-height:1.03;letter-spacing:-2.8px;color:#f5faff}
+.vext-landing-hero h1 span{color:#54d4ed}
+.vext-landing-lead{max-width:610px;color:#b4c7dc;font-size:17px;line-height:1.75}
+.vext-landing-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.vext-landing-cta{padding:14px 19px;font-size:14px}
+.vext-landing-secondary{border:1px solid #31516e;border-radius:9px;padding:13px 18px;background:#10243a;color:#e8f7ff;font-weight:700}
+.vext-landing-note{margin-top:16px;color:#8fa3bc;font-size:12px;line-height:1.6}
+#vextAuthCard{width:100%;max-width:430px;justify-self:end;padding:27px}
+.vext-landing-card-label{color:#5bd5e9;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase}
+.vext-landing-section{padding:26px 0 42px}
+.vext-landing-section h2{font-size:clamp(24px,3vw,34px);letter-spacing:-.8px;margin:0 0 10px;color:#f5faff}
+.vext-landing-section-intro{max-width:690px;color:#9eb4ca;line-height:1.7;margin:0 0 22px}
+.vext-landing-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.vext-landing-feature{padding:19px;border:1px solid #233c57;border-radius:14px;background:linear-gradient(145deg,#112039,#0b1627);min-height:155px}
+.vext-landing-feature-icon{font-size:22px;color:#59d7ee}
+.vext-landing-feature h3{font-size:14px;margin:13px 0 8px;color:#edf7ff}
+.vext-landing-feature p{font-size:12px;line-height:1.65;color:#9eb4ca;margin:0}
+.vext-landing-bottom{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:22px 0 12px;border-top:1px solid #23364d;color:#8fa3bc;font-size:11px}
+@media(max-width:900px){.vext-landing-hero{grid-template-columns:1fr}.vext-landing-hero-copy{max-width:760px}#vextAuthCard{justify-self:start}.vext-landing-features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){#vextAuthGate{padding:15px}.vext-landing-nav{padding-bottom:18px}.vext-landing-nav-actions{gap:6px}.vext-landing-nav button{padding:9px 10px;font-size:12px}.vext-landing-hero{padding:20px 0 30px;gap:25px}.vext-landing-hero h1{letter-spacing:-1.6px}.vext-landing-lead{font-size:15px}.vext-landing-features{grid-template-columns:1fr}.vext-landing-feature{min-height:0}#vextAuthCard{padding:22px}}
+
 </style>
 </head>
 <body>
 
-<div id="vextAuthGate"><div id="vextAuthCard"><div style="font-weight:800;letter-spacing:1px;color:#65d9ed;margin-bottom:20px">VEXT<span style="color:#fff"> AI</span></div><h2 id="vextAuthHeading">Welcome back</h2><p id="vextAuthIntro">Sign in to access your VEXT AI workspace.</p><form id="vextAuthForm"><label for="vextAuthEmail">Email address</label><input id="vextAuthEmail" type="email" autocomplete="email" required placeholder="you@example.com"><label for="vextAuthPassword">Password</label><input id="vextAuthPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"><button id="vextAuthSubmit" type="submit">Sign in</button></form><button id="vextAuthForgot" type="button">Forgot your password?</button><div id="vextAuthMessage" role="status" aria-live="polite"></div><p style="margin-bottom:0"><span id="vextAuthSwitchText">New to VEXT AI?</span> <button id="vextAuthSwitch" type="button">Create an account</button></p></div></div>
+<div id="vextAuthGate">
+ <div class="vext-landing-shell">
+  <header class="vext-landing-nav">
+   <div class="vext-landing-brand">VEXT<span> AI</span></div>
+   <div class="vext-landing-nav-actions">
+    <button id="vextLandingLogin" type="button">Sign in</button>
+    <button id="vextLandingSignup" class="vext-landing-primary" type="button">Create account</button>
+   </div>
+  </header>
+  <section class="vext-landing-hero">
+   <div class="vext-landing-hero-copy">
+    <div class="vext-landing-eyebrow">✦ AI-powered business workspace</div>
+    <h1>Run your business.<br><span>Move forward faster.</span></h1>
+    <p class="vext-landing-lead">Bring customer enquiries, client records, invoices and business insights together in one intelligent workspace. VEXT AI helps growing businesses stay organized and serve customers better.</p>
+    <div class="vext-landing-actions">
+     <button class="vext-landing-cta" id="vextHeroSignup" type="button">Get started <span aria-hidden="true">→</span></button>
+     <button class="vext-landing-secondary" id="vextHeroLogin" type="button">I already have an account</button>
+    </div>
+    <p class="vext-landing-note">VEXT AI is in early access. Some advanced capabilities, including subscription billing and additional automations, are still being developed.</p>
+   </div>
+   <div id="vextAuthCard">
+    <div class="vext-landing-card-label">Your business workspace</div>
+    <h2 id="vextAuthHeading">Welcome back</h2>
+    <p id="vextAuthIntro">Sign in to access your VEXT AI workspace.</p>
+    <form id="vextAuthForm">
+     <label for="vextAuthEmail">Email address</label>
+     <input id="vextAuthEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+     <label for="vextAuthPassword">Password</label>
+     <input id="vextAuthPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+     <button id="vextAuthSubmit" type="submit">Sign in</button>
+    </form>
+    <button id="vextAuthForgot" type="button">Forgot your password?</button>
+    <div id="vextAuthMessage" role="status" aria-live="polite"></div>
+    <p style="margin-bottom:0"><span id="vextAuthSwitchText">New to VEXT AI?</span> <button id="vextAuthSwitch" type="button">Create an account</button></p>
+   </div>
+  </section>
+  <section class="vext-landing-section">
+   <h2>Everything important, in one workspace.</h2>
+   <p class="vext-landing-section-intro">Start with the everyday work of running a business. Keep customer information organized, respond to enquiries and understand what's happening across your business.</p>
+   <div class="vext-landing-features">
+    <article class="vext-landing-feature"><div class="vext-landing-feature-icon">✧</div><h3>AI business assistant</h3><p>Ask questions, explore ideas and get practical help with business tasks.</p></article>
+    <article class="vext-landing-feature"><div class="vext-landing-feature-icon">☏</div><h3>Customer enquiries</h3><p>Set up a website assistant to answer questions and collect contact requests with consent.</p></article>
+    <article class="vext-landing-feature"><div class="vext-landing-feature-icon">◎</div><h3>Client management</h3><p>Keep customer and lead details organized in one searchable workspace.</p></article>
+    <article class="vext-landing-feature"><div class="vext-landing-feature-icon">▤</div><h3>Invoices and insights</h3><p>Create invoices and review basic business activity and performance.</p></article>
+   </div>
+  </section>
+  <footer class="vext-landing-bottom">
+   <span>VEXT AI · An intelligent workspace for growing businesses</span>
+   <span>Early access · © <span id="landingYear"></span> VEXT AI</span>
+  </footer>
+ </div>
+</div>
 <div class="app">
 <aside class="sidebar">
  <div class="brand">VEXT<span> AI</span></div>
@@ -1100,6 +1194,13 @@ render();
   }
  }
  document.getElementById("vextAuthSwitch").onclick=()=>setMode(mode==="signin"?"signup":"signin");
+
+  const startSignup=()=>{setMode("signup");document.getElementById("vextAuthEmail").focus();document.getElementById("vextAuthCard").scrollIntoView({behavior:"smooth",block:"center"})};
+  const startLogin=()=>{setMode("signin");document.getElementById("vextAuthEmail").focus();document.getElementById("vextAuthCard").scrollIntoView({behavior:"smooth",block:"center"})};
+  ["vextLandingSignup","vextHeroSignup"].forEach(id=>document.getElementById(id).addEventListener("click",startSignup));
+  ["vextLandingLogin","vextHeroLogin"].forEach(id=>document.getElementById(id).addEventListener("click",startLogin));
+  document.getElementById("landingYear").textContent=new Date().getFullYear();
+
  form.onsubmit=async e=>{e.preventDefault();submit.disabled=true;submit.textContent=mode==="signup"?"Creating account…":"Signing in…";say("");try{let result;if(mode==="signup"){result=await client.auth.signUp({email:email.value.trim(),password:password.value,options:{emailRedirectTo:location.origin+location.pathname}});if(result.error)throw result.error;say(result.data.session?"Account created. Opening workspace…":"Account created. Check your email and confirm your address before signing in.")}else{result=await client.auth.signInWithPassword({email:email.value.trim(),password:password.value});if(result.error)throw result.error;say("Signed in successfully.")}}catch(err){say(err.message||"Please try again.",true)}finally{submit.disabled=false;submit.textContent=mode==="signup"?"Create account":"Sign in"}};
  document.getElementById("vextAuthForgot").onclick=async()=>{const mail=email.value.trim();if(!mail){say("Enter your email address first.",true);email.focus();return}say("Sending reset email…");const {error}=await client.auth.resetPasswordForEmail(mail,{redirectTo:location.origin+location.pathname});say(error?error.message:"If an account exists, a password reset email has been sent.",!!error)};
  client.auth.onAuthStateChange((_event,session)=>{void apply(session)});client.auth.getSession().then(({data,error})=>{if(error)say(error.message,true);void apply(data?.session||null)});
