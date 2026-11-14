@@ -385,6 +385,9 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .crm-history-top strong{font-size:12px}
 .crm-history-item p{font-size:13px;line-height:1.6;color:#d9e5f2;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
 .crm-history-meta{font-size:10px;color:#91a7c0;line-height:1.6;margin-top:5px}
+.crm-timeline-item{position:relative;padding-left:17px;margin-left:5px;border-left:2px solid rgba(73,190,220,.28)}
+.crm-timeline-item:before{content:"";position:absolute;left:-6px;top:17px;width:9px;height:9px;border-radius:50%;background:#43c6dc;box-shadow:0 0 0 4px rgba(67,198,220,.12)}
+.crm-timeline-item p{margin:7px 0;white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:1000px){.crm-layout{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.crm-stats{grid-template-columns:1fr 1fr}.crm-edit-grid{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:1fr 1fr}.crm-stat{padding:14px}.crm-stat strong{font-size:23px}}
 
@@ -1112,6 +1115,7 @@ function renderClientProfile(clientId){
  const client=read("leads").find(x=>x.id===clientId);if(!client)return;
  $("clientProfilePanel").hidden=false;$("clientProfilePanel").dataset.clientId=clientId;
  const history=Array.isArray(client.enquiryHistory)?client.enquiryHistory:[];
+ const activityLog=Array.isArray(client.activityLog)?client.activityLog:[];
  const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
  const currentStage=client.salesStage||history.at(-1)?.salesStage||"New";
  $("clientProfileContent").innerHTML=`
@@ -1128,8 +1132,10 @@ function renderClientProfile(clientId){
   </div>
   <div class="field"><label for="clientNotes">Internal notes</label><textarea id="clientNotes" maxlength="2000" rows="3" placeholder="Add useful context for your team...">${esc(client.notes||"")}</textarea></div>
   <div class="action-row"><button class="primary" id="saveClientProfile" type="button">Save profile updates</button><span class="chat-status" id="clientProfileStatus" role="status"></span></div>
-  <div class="crm-history-heading"><div><h3>Enquiry history</h3><p class="muted small">${history.length} saved website ${history.length===1?"enquiry":"enquiries"}</p></div></div>
-  ${history.length?history.slice().reverse().map((entry,index)=>`<div class="crm-history-item"><div class="crm-history-top"><strong>Website enquiry ${history.length-index}</strong><span class="pill">${esc(entry.salesStage||"New")}</span></div><p>${esc(entry.message||"No enquiry message")}</p><div class="crm-history-meta">${esc(entry.receivedAt?new Date(entry.receivedAt).toLocaleString():"Date not recorded")} · Intent: ${esc(entry.intent||"Not classified")}${entry.leadScore? " · Lead score: "+esc(entry.leadScore):""}</div>${entry.nextAction?`<div class="crm-history-meta">Next action: ${esc(entry.nextAction)}</div>`:""}</div>`).join(""):'<div class="empty">No website enquiries are linked to this client yet.</div>'}`;
+  <div class="crm-history-heading"><div><h3>Activity timeline</h3><p class="muted small">Website enquiries and recorded profile changes, newest first</p></div></div>
+  ${[...history.map((entry,index)=>({kind:"enquiry",title:"Website enquiry "+(index+1),detail:entry.message||"No enquiry message",at:entry.receivedAt,status:entry.salesStage||"New",meta:"Intent: "+(entry.intent||"Not classified")+(entry.leadScore?" · Lead score: "+entry.leadScore:"") })),...activityLog].sort((a,b)=>new Date(b.at||0).getTime()-new Date(a.at||0).getTime()).map(item=>`<div class="crm-history-item crm-timeline-item"><div class="crm-history-top"><strong>${esc(item.title||"Profile activity")}</strong>${item.status?`<span class="pill">${esc(item.status)}</span>`:""}</div><p>${esc(item.detail||"")}</p><div class="crm-history-meta">${esc(item.at?new Date(item.at).toLocaleString():"Date not recorded")}${item.meta?" · "+esc(item.meta):""}</div></div>`).join("")||'<div class="empty">No activity recorded yet.</div>'}
+  <div class="crm-history-heading"><div><h3>Full enquiry history</h3><p class="muted small">${history.length} saved website ${history.length===1?"enquiry":"enquiries"} · Original customer messages are preserved</p></div></div>
+  ${history.length?history.slice().reverse().map((entry,index)=>`<div class="crm-history-item"><div class="crm-history-top"><strong>Website enquiry ${history.length-index}</strong><span class="pill">${esc(entry.salesStage||"New")}</span></div><p>${esc(entry.message||"No enquiry message")}</p><div class="crm-history-meta">${esc(entry.receivedAt?new Date(entry.receivedAt).toLocaleString():"Date not recorded")} · Intent: ${esc(entry.intent||"Not classified")}${entry.leadScore? " · Lead score: "+esc(entry.leadScore):""}</div>${entry.nextAction?`<div class="crm-history-meta">Next action: ${esc(entry.nextAction)}</div>`:""}</div>`).join(""):'<div class="empty">No website enquiries are linked to this client yet.</div>'};
 }
 function closeClientProfile(){
  $("clientProfilePanel").hidden=true;$("clientProfilePanel").dataset.clientId="";
@@ -1218,9 +1224,20 @@ $("clientProfileContent").addEventListener("click",e=>{
  if(e.target.id==="closeClientProfile"){closeClientProfile();return}
  if(e.target.id!=="saveClientProfile")return;
  const all=read("leads"),client=all.find(x=>x.id===$("clientProfilePanel").dataset.clientId);if(!client)return;
- client.salesStage=$("clientSalesStage").value;
- client.nextAction=$("clientNextAction").value.trim();
- client.notes=$("clientNotes").value.trim();
+ const previousStage=client.salesStage||client.enquiryHistory?.at(-1)?.salesStage||"New";
+ const previousAction=String(client.nextAction||"").trim();
+ const previousNotes=String(client.notes||"").trim();
+ const nextStage=$("clientSalesStage").value;
+ const nextAction=$("clientNextAction").value.trim();
+ const nextNotes=$("clientNotes").value.trim();
+ const savedAt=new Date().toISOString();
+ client.activityLog=Array.isArray(client.activityLog)?client.activityLog:[];
+ if(previousStage!==nextStage)client.activityLog.push({kind:"status",title:"Sales status changed",detail:previousStage+" → "+nextStage,at:savedAt,status:nextStage});
+ if(previousAction!==nextAction)client.activityLog.push({kind:"followup",title:"Next follow-up action updated",detail:nextAction||"Follow-up action cleared",at:savedAt});
+ if(previousNotes!==nextNotes)client.activityLog.push({kind:"note",title:"Internal note updated",detail:nextNotes||"Internal notes cleared",at:savedAt});
+ client.salesStage=nextStage;
+ client.nextAction=nextAction;
+ client.notes=nextNotes;
  write("leads",all);log("Client profile updated for "+(client.name||"customer")+".");
  $("clientProfileStatus").textContent="Profile updates saved.";
  renderLeads();
