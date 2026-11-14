@@ -212,6 +212,27 @@ export default {
           return json({ ok: true, businessId }, 200, cors);
         }
 
+        if (path === "/api/admin/leads" && request.method === "PATCH") {
+          const body = await readJson(request);
+          const businessId = clean(body && body.businessId, 80);
+          const leadId = clean(body && body.leadId, 80);
+          const status = clean(body && body.status, 30);
+          const nextAction = clean(body && body.nextAction, 500);
+          const allowedStatuses = ["new", "qualified", "contacted", "proposal", "won", "lost"];
+          if (!businessId || !leadId || !allowedStatuses.includes(status)) {
+            return json({ error: "Business ID, lead ID and a valid sales status are required." }, 400, cors);
+          }
+          const ownedBusiness = await env.VEXT_DB.prepare(
+            "SELECT business_id FROM businesses WHERE business_id = ? AND owner_user_id = ?"
+          ).bind(businessId, user.id).first();
+          if (!ownedBusiness) return json({ error: "This business assistant does not belong to your VEXT AI account." }, 404, cors);
+          const updatedLead = await env.VEXT_DB.prepare(
+            "UPDATE support_leads SET status = ?, next_action = ? WHERE id = ? AND business_id = ?"
+          ).bind(status, nextAction, leadId, businessId).run();
+          if (!updatedLead.meta || updatedLead.meta.changes === 0) return json({ error: "Lead not found." }, 404, cors);
+          return json({ ok: true, leadId, status, nextAction }, 200, cors);
+        }
+
         if (path === "/api/admin/leads" && request.method === "GET") {
           const businessId = clean(url.searchParams.get("businessId"), 80);
           if (!businessId) return json({ error: "Business ID is required." }, 400, cors);
@@ -220,7 +241,7 @@ export default {
           ).bind(businessId, user.id).first();
           if (!ownedBusiness) return json({ error: "This business assistant does not belong to your VEXT AI account." }, 404, cors);
           const result = await env.VEXT_DB.prepare(
-            "SELECT id, customer_name, email, phone, message, created_at FROM support_leads WHERE business_id = ? ORDER BY created_at DESC LIMIT 200"
+            "SELECT id, customer_name, email, phone, message, status, intent, lead_score, next_action, created_at FROM support_leads WHERE business_id = ? ORDER BY created_at DESC LIMIT 200"
           ).bind(businessId).all();
           return json({ leads: result.results || [] }, 200, cors);
         }
@@ -239,6 +260,27 @@ export default {
         ).bind(businessId).first();
         if (!business) return json({ error: "Business was not found. Ask the business owner to finish setup." }, 404, cors);
         return json({ business }, 200, cors);
+      }
+
+      if (path === "/api/public/sales-chat" && request.method === "POST") {
+        const body = await readJson(request);
+        const businessId = clean(body && body.businessId, 80);
+        const message = clean(body && body.message, 2000);
+        if (!businessId || !message) return json({ error: "Business ID and message are required." }, 400, cors);
+        const business = await env.VEXT_DB.prepare(
+          "SELECT name, instructions, website FROM businesses WHERE business_id = ?"
+        ).bind(businessId).first();
+        if (!business) return json({ error: "This business sales assistant is not configured yet." }, 404, cors);
+        const originError = checkWebsiteOrigin(request, business.website);
+        if (originError) return json({ error: originError }, 403, cors);
+        const system = "You are the VEXT AI Sales Agent for " + business.name + ". Your job is to help visitors understand the business and decide whether its products or services fit their needs. Be helpful, consultative, concise and never pushy. Use only the verified business information below. Never invent prices, stock, discounts, policies, availability, guarantees or delivery promises. Ask at most one useful question at a time. If information is missing, say a team member must confirm it. Do not claim a purchase or booking is complete. Do not request passwords, one-time codes or payment-card details. At the end of your response, append a compact machine-readable marker on a new line in exactly this format: [VEXT_SALES intent=low|medium|high score=0|1|2|3|4|5 next=ask_need|share_info|offer_contact|human_followup]. Choose intent and score based only on the visitor's expressed buying interest; use low/0 when unclear. Business information: " + business.instructions;
+        const rawReply = await callAI(env, system, message);
+        const marker = rawReply.match(/\n?\[VEXT_SALES intent=(low|medium|high) score=([0-5]) next=(ask_need|share_info|offer_contact|human_followup)\]\s*$/);
+        const reply = marker ? rawReply.slice(0, marker.index).trim() : rawReply;
+        const intent = marker ? marker[1] : "unknown";
+        const score = marker ? Number(marker[2]) : 0;
+        const nextAction = marker ? marker[3] : "human_followup";
+        return json({ reply, intent, score, nextAction }, 200, cors);
       }
 
       if (path === "/api/public/chat" && request.method === "POST") {
