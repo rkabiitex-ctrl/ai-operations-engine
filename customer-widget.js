@@ -50,6 +50,37 @@
   let config = { name: "Sales Assistant", greeting: "Hello! What are you looking for today?" };
   const conversation = [];
   let lastSalesAssessment = { intent: "unknown", score: 0, nextAction: "human_followup" };
+  let leadSubmitted = false;
+
+  function userTranscript() {
+    return conversation.filter(item => item.role === "user").map(item => item.content).join("\n");
+  }
+  function detectedContact() {
+    const text = userTranscript();
+    const email = (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i) || [""])[0];
+    const phone = (text.match(/(?:\+?\d[\d ().-]{7,}\d)/) || [""])[0].trim();
+    const consent = /\b(i agree to be contacted|i consent to be contacted|i agree that (?:you|your team) can contact me|please contact me|you have my permission to contact me)\b/i.test(text)
+      && !/\b(i do not agree|i don't agree|i do not consent|i don't consent)\b/i.test(text);
+    return { email, phone, consent };
+  }
+  function openLeadCapture(automatic) {
+    const contact = detectedContact();
+    if (contact.email && !leadForm.elements.email.value) leadForm.elements.email.value = contact.email;
+    if (contact.phone && !leadForm.elements.phone.value) leadForm.elements.phone.value = contact.phone;
+    if (contact.consent) leadForm.elements.consent.checked = true;
+    if (!leadForm.elements.message.value) leadForm.elements.message.value = userTranscript().slice(-1200);
+    chatForm.style.display = "none";
+    leadForm.classList.add("open");
+    if (automatic) status.textContent = "Your contact details and permission were detected. Add your name, review the enquiry and select Send enquiry to submit it securely.";
+  }
+  function updateSalesAssessment(data) {
+    const ranks = { unknown: 0, low: 1, medium: 2, high: 3 };
+    const intent = data.intent || "unknown";
+    const score = Number.isInteger(data.score) ? Math.max(0, Math.min(5, data.score)) : 0;
+    if (score >= lastSalesAssessment.score || (ranks[intent] || 0) > (ranks[lastSalesAssessment.intent] || 0)) {
+      lastSalesAssessment = { intent, score: Math.max(score, lastSalesAssessment.score), nextAction: data.nextAction || lastSalesAssessment.nextAction };
+    }
+  }
 
   function bubble(text, who) {
     const el = document.createElement("div");
@@ -64,9 +95,7 @@
   }
   launch.addEventListener("click", () => showPanel(!panel.classList.contains("open")));
   panel.querySelector(".vext-widget-close").addEventListener("click", () => showPanel(false));
-  panel.querySelector(".vext-widget-link").addEventListener("click", () => {
-    chatForm.style.display = "none"; leadForm.classList.add("open");
-  });
+  panel.querySelector(".vext-widget-link").addEventListener("click", () => openLeadCapture(false));
   panel.querySelector(".vext-widget-cancel").addEventListener("click", () => {
     leadForm.classList.remove("open"); chatForm.style.display = "flex";
   });
@@ -106,14 +135,20 @@
       if (!r.ok) throw new Error(data.error || "The assistant could not reply.");
       bubble(data.reply, "assistant");
       conversation.push({ role: "assistant", content: data.reply });
-      lastSalesAssessment = { intent: data.intent || "unknown", score: Number.isInteger(data.score) ? Math.max(0, Math.min(5, data.score)) : 0, nextAction: data.nextAction || "human_followup" };
-      status.textContent = data.intent === "high" ? "Ready to help you take the next step." : "";
+      updateSalesAssessment(data);
+      const contact = detectedContact();
+      if (contact.consent && (contact.email || contact.phone) && !leadSubmitted) {
+        openLeadCapture(true);
+      } else {
+        status.textContent = data.intent === "high" ? "Ready to help you take the next step." : "";
+      }
     } catch (e) { bubble("Sorry, I couldn't connect just now. Please try again or request a callback."); status.textContent = e.message || "Connection problem."; }
     finally { button.disabled = false; input.focus(); }
   });
 
   leadForm.addEventListener("submit", async function (event) {
     event.preventDefault();
+    if (leadSubmitted) { status.textContent = "This enquiry has already been sent."; return; }
     const values = Object.fromEntries(new FormData(leadForm).entries());
     if (!values.email.trim() && !values.phone.trim()) { status.textContent = "Please add an email address or phone number."; return; }
     const button = leadForm.querySelector('button[type="submit"]');
@@ -125,7 +160,9 @@
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "We could not save your enquiry.");
-      leadForm.reset(); leadForm.classList.remove("open"); chatForm.style.display = "flex";
+      leadSubmitted = true;
+      leadForm.classList.remove("open"); chatForm.style.display = "flex";
+      leadForm.querySelector('button[type="submit"]').disabled = true;
       status.textContent = "Thank you. Your enquiry has been sent to the business.";
     } catch (e) { status.textContent = e.message || "Connection problem."; }
     finally { button.disabled = false; }
