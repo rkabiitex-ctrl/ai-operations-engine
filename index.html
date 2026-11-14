@@ -115,6 +115,27 @@ th{color:var(--muted);font-weight:600}
 .chat-status{font-size:11px;color:var(--muted);margin-top:9px;min-height:16px}
 @media(max-width:600px){.chat-message{max-width:94%}.chat-compose{align-items:stretch;flex-direction:column}.chat-compose button{width:100%}.chat-shell{max-height:none}}
 
+.employee-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+.employee-overview>div{background:#0b1528;border:1px solid var(--line);border-radius:10px;padding:15px}
+.employee-overview strong{display:block;font-size:23px;color:var(--blue);margin-bottom:5px}
+.employee-overview span{font-size:11px;color:var(--muted)}
+.employee-section-heading{margin:25px 0 12px}
+.employee-section-heading h2{font-size:18px;margin:0 0 6px}
+.employee-section-heading p{margin:0}
+.employee-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.employee-card{background:linear-gradient(145deg,var(--panel),#101a2b);border:1px solid var(--line);border-radius:13px;padding:20px;min-width:0}
+.employee-card.employee-live{border-color:#25617a}
+.employee-card-top,.employee-card-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.employee-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:#17324a;color:var(--cyan);font-size:21px}
+.employee-state{font-size:10px;letter-spacing:1px;padding:6px 9px;border-radius:20px}
+.employee-state.live{background:#123a32;color:#86efac}
+.employee-state.planned{background:#263247;color:#b6c5d8}
+.employee-card h3{font-size:17px;margin:17px 0 8px}
+.employee-card p{line-height:1.6;min-height:58px}
+.employee-tags{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 20px}
+.employee-tags span{font-size:10px;color:#b9c9dc;background:#1a2a40;border:1px solid #2b405b;border-radius:20px;padding:5px 8px}
+.employee-card-bottom{border-top:1px solid var(--line);padding-top:15px}
+@media(max-width:760px){.employee-grid{grid-template-columns:1fr}.employee-overview{grid-template-columns:1fr 1fr}}
 .notice{padding:13px;background:#122b3c;border:1px solid #23506a;
  border-radius:9px;color:#bae6fd;font-size:12px;line-height:1.5}
 .footer{padding:25px 0;color:var(--muted);font-size:11px;text-align:center}
@@ -259,6 +280,7 @@ th{color:var(--muted);font-weight:600}
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
  <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
  <button class="nav" data-page="support">✧ &nbsp; Sales Agent</button>
+ <button class="nav" data-page="employees">♙ &nbsp; AI Employees</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
@@ -454,6 +476,62 @@ th{color:var(--muted);font-weight:600}
    </form>
   </div>
  </div>
+</section>
+
+<section class="page" id="employees">
+ <div class="card">
+  <div class="action-row" style="justify-content:space-between;align-items:flex-start">
+   <div>
+    <span class="plan-tag">VEXT AI WORKFORCE</span>
+    <h2 style="font-size:25px;margin:10px 0">Your AI team. Ready to help you grow.</h2>
+    <p class="muted small">Explore digital employees for sales, customer service, marketing and business operations. Each employee has a defined role and works under your business instructions.</p>
+   </div>
+   <span class="pill">EARLY ACCESS</span>
+  </div>
+  <div class="employee-overview">
+   <div><strong>1</strong><span>Available now</span></div>
+   <div><strong>3</strong><span>Planned employees</span></div>
+   <div><strong>24/7</strong><span>Potential coverage</span></div>
+  </div>
+ </div>
+ <div class="employee-section-heading">
+  <h2>Available employee</h2>
+  <p class="muted small">Your first VEXT AI employee is connected to the existing Sales Agent.</p>
+ </div>
+ <div class="employee-grid">
+  <article class="employee-card employee-live">
+   <div class="employee-card-top"><span class="employee-icon">↗</span><span class="employee-state live">AVAILABLE</span></div>
+   <h3>AI Sales Representative</h3>
+   <p class="muted small">Engages website visitors, answers product questions, identifies buying intent and captures customer enquiries with consent.</p>
+   <div class="employee-tags"><span>Lead capture</span><span>Product guidance</span><span>Sales pipeline</span></div>
+   <div class="employee-card-bottom"><span class="muted small">Connected to Sales Agent</span><button class="primary" id="openSalesEmployee" type="button">Manage employee</button></div>
+  </article>
+ </div>
+ <div class="employee-section-heading">
+  <h2>Coming next</h2>
+  <p class="muted small">These roles are planned. They are not active yet.</p>
+ </div>
+ <div class="employee-grid">
+  <article class="employee-card">
+   <div class="employee-card-top"><span class="employee-icon">♡</span><span class="employee-state planned">PLANNED</span></div>
+   <h3>AI Customer Support Agent</h3>
+   <p class="muted small">Handles common customer questions, explains services and routes complex issues to a human team member.</p>
+   <div class="employee-tags"><span>Customer care</span><span>FAQ responses</span><span>Escalation</span></div>
+  </article>
+  <article class="employee-card">
+   <div class="employee-card-top"><span class="employee-icon">✧</span><span class="employee-state planned">PLANNED</span></div>
+   <h3>AI Marketing Manager</h3>
+   <p class="muted small">Helps plan campaigns, draft social posts, write promotional content and organize marketing ideas for review.</p>
+   <div class="employee-tags"><span>Campaigns</span><span>Content drafts</span><span>Brand voice</span></div>
+  </article>
+  <article class="employee-card">
+   <div class="employee-card-top"><span class="employee-icon">▥</span><span class="employee-state planned">PLANNED</span></div>
+   <h3>AI Business Analyst</h3>
+   <p class="muted small">Reviews business performance, summarizes key metrics and highlights trends and opportunities from connected data.</p>
+   <div class="employee-tags"><span>Reporting</span><span>Insights</span><span>Trend analysis</span></div>
+  </article>
+ </div>
+ <div class="notice" style="margin-top:18px">Human oversight matters: AI employees should only access the business data needed for their role. Important actions and customer commitments should be reviewed by an authorized person.</div>
 </section>
 
 <section class="page" id="leads">
@@ -687,10 +765,11 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent",analytics:"Business Analytics",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent",employees:"AI Employees",analytics:"Business Analytics",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
+$( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
 
 let pricingBilling="monthly";
 document.querySelectorAll("[data-billing]").forEach(button=>button.addEventListener("click",()=>{
