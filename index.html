@@ -1430,15 +1430,39 @@ $("loadSupportLeads").addEventListener("click",loadSupportCloudLeads);
 $("importSupportLeads").addEventListener("click",()=>{
  if(!cloudSupportLeads.length){$("supportCloudStatus").textContent="Load cloud enquiries first.";return}
  const leads=read("leads");
- let created=0,updated=0,alreadyLinked=0;
- cloudSupportLeads.forEach(item=>{
+ const emailOf=x=>String(x.email||"").trim().toLowerCase();
+ const phoneOf=x=>String(x.phone||"").replace(/\\D/g,"");
+ const sameCustomer=(a,b)=>{
+  const ae=emailOf(a),be=emailOf(b),ap=phoneOf(a),bp=phoneOf(b);
+  return (!!ae&&!!be&&ae===be)||(!!ap&&!!bp&&ap===bp);
+ };
+ const uniqueHistory=entries=>{
+  const seen=new Set();
+  return entries.filter(entry=>{
+   const key=entry.cloudLeadId?"id:"+entry.cloudLeadId:"fallback:"+String(entry.receivedAt||"")+"|"+String(entry.message||"").trim().toLowerCase();
+   if(seen.has(key))return false;seen.add(key);return true;
+  }).sort((a,b)=>new Date(a.receivedAt||0)-new Date(b.receivedAt||0));
+ };
+ // Consolidate older duplicate client records without discarding notes or enquiry history.
+ let merged=0;
+ for(let i=0;i<leads.length;i++){
+  for(let j=i+1;j<leads.length;){
+   if(!sameCustomer(leads[i],leads[j])){j++;continue}
+   const keep=leads[i],duplicate=leads[j];
+   ["name","email","phone","country","interest","source","created","salesStage","nextAction"].forEach(field=>{
+    if(!keep[field]&&duplicate[field])keep[field]=duplicate[field];
+   });
+   keep.notes=[...new Set([String(keep.notes||"").trim(),String(duplicate.notes||"").trim()].filter(Boolean))].join("\n\n");
+   keep.enquiryHistory=uniqueHistory([...(Array.isArray(keep.enquiryHistory)?keep.enquiryHistory:[]),...(Array.isArray(duplicate.enquiryHistory)?duplicate.enquiryHistory:[])]);
+   leads.splice(j,1);merged++;
+  }
+ }
+ let created=0,updated=0,alreadyLinked=0,linked=0;
+ // Oldest first so the newest enquiry is the final history item.
+ [...cloudSupportLeads].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0)).forEach(item=>{
   const email=String(item.email||"").trim().toLowerCase();
-  const phone=String(item.phone||"").replace(/\D/g,"");
-  let client=leads.find(existing=>{
-   const existingEmail=String(existing.email||"").trim().toLowerCase();
-   const existingPhone=String(existing.phone||"").replace(/\D/g,"");
-   return (email&&existingEmail===email)||(phone&&existingPhone===phone);
-  });
+  const phone=String(item.phone||"").replace(/\\D/g,"");
+  let client=leads.find(existing=>sameCustomer(existing,{email,phone}));
   if(!client){
    client={id:id(),name:item.customer_name||"Website customer",email:item.email||"",phone:item.phone||"",country:"",interest:item.message||"Website enquiry",source:"VEXT AI Website Widget",created:item.created_at||new Date().toISOString(),enquiryHistory:[]};
    leads.push(client);created++;
@@ -1452,24 +1476,26 @@ $("importSupportLeads").addEventListener("click",()=>{
    if(!client.created)client.created=item.created_at||new Date().toISOString();
   }
   if(!Array.isArray(client.enquiryHistory))client.enquiryHistory=[];
-  if(item.id&&client.enquiryHistory.some(entry=>entry.cloudLeadId===item.id)){
-   alreadyLinked++;return;
-  }
+  if(item.id&&client.enquiryHistory.some(entry=>entry.cloudLeadId===item.id)){alreadyLinked++;return}
   client.enquiryHistory.push({
-   cloudLeadId:item.id||"",
-   message:item.message||"Website enquiry",
-   receivedAt:item.created_at||new Date().toISOString(),
-   intent:item.intent||"unknown",
-   leadScore:Number(item.lead_score)||0,
-   salesStage:item.status||"new",
-   nextAction:item.next_action||"",
-   consent:true
+   cloudLeadId:item.id||"",message:item.message||"Website enquiry",
+   receivedAt:item.created_at||new Date().toISOString(),intent:item.intent||"unknown",
+   leadScore:Number(item.lead_score)||0,salesStage:item.status||"new",
+   nextAction:item.next_action||"",consent:true
   });
+  linked++;
+ });
+ // Keep all historical enquiries, remove duplicates, and show the newest stage when no team stage exists.
+ leads.forEach(client=>{
+  client.enquiryHistory=uniqueHistory(Array.isArray(client.enquiryHistory)?client.enquiryHistory:[]);
+  const latest=client.enquiryHistory[client.enquiryHistory.length-1];
+  if(!client.salesStage&&latest?.salesStage)client.salesStage=latest.salesStage.charAt(0).toUpperCase()+latest.salesStage.slice(1);
+  if(!client.nextAction&&latest?.nextAction)client.nextAction=latest.nextAction;
  });
  write("leads",leads);
- log(created+" new clients created; "+updated+" existing clients updated from website enquiries.");
+ log(created+" new clients created; "+updated+" existing enquiries grouped; "+merged+" duplicate client records consolidated.");
  render();
- $("supportCloudStatus").textContent=created+" new clients created; "+updated+" existing clients updated; "+alreadyLinked+" enquiries were already linked. All imported enquiries are kept in client history.";
+ $("supportCloudStatus").textContent=merged+" duplicate client records consolidated; "+created+" new clients created; "+linked+" enquiries added; "+alreadyLinked+" already-linked enquiries skipped. All enquiry history and internal notes were preserved.";
 });
 renderSupportChat();
 $("supportLeadForm").addEventListener("submit",e=>{
