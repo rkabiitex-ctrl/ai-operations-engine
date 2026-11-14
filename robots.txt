@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rkabiitex-ctrl.github.io/ai-operations-engine/sitemap.xml
