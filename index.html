@@ -327,6 +327,32 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  .employee-overview{grid-template-columns:1fr 1fr}
 }
 
+
+/* Dashboard command-centre components */
+.dashboard-insights{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;margin:0 0 18px}
+.dashboard-card-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.dashboard-card-heading h2{margin:5px 0 0}
+.dashboard-eyebrow{font-size:9px;font-weight:850;letter-spacing:1.6px;color:#78cfe8}
+.dashboard-live-dot{font-size:10px;color:#9bb1c8}
+.dashboard-live-dot:first-letter{color:#4ade80}
+.snapshot-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.snapshot-metrics>div{padding:16px;border-radius:12px;background:#0b182a;border:1px solid rgba(123,157,190,.15)}
+.snapshot-metrics span{display:block;font-size:11px;color:#91a7c0;margin-bottom:8px}
+.snapshot-metrics strong{font-size:clamp(19px,2vw,25px);letter-spacing:-.6px}
+.snapshot-progress{height:7px;background:#263750;border-radius:20px;overflow:hidden;margin:18px 0 9px}
+.snapshot-progress span{display:block;height:100%;background:linear-gradient(90deg,#38bdf8,#22d3ee);border-radius:20px}
+.snapshot-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#b4c4d6;font-size:10px}
+.snapshot-note{margin:13px 0 0}
+.dashboard-recent-list{display:flex;flex-direction:column}
+.dashboard-client-row{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid rgba(123,157,190,.13);min-width:0}
+.dashboard-client-row:last-child{border-bottom:0}
+.dashboard-client-avatar{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:rgba(56,189,248,.13);border:1px solid rgba(56,189,248,.2);color:#9de8fa;font-size:13px;font-weight:800}
+.dashboard-client-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.dashboard-client-info strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-client-info span{font-size:10px;color:#91a7c0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-client-date{font-size:10px;color:#8299b2;white-space:nowrap}
+@media(max-width:900px){.dashboard-insights{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -457,6 +483,16 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
    <div class="stat-foot">Marked as paid</div>
   </div>
  </div>
+ <div class="dashboard-insights">
+  <div class="card">
+   <div class="dashboard-card-heading"><div><span class="dashboard-eyebrow">BUSINESS OVERVIEW</span><h2>Sales snapshot</h2></div><span class="dashboard-live-dot">● Live workspace data</span></div>
+   <div id="dashboardSalesSnapshot" class="dashboard-snapshot"></div>
+  </div>
+  <div class="card">
+   <div class="dashboard-card-heading"><div><span class="dashboard-eyebrow">CUSTOMER RELATIONSHIPS</span><h2>Recently added clients</h2></div><button class="secondary" onclick="navigate('leads')">View clients</button></div>
+   <div id="dashboardRecentClients" class="dashboard-recent-list"></div>
+  </div>
+ </div>
  <div class="grid">
   <div class="card">
    <h2>Welcome to VEXT AI</h2>
@@ -469,7 +505,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
    <hr style="border-color:var(--line);margin:25px 0">
    <h3>Platform capabilities</h3>
    <p class="muted small">Customer records, invoices, business documents and analytics.</p>
-   <div class="notice">Your workspace records are stored in this browser and separated by signed-in account. Cloud sync across devices is not yet enabled.</div>
+   <div class="notice">Your signed-in workspace syncs supported business records to your account. Some prototype features may still store information locally.</div>
   </div>
   <div class="card">
    <h2>Recent activity</h2>
@@ -1034,6 +1070,27 @@ function renderAnalytics(){
  <div class="bar"><span style="width:${rate}%"></span></div>
  <p class="muted small">Totals above combine original invoice amounts and may contain different currencies. They are not a converted financial total.</p>`;
 }
+function renderDashboardOverview(leads,inv,code){
+ const currencyInvoices=inv.filter(x=>x.currency===code);
+ const paid=currencyInvoices.filter(x=>x.status==="Paid");
+ const outstanding=currencyInvoices.filter(x=>x.status!=="Paid").reduce((sum,x)=>sum+Number(x.amount||0),0);
+ const paidRate=currencyInvoices.length?Math.round(paid.length/currencyInvoices.length*100):0;
+ $("dashboardSalesSnapshot").innerHTML=`
+  <div class="snapshot-metrics">
+   <div><span>Outstanding</span><strong>${formatMoney(outstanding,code)}</strong></div>
+   <div><span>Payment rate</span><strong>${paidRate}%</strong></div>
+  </div>
+  <div class="snapshot-progress"><div><span style="width:${paidRate}%"></span></div></div>
+  <div class="snapshot-foot"><span>${paid.length} paid</span><span>${currencyInvoices.length-paid.length} unpaid</span><span>Currency: ${esc(code)}</span></div>
+  <p class="muted small snapshot-note">Invoice figures include only ${esc(code)} invoices to avoid mixing currencies.</p>`;
+ const recent=[...leads].sort((a,b)=>new Date(b.created||0)-new Date(a.created||0)).slice(0,4);
+ $("dashboardRecentClients").innerHTML=recent.length?recent.map(x=>`
+  <div class="dashboard-client-row">
+   <div class="dashboard-client-avatar">${esc((x.name||"?").trim().charAt(0).toUpperCase())}</div>
+   <div class="dashboard-client-info"><strong>${esc(x.name||"Unnamed client")}</strong><span>${esc(x.interest||x.email||x.phone||"Client record")}</span></div>
+   <span class="dashboard-client-date">${x.created?esc(new Date(x.created).toLocaleDateString()):"Saved"}</span>
+  </div>`).join(""):'<div class="empty">Your new clients will appear here.</div>';
+}
 function render(){
  const leads=read("leads"),inv=read("invoices"),code=currentCurrency();
  $("statLeads").textContent=leads.length;
@@ -1041,6 +1098,7 @@ function render(){
  $("statPaid").textContent=inv.filter(x=>x.status==="Paid").length;
  const sameCurrency=inv.filter(x=>x.currency===code).reduce((s,x)=>s+Number(x.amount),0);
  $("statRevenue").textContent=formatMoney(sameCurrency,code);
+ renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
 }
 $("currency").value=read("currency","USD");
