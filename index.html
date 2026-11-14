@@ -1086,10 +1086,10 @@ $("importSupportLeads").addEventListener("click",()=>{
  let created=0,updated=0,alreadyLinked=0;
  cloudSupportLeads.forEach(item=>{
   const email=String(item.email||"").trim().toLowerCase();
-  const phone=String(item.phone||"").replace(/\\D/g,"");
+  const phone=String(item.phone||"").replace(/\D/g,"");
   let client=leads.find(existing=>{
    const existingEmail=String(existing.email||"").trim().toLowerCase();
-   const existingPhone=String(existing.phone||"").replace(/\\D/g,"");
+   const existingPhone=String(existing.phone||"").replace(/\D/g,"");
    return (email&&existingEmail===email)||(phone&&existingPhone===phone);
   });
   if(!client){
