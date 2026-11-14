@@ -1431,7 +1431,7 @@ $("importSupportLeads").addEventListener("click",()=>{
  if(!cloudSupportLeads.length){$("supportCloudStatus").textContent="Load cloud enquiries first.";return}
  const leads=read("leads");
  const emailOf=x=>String(x.email||"").trim().toLowerCase();
- const phoneOf=x=>String(x.phone||"").replace(/\\D/g,"");
+ const phoneOf=x=>String(x.phone||"").replace(/\D/g,"");
  const sameCustomer=(a,b)=>{
   const ae=emailOf(a),be=emailOf(b),ap=phoneOf(a),bp=phoneOf(b);
   return (!!ae&&!!be&&ae===be)||(!!ap&&!!bp&&ap===bp);
@@ -1461,7 +1461,7 @@ $("importSupportLeads").addEventListener("click",()=>{
  // Oldest first so the newest enquiry is the final history item.
  [...cloudSupportLeads].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0)).forEach(item=>{
   const email=String(item.email||"").trim().toLowerCase();
-  const phone=String(item.phone||"").replace(/\\D/g,"");
+  const phone=String(item.phone||"").replace(/\D/g,"");
   let client=leads.find(existing=>sameCustomer(existing,{email,phone}));
   if(!client){
    client={id:id(),name:item.customer_name||"Website customer",email:item.email||"",phone:item.phone||"",country:"",interest:item.message||"Website enquiry",source:"VEXT AI Website Widget",created:item.created_at||new Date().toISOString(),enquiryHistory:[]};
