@@ -485,6 +485,17 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .invoice-edit-modal[hidden]{display:none!important}.invoice-edit-dialog{width:min(680px,100%);max-height:90vh;overflow:auto;padding:25px;border:1px solid #34516d;border-radius:17px;background:linear-gradient(150deg,#14243a,#0b1528);box-shadow:0 25px 90px rgba(0,0,0,.45)}
 .invoice-edit-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:20px}.invoice-edit-heading h3{font-size:22px;margin:7px 0}.invoice-edit-heading p{margin:0}.invoice-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.invoice-edit-dialog .field{margin-bottom:13px}.invoice-edit-dialog .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.invoice-edit-dialog .action-row{margin-top:12px}
 @media(max-width:560px){.invoice-edit-dialog{padding:17px}.invoice-edit-grid{grid-template-columns:1fr}}
+
+/* AI Auditor — executive oversight interface */
+#audit{max-width:1240px;margin:0 auto}
+.audit-hero{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:30px 32px;margin-bottom:18px;border:1px solid #294760;border-radius:18px;background:radial-gradient(circle at 80% 15%,rgba(56,189,248,.17),transparent 30%),linear-gradient(115deg,#142a43,#0a1729 75%);box-shadow:0 14px 36px rgba(0,0,0,.16)}
+.audit-hero h2{font-size:clamp(25px,3vw,34px);letter-spacing:-1px;margin:8px 0}.audit-hero p{max-width:650px;margin:0;color:#a9bed2;font-size:13px;line-height:1.7}
+.audit-hero-side{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}.audit-status-dot{font-size:9px;letter-spacing:1px;font-weight:800;color:#86efac}.audit-hero-mark{width:62px;height:62px;display:grid;place-items:center;border:1px solid #31617c;border-radius:17px;background:#103149;color:#7dd3fc;font-size:32px}
+.audit-kpis{gap:13px;margin-bottom:18px}.audit-kpi{position:relative;overflow:hidden;padding:19px;border:1px solid #263e58;border-radius:14px;background:linear-gradient(150deg,#14263d,#0c192b);min-width:0}.audit-kpi:after{content:"";position:absolute;inset:auto -22px -40px auto;width:100px;height:100px;border-radius:50%;background:rgba(56,189,248,.045)}.audit-kpi .stat-title{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9bb0c6}.audit-kpi .stat-number{font-size:29px;margin:13px 0 7px}.audit-kpi .stat-foot{font-size:10px;color:#829bb4}
+.audit-panel{margin-top:0!important;padding:23px;border:1px solid #263d56;border-radius:16px;background:linear-gradient(155deg,#111f33,#0b1627);box-shadow:0 10px 28px rgba(0,0,0,.12)}.audit-run-panel{margin-bottom:16px!important}.audit-panel-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-bottom:17px;margin-bottom:17px;border-bottom:1px solid #263a52}.audit-panel-heading h2{font-size:19px;margin:6px 0}.audit-panel-heading p{margin:0;line-height:1.6}.audit-panel-heading .primary{white-space:nowrap;min-height:42px;padding:0 20px}
+.audit-checks-wrap{padding:15px;border:1px solid #263e58;border-radius:12px;background:#0b1728}.audit-section-label{font-size:9px;letter-spacing:1.4px;font-weight:800;color:#7dd3fc;margin-bottom:11px}#auditChecks{margin-top:0!important;background:transparent;border:0;padding:0;color:#c8d7e7}.audit-result{margin-top:15px!important;padding:0 2px}.audit-history-list{min-height:60px}.audit-report-row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:15px 2px!important;border-bottom:1px solid #263a52!important}.audit-report-row:last-child{border-bottom:0!important}.audit-report-date{margin-top:4px}.audit-disclaimer{margin-top:16px!important;padding:16px 18px;border-color:#66502b;background:#241f17;color:#e8d6b4;line-height:1.7}.audit-disclaimer strong{display:block;color:#f6d99d;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px}
+@media(max-width:760px){.audit-hero{align-items:flex-start;flex-direction:column;padding:22px}.audit-hero-side{justify-content:flex-start}.audit-panel{padding:17px}.audit-panel-heading{align-items:flex-start;flex-direction:column}.audit-panel-heading .primary{width:100%}.audit-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.audit-hero-side{gap:8px}.audit-hero-mark{width:48px;height:48px}.audit-kpi{padding:14px}.audit-kpi .stat-number{font-size:23px}.audit-report-row{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -825,27 +836,27 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="audit">
- <div class="crm-heading">
+ <div class="audit-hero">
   <div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / FINANCIAL OVERSIGHT</span><h2>AI Audit Centre</h2><p class="muted small">Review recorded invoices, identify data-quality issues and generate a report for human review.</p></div>
-  <span class="pill">AUDITOR BETA</span>
+  <div class="audit-hero-side"><span class="audit-status-dot">● SYSTEM READY</span><span class="pill">AI AUDITOR · BETA</span><div class="audit-hero-mark">⌕</div></div>
  </div>
- <div class="stats">
-  <div class="card"><div class="stat-title">Recorded invoices</div><div class="stat-number" id="auditInvoiceCount">0</div><div class="stat-foot">Available for review</div></div>
+ <div class="stats audit-kpis">
+  <div class="card audit-kpi"><div class="stat-title">Recorded invoices</div><div class="stat-number" id="auditInvoiceCount">0</div><div class="stat-foot">Available for review</div></div>
   <div class="card"><div class="stat-title">Unpaid invoices</div><div class="stat-number" id="auditUnpaidCount">0</div><div class="stat-foot">Marked unpaid in VEXT</div></div>
   <div class="card"><div class="stat-title">Recorded clients</div><div class="stat-number" id="auditClientCount">0</div><div class="stat-foot">Client records only</div></div>
   <div class="card"><div class="stat-title">Potential data issues</div><div class="stat-number" id="auditIssueCount">0</div><div class="stat-foot">Rule-based checks · not fraud findings</div></div>
  </div>
- <div class="card" style="margin-top:16px">
-  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">AUDIT REVIEW</span><h2>Run a business records review</h2><p class="muted small">VEXT AI checks duplicate invoice numbers, missing invoice fields, invalid amounts and payment-record inconsistencies.</p></div><button class="primary" id="runAudit" type="button">Run AI audit</button></div>
-  <div id="auditChecks" class="notice">Preparing your saved records…</div>
+ <div class="card audit-panel audit-run-panel">
+  <div class="audit-panel-heading"><div><span class="dashboard-eyebrow">CONTROL TESTING</span><h2>Run a business records review</h2><p class="muted small">VEXT AI checks duplicate invoice numbers, missing invoice fields, invalid amounts and payment-record inconsistencies.</p></div><button class="primary" id="runAudit" type="button">Run AI audit</button></div>
+  <div class="audit-checks-wrap"><div class="audit-section-label">AUTOMATED RECORD CHECKS</div><div id="auditChecks" class="notice">Preparing your saved records…</div></div>
   <p id="auditStatus" class="chat-status" role="status" aria-live="polite"></p>
-  <div id="auditResult" style="margin-top:16px"></div>
+  <div id="auditResult" class="audit-result"></div>
  </div>
- <div class="card" style="margin-top:16px">
-  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">AUDIT HISTORY</span><h2>Saved reports</h2><p class="muted small">Reports are saved to your VEXT workspace.</p></div></div>
-  <div id="auditReportHistory"><div class="empty">No audit reports yet.</div></div>
+ <div class="card audit-panel audit-history-panel">
+  <div class="audit-panel-heading"><div><span class="dashboard-eyebrow">REPORT ARCHIVE</span><h2>Saved reports</h2><p class="muted small">Reports are saved to your VEXT workspace.</p></div></div>
+  <div id="auditReportHistory" class="audit-history-list"><div class="empty">No audit reports yet.</div></div>
  </div>
- <div class="notice" style="margin-top:16px">Important: this is a preliminary records review, not a statutory, forensic or independent financial audit. VEXT AI cannot verify cash, bank statements, receipts or transactions that have not been entered. Review every finding before taking action.</div>
+ <div class="notice audit-disclaimer"><strong>Scope & limitations</strong><br>Important: this is a preliminary records review, not a statutory, forensic or independent financial audit. VEXT AI cannot verify cash, bank statements, receipts or transactions that have not been entered. Review every finding before taking action.</div>
 </section>
 
 <section class="page" id="leads">
