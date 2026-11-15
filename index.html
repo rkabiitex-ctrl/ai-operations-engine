@@ -761,8 +761,8 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <div class="employee-hero-mark" aria-hidden="true">✧</div>
  </div>
  <div class="employee-overview">
-  <div><strong>2</strong><span>Available employees</span></div>
-  <div><strong>3</strong><span>In development</span></div>
+  <div><strong>3</strong><span>Available employees</span></div>
+  <div><strong>2</strong><span>In development</span></div>
   <div><strong>5</strong><span>Defined team roles</span></div>
  </div>
  <div class="employee-section-heading">
@@ -806,12 +806,13 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
    <p class="muted small">Designed to help plan campaigns, draft social content and organize promotional ideas for approval.</p>
    <div class="employee-tags"><span>Campaign planning</span><span>Content drafts</span><span>Brand voice</span></div>
   </article>
-  <article class="employee-card">
-   <div class="employee-card-top"><span class="employee-icon">▥</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
+  <article class="employee-card employee-live">
+   <div class="employee-card-top"><span class="employee-icon">▥</span><span class="employee-state live">AVAILABLE · BETA</span></div>
    <div class="employee-role">BUSINESS INTELLIGENCE</div>
    <h3>AI Business Analyst</h3>
-   <p class="muted small">Designed to summarize connected business metrics, highlight trends and help identify areas that may need attention.</p>
-   <div class="employee-tags"><span>Performance insights</span><span>Trend summaries</span><span>Reporting</span></div>
+   <p class="muted small">Analyses saved business metrics, identifies performance signals and prepares practical recommendations for your review.</p>
+   <div class="employee-tags"><span>Performance insights</span><span>Sales trends</span><span>Action plan</span></div>
+   <div class="employee-card-bottom"><span class="muted small">Uses VEXT workspace records</span><button class="primary" id="openBusinessAnalyst" type="button">Open Business Analyst →</button></div>
   </article>
  </div>
  <div class="employee-oversight"><span class="employee-oversight-icon">盾</span><div><strong>Human oversight stays in control</strong><p>AI employees assist with defined tasks. Review important outputs and decisions before acting. Availability labels describe the current VEXT AI build—not guaranteed 24/7 service or autonomous work.</p></div></div>
@@ -925,6 +926,12 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <div><span class="ai-eyebrow">BUSINESS INTELLIGENCE</span><h2>Business performance</h2><p>Understand your sales, customers and collections from the records in your VEXT workspace.</p></div>
   <div class="analytics-hero-controls"><label for="analyticsRange">REPORTING PERIOD</label><select id="analyticsRange"><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option><option value="all">All time</option></select><span id="analyticsCurrencyLabel">Currency: USD</span></div>
  </div>
+ <section class="card analyst-panel">
+  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / BUSINESS INTELLIGENCE</span><h2>AI Business Analyst</h2><p class="muted small">Generate an evidence-based management briefing from your saved VEXT records and selected reporting period.</p></div><button class="primary" id="runBusinessAnalysis" type="button">Generate business analysis</button></div>
+  <div class="notice">Your report uses business totals, invoice status, dates and sales-stage counts. Customer contact details, private notes and enquiry message contents are not sent. Review recommendations before acting.</div>
+  <p id="analystStatus" class="chat-status" role="status" aria-live="polite"></p>
+  <div id="analystResult" style="margin-top:16px"></div>
+ </section>
  <div id="analyticsContent"></div>
 </section>
 
@@ -1151,6 +1158,7 @@ document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navi
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
 
 $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
+$("openBusinessAnalyst").addEventListener("click",()=>{navigate("analytics");$("analystResult").innerHTML="";$("analystStatus").textContent="Choose a reporting period, then generate your business analysis.";});
 function auditRuleChecks(){
  const invoices=read("invoices"),clients=read("leads"),issues=[];
  const seen=new Set();
@@ -1662,7 +1670,49 @@ function render(){
  renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
 }
-$("analyticsRange").addEventListener("change",renderAnalytics);
+$("analyticsRange").addEventListener("change",()=>{renderAnalytics();$("analystResult").innerHTML="";$("analystStatus").textContent="Reporting period changed. Generate a fresh analysis to use the updated period.";});
+$("runBusinessAnalysis").addEventListener("click",async()=>{
+ const button=$("runBusinessAnalysis"),status=$("analystStatus"),result=$("analystResult");
+ const code=currentCurrency(),range=$("analyticsRange").value,now=new Date();
+ const cutoff=new Date(now);if(range!=="all")cutoff.setDate(cutoff.getDate()-Number(range));
+ const inPeriod=value=>{if(!value)return false;const d=new Date(value);return !Number.isNaN(d.getTime())&&(range==="all"||d>=cutoff)&&d<=now;};
+ const allInvoices=read("invoices"),allClients=read("leads");
+ const invoices=allInvoices.filter(x=>x.currency===code&&inPeriod(x.date));
+ const paid=invoices.filter(x=>x.status==="Paid"),unpaid=invoices.filter(x=>x.status!=="Paid");
+ const today=now.toISOString().slice(0,10);
+ const overdue=unpaid.filter(x=>x.dueDate&&x.dueDate<today);
+ const total=invoices.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ const collected=paid.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
+ const stageCounts=stages.map(stage=>({stage,count:allClients.filter(x=>(x.salesStage||x.salesStatus||x.status||"New")===stage).length}));
+ const currencies=[...new Set(allInvoices.map(x=>String(x.currency||"").trim()).filter(Boolean))];
+ const invoiceByMonth={};
+ invoices.forEach(x=>{const d=new Date(x.date);if(Number.isNaN(d.getTime()))return;const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");invoiceByMonth[key]=(invoiceByMonth[key]||0)+(Number(x.amount)||0);});
+ const input={
+  reportingPeriod:range==="all"?"All recorded dates":"Last "+range+" days",
+  selectedCurrency:code,
+  totals:{clientRecords:allClients.length,newClientsInPeriod:allClients.filter(x=>inPeriod(x.created)).length,invoicesInPeriod:invoices.length,invoiced:total,markedPaidValue:collected,recordedOutstandingValue:total-collected,paidInvoiceCount:paid.length,unpaidInvoiceCount:unpaid.length,overdueInvoiceCount:overdue.length},
+  salesPipeline:stageCounts,
+  monthlyInvoiceTotals:invoiceByMonth,
+  overdueInvoices:overdue.slice(0,30).map(x=>({invoiceNumber:x.number||"Not recorded",amount:Number(x.amount)||0,currency:x.currency,dueDate:x.dueDate||"Not recorded"})),
+  currenciesPresent:currencies,
+  dataNotes:["Only invoices in the selected currency and reporting period are included in financial totals.","Different currencies must never be added or converted; no exchange rates are available.","Payment status reflects what users marked in VEXT AI and is not independently verified.","Sales stages reflect saved client profile fields and may default to New.","Client contact details, private notes and enquiry text are intentionally excluded."]
+ };
+ button.disabled=true;button.textContent="Analysing records…";status.textContent="Preparing a secure, limited business summary for VEXT AI…";result.innerHTML="";
+ try{
+  const prompt="You are the VEXT AI Business Analyst. Prepare a concise, professional management briefing using only the structured data provided. Structure it as: Executive snapshot; What the numbers indicate; Sales pipeline observations; Risks and items to check; Recommended next actions (prioritised). Include exact supplied figures where useful. Do not invent benchmarks, causes, forecasts, customer identities or missing facts. Distinguish observations from hypotheses. Never combine currencies or calculate exchange conversions. Explain that paid status is user-recorded, not independently bank-verified. Do not call invoice totals accounting revenue or profit. If there is little data, clearly say that and recommend what records to add. Do not request or expose personal customer information. Keep recommendations practical for a small business. Data: "+JSON.stringify(input);
+  const token=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message:prompt,history:[]})});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.error||("Analysis request failed ("+response.status+")"));
+  const report=typeof payload.reply==="string"?payload.reply:(typeof payload.output_text==="string"?payload.output_text:"");
+  if(!report)throw new Error("The AI service returned an empty analysis.");
+  result.innerHTML='<h3>Business intelligence briefing</h3><div class="audit-report-date">Generated '+esc(new Date().toLocaleString())+' · '+esc(input.reportingPeriod)+' · '+esc(code)+'</div><div>'+formatAuditReport(report)+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
+  $("copyAnalystReport").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(report);status.textContent="Report copied to clipboard.";}catch{status.textContent="Clipboard access was blocked. Select the report text and copy it manually.";}});
+  status.textContent="Analysis complete. Review the findings before making business decisions.";
+ }catch(error){status.textContent="Could not generate the analysis: "+(error.message||"Please try again.");}
+ finally{button.disabled=false;button.textContent="Generate business analysis";}
+});
 $("currency").value=read("currency","USD");
 $("currency").addEventListener("change",()=>{
  write("currency",currentCurrency());render();
