@@ -1449,7 +1449,13 @@ function renderActivity(){
  `<div class="activity">${esc(x.message)}<small>${esc(x.time)}</small></div>`
  ).join(""):'<div class="empty">No activity recorded yet.</div>';
 }
-function crmInterestSummary(client){
+function getClientSalesStage(client){
+  const history=Array.isArray(client.enquiryHistory)?client.enquiryHistory:[];
+  const raw=client.salesStage||history.at(-1)?.salesStage||client.salesStatus||client.status||"New";
+  const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
+  return stages.find(stage=>stage.toLowerCase()===String(raw).trim().toLowerCase())||"New";
+ }
+ function crmInterestSummary(client){
  const raw=String(client.interest||client.enquiryHistory?.at(-1)?.message||"No interest recorded").trim();
  if(!raw)return "No interest recorded";
  // Keep the directory scannable while leaving the complete original enquiry in the profile.
@@ -1458,7 +1464,7 @@ function crmInterestSummary(client){
  return summary.replace(/\\s+/g," ");
 }
 function crmFollowupState(client){
- const stage=client.salesStage||client.enquiryHistory?.at(-1)?.salesStage||"New";
+ const stage=getClientSalesStage(client);
  if(["Won","Lost"].includes(stage))return "complete";
  const date=String(client.nextFollowUpDate||"").trim();
  if(!date)return "unscheduled";
@@ -1509,7 +1515,7 @@ function renderLeads(){
  $("crmDirectoryCount").textContent=filtered.length+" record"+(filtered.length===1?"":"s");
  $("leadTable").innerHTML=filtered.length?
  `<table><thead><tr><th>Customer</th><th>Contact</th><th>Sales status</th><th>Follow-up</th><th>Profile</th></tr></thead><tbody>
- ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;const stage=x.salesStage||x.enquiryHistory?.at(-1)?.salesStage||"New";const state=crmFollowupState(x);return `<tr>
+ ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;const stage=getClientSalesStage(x);const state=crmFollowupState(x);return `<tr>
  <td><strong>${esc(x.name||"Unnamed client")}</strong><br><small>${esc(crmInterestSummary(x))}</small>${historyCount?`<br><small>${historyCount} website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
  <td>${esc(x.email||x.phone||"—")}</td><td><span class="pill">${esc(stage)}</span></td>
  <td><span class="crm-followup-tag ${state}">${esc(crmFollowupLabel(x))}</span></td>
@@ -1525,7 +1531,7 @@ function renderClientProfile(clientId){
  const history=Array.isArray(client.enquiryHistory)?client.enquiryHistory:[];
  const activityLog=Array.isArray(client.activityLog)?client.activityLog:[];
  const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
- const currentStage=client.salesStage||history.at(-1)?.salesStage||"New";
+ const currentStage=getClientSalesStage(client);
  $("clientProfileContent").innerHTML=`
   <div class="crm-profile-head"><div><span class="dashboard-eyebrow">CUSTOMER PROFILE</span><h2>${esc(client.name||"Unnamed client")}</h2><p class="muted small">${esc(client.interest||"No business interest recorded")}</p></div><button class="secondary" id="closeClientProfile" type="button">Close profile</button></div>
   <div class="crm-profile-grid">
@@ -1610,7 +1616,7 @@ function renderAnalytics(){
  const max=Math.max(1,...buckets.map(x=>x.value));
  const chart=buckets.map(b=>'<div class="analytics-bar-group"><span class="analytics-bar-value">'+(b.value?esc(formatMoney(b.value,code)):"—")+'</span><div class="analytics-bar" style="height:'+Math.max(2,Math.round(b.value/max*100))+'%"></div><span class="analytics-bar-label">'+esc(b.label)+'</span></div>').join("");
  const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
- const stageCounts=stages.map(stage=>({stage,count:leads.filter(x=>(x.salesStatus||x.status||"New")===stage).length}));
+ const stageCounts=stages.map(stage=>({stage,count:leads.filter(x=>getClientSalesStage(x)===stage).length}));
  const stageMax=Math.max(1,...stageCounts.map(x=>x.count));
  const signals=[];
  if(due.length)signals.push({title:due.length+" overdue invoice"+(due.length===1?"":"s"),body:"Review overdue "+code+" invoices and agree the next collection action."});
@@ -1719,7 +1725,7 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
   previous:{invoiced:previousInvoiced,collected:previousCollected,outstanding:previousInvoiced-previousCollected,invoices:previousInvoices.length,newClients:allClients.filter(x=>inPreviousPeriod(x.created)).length}
  }:null;
  const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
- const stageCounts=stages.map(stage=>({stage,count:allClients.filter(x=>(x.salesStage||x.salesStatus||x.status||"New")===stage).length}));
+ const stageCounts=stages.map(stage=>({stage,count:allClients.filter(x=>getClientSalesStage(x)===stage).length}));
  const currencies=[...new Set(allInvoices.map(x=>String(x.currency||"").trim()).filter(Boolean))];
  const invoiceByMonth={};
  invoices.forEach(x=>{const d=new Date(x.date);if(Number.isNaN(d.getTime()))return;const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");invoiceByMonth[key]=(invoiceByMonth[key]||0)+(Number(x.amount)||0);});
