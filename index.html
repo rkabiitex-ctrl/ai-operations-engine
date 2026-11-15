@@ -480,7 +480,12 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .employee-oversight-icon{font-size:20px;color:var(--cyan)}
 .employee-oversight strong{font-size:13px}.employee-oversight p{font-size:12px;line-height:1.6;color:var(--muted);margin:5px 0 0}
 @media(max-width:760px){.employee-hero{padding:22px 18px}.employee-hero-mark{flex-basis:54px;width:54px;height:54px;font-size:28px}.employee-hero h2{font-size:23px}.employee-section-heading{align-items:flex-start;flex-direction:column}.employee-card p{min-height:0}}
-.analyst-history-wrap{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.analyst-history-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.analyst-history-heading h3{margin:0 0 5px}.analyst-history-list{display:grid;gap:8px}.analyst-history-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:#0b1528;color:var(--white);text-align:left}.analyst-history-item:hover{border-color:var(--blue);background:#10233a}.analyst-history-item strong,.analyst-history-item small{display:block}.analyst-history-item strong{font-size:12px}.analyst-history-item small{font-size:10px;color:var(--muted);margin-top:5px}.analyst-history-item b{font-size:11px;color:var(--cyan);white-space:nowrap}@media(max-width:520px){.analyst-history-item{align-items:flex-start;flex-direction:column}}</style>
+.analyst-history-wrap{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.analyst-history-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.analyst-history-heading h3{margin:0 0 5px}.analyst-history-list{display:grid;gap:8px}.analyst-history-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:#0b1528;color:var(--white);text-align:left}.analyst-history-item:hover{border-color:var(--blue);background:#10233a}.analyst-history-item strong,.analyst-history-item small{display:block}.analyst-history-item strong{font-size:12px}.analyst-history-item small{font-size:10px;color:var(--muted);margin-top:5px}.analyst-history-item b{font-size:11px;color:var(--cyan);white-space:nowrap}@media(max-width:520px){.analyst-history-item{align-items:flex-start;flex-direction:column}}
+.invoice-edit-modal{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,8,20,.78);backdrop-filter:blur(7px)}
+.invoice-edit-modal[hidden]{display:none!important}.invoice-edit-dialog{width:min(680px,100%);max-height:90vh;overflow:auto;padding:25px;border:1px solid #34516d;border-radius:17px;background:linear-gradient(150deg,#14243a,#0b1528);box-shadow:0 25px 90px rgba(0,0,0,.45)}
+.invoice-edit-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:20px}.invoice-edit-heading h3{font-size:22px;margin:7px 0}.invoice-edit-heading p{margin:0}.invoice-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.invoice-edit-dialog .field{margin-bottom:13px}.invoice-edit-dialog .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.invoice-edit-dialog .action-row{margin-top:12px}
+@media(max-width:560px){.invoice-edit-dialog{padding:17px}.invoice-edit-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
@@ -920,6 +925,23 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <div class="invoice-tools"><input id="invoiceSearch" type="search" placeholder="Search invoice number or customer..." aria-label="Search invoices"><select id="invoiceStatusFilter" aria-label="Filter invoices"><option value="all">All statuses</option><option value="Unpaid">Unpaid</option><option value="Paid">Paid</option><option value="Overdue">Overdue</option></select></div>
   <div class="table-wrap" id="invoiceTable"></div>
  </section>
+
+ <div class="invoice-edit-modal" id="invoiceEditModal" hidden>
+  <form class="invoice-edit-dialog" id="invoiceEditForm">
+   <div class="invoice-edit-heading"><div><span class="ai-eyebrow">RECORD MAINTENANCE</span><h3>Edit invoice</h3><p class="muted small">Update the saved invoice details. Payment status is managed separately.</p></div><button class="secondary" type="button" id="closeInvoiceEdit" aria-label="Close editor">✕</button></div>
+   <input type="hidden" id="editInvoiceId">
+   <div class="invoice-edit-grid">
+    <div class="field"><label for="editInvoiceClient">Customer</label><input id="editInvoiceClient" required maxlength="100"></div>
+    <div class="field"><label for="editInvoiceDescription">Description</label><input id="editInvoiceDescription" required maxlength="300"></div>
+    <div class="field"><label for="editInvoiceIssueDate">Issue date</label><input id="editInvoiceIssueDate" type="date" required></div>
+    <div class="field"><label for="editInvoiceDueDate">Due date</label><input id="editInvoiceDueDate" type="date" required></div>
+    <div class="field"><label for="editInvoiceAmount">Amount</label><input id="editInvoiceAmount" type="number" min="0.01" step="0.01" required></div>
+    <div class="field"><label for="editInvoiceCurrency">Currency</label><select id="editInvoiceCurrency" required></select></div>
+   </div>
+   <p class="muted small" id="invoiceEditStatus" role="status"></p>
+   <div class="action-row"><button class="primary" type="submit">Save invoice changes</button><button class="secondary" type="button" id="cancelInvoiceEdit">Cancel</button></div>
+  </form>
+ </div>
 </section>
 
 <section class="page" id="analytics">
@@ -1597,7 +1619,7 @@ function renderInvoices(){
  <td class="invoice-date-cell">${x.dueDate?esc(new Date(x.dueDate+"T00:00:00").toLocaleDateString()):'<span class="muted">Not set</span>'}${overdue?'<div class="invoice-overdue-note">Past due</div>':""}</td>
  <td><strong>${formatMoney(x.amount,x.currency)}</strong></td>
  <td><span class="invoice-status ${overdue?"overdue":status==="Paid"?"paid":"unpaid"}">${status}</span></td>
- <td><div class="invoice-actions"><button class="secondary" data-print="${esc(x.id)}">Print</button><button class="secondary" data-paid="${esc(x.id)}">${x.status==="Paid"?"Mark unpaid":"Mark paid"}</button><button class="danger" data-delete-invoice="${esc(x.id)}">Delete</button></div></td></tr>`}).join("")}
+ <td><div class="invoice-actions"><button class="secondary" data-edit-invoice="${esc(x.id)}">Edit</button><button class="secondary" data-print="${esc(x.id)}">Print</button><button class="secondary" data-paid="${esc(x.id)}">${x.status==="Paid"?"Mark unpaid":"Mark paid"}</button><button class="danger" data-delete-invoice="${esc(x.id)}">Delete</button></div></td></tr>`}).join("")}
  </tbody></table>`:'<div class="empty">No invoices match this view. Create an invoice or adjust your search and filters.</div>';
 }
 function renderAnalytics(){
@@ -1883,6 +1905,14 @@ $("invoiceForm").addEventListener("submit",e=>{
  log("Invoice "+number+" created.");render();
 });
 $("invoiceTable").addEventListener("click",e=>{
+ const edit=e.target.closest("[data-edit-invoice]");
+ if(edit){
+  const invoice=read("invoices").find(v=>v.id===edit.dataset.editInvoice);if(!invoice)return;
+  $("editInvoiceId").value=invoice.id;$("editInvoiceClient").value=invoice.client||"";$("editInvoiceDescription").value=invoice.description||"";
+  $("editInvoiceIssueDate").value=invoice.date?new Date(invoice.date).toISOString().slice(0,10):"";
+  $("editInvoiceDueDate").value=invoice.dueDate||"";$("editInvoiceAmount").value=Number(invoice.amount||0);$("editInvoiceCurrency").value=invoice.currency||currentCurrency();
+  $("invoiceEditStatus").textContent="";$("invoiceEditModal").hidden=false;$("editInvoiceClient").focus();return;
+ }
  const paid=e.target.closest("[data-paid]");
  const del=e.target.closest("[data-delete-invoice]");
  const print=e.target.closest("[data-print]");
@@ -1914,8 +1944,24 @@ $("invoiceTable").addEventListener("click",e=>{
   </body></html>`);
   w.document.close();
  }
-});
 
+});
+function closeInvoiceEditor(){$("invoiceEditModal").hidden=true}
+$("closeInvoiceEdit").addEventListener("click",closeInvoiceEditor);
+$("cancelInvoiceEdit").addEventListener("click",closeInvoiceEditor);
+$("invoiceEditModal").addEventListener("click",e=>{if(e.target===$("invoiceEditModal"))closeInvoiceEditor()});
+$("invoiceEditForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ const all=read("invoices"),invoice=all.find(x=>x.id===$("editInvoiceId").value);
+ if(!invoice){$("invoiceEditStatus").textContent="This invoice could not be found. Refresh and try again.";return}
+ const issueDate=$("editInvoiceIssueDate").value,dueDate=$("editInvoiceDueDate").value,amount=Number($("editInvoiceAmount").value);
+ if(!issueDate||!dueDate){$("invoiceEditStatus").textContent="Enter both the issue date and due date.";return}
+ if(dueDate<issueDate){$("invoiceEditStatus").textContent="The due date cannot be earlier than the issue date.";return}
+ if(!Number.isFinite(amount)||amount<=0){$("invoiceEditStatus").textContent="Enter a valid amount greater than zero.";return}
+ invoice.client=$("editInvoiceClient").value.trim();invoice.description=$("editInvoiceDescription").value.trim();
+ invoice.date=new Date(issueDate+"T12:00:00").toISOString();invoice.dueDate=dueDate;invoice.amount=amount;invoice.currency=$("editInvoiceCurrency").value;
+ write("invoices",all);log("Invoice "+(invoice.number||"record")+" details updated.");closeInvoiceEditor();render();
+});
 function getSupportSettings(){
  const defaults={business:localStorage.getItem(key+"business")||"Your Business",website:"",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
  try{return {...defaults,...JSON.parse(localStorage.getItem(key+"support_settings")||"{}")}}
