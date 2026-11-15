@@ -1682,7 +1682,15 @@ function renderAnalystHistory(){
 $("analystReportHistory").addEventListener("click",event=>{
  const button=event.target.closest("[data-analyst-report]");if(!button)return;
  const report=read("business_analysis_reports",[])[Number(button.dataset.analystReport)];if(!report)return;
- $("analystResult").innerHTML='<h3>'+esc(report.title||"Business analysis")+'</h3><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"")+' · '+esc(report.period||"")+' · '+esc(report.currency||"")+'</div><div>'+formatAuditReport(report.content||"No report text saved.")+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
+ const savedComparison=report.periodComparison;
+ const savedComparisonHtml=savedComparison?'<section class="card" style="margin:14px 0;padding:16px"><h3>Saved period comparison</h3><p class="muted small">Same currency only · '+esc(report.currency||"")+'</p><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Current</th><th>Previous</th></tr></thead><tbody>'+[
+  ["Invoiced",formatMoney(savedComparison.current.invoiced,report.currency),formatMoney(savedComparison.previous.invoiced,report.currency)],
+  ["Marked collected",formatMoney(savedComparison.current.collected,report.currency),formatMoney(savedComparison.previous.collected,report.currency)],
+  ["Recorded outstanding",formatMoney(savedComparison.current.outstanding,report.currency),formatMoney(savedComparison.previous.outstanding,report.currency)],
+  ["Invoices",savedComparison.current.invoices,savedComparison.previous.invoices],
+  ["New clients",savedComparison.current.newClients,savedComparison.previous.newClients]
+ ].map(row=>'<tr><td>'+esc(row[0])+'</td><td>'+esc(row[1])+'</td><td>'+esc(row[2])+'</td></tr>').join("")+'</tbody></table></div></section>':'';
+ $("analystResult").innerHTML='<h3>'+esc(report.title||"Business analysis")+'</h3><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"")+' · '+esc(report.period||"")+' · '+esc(report.currency||"")+'</div>'+savedComparisonHtml+'<div>'+formatAuditReport(report.content||"No report text saved.")+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
  $("copyAnalystReport").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(report.content||"");$("analystStatus").textContent="Saved report copied to clipboard.";}catch{$("analystStatus").textContent="Clipboard access was blocked. Select the report text and copy it manually.";}});
  $("analystStatus").textContent="Opened a saved report. Your history remains available in this workspace.";
 });
@@ -1692,6 +1700,9 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
  const code=currentCurrency(),range=$("analyticsRange").value,now=new Date();
  const cutoff=new Date(now);if(range!=="all")cutoff.setDate(cutoff.getDate()-Number(range));
  const inPeriod=value=>{if(!value)return false;const d=new Date(value);return !Number.isNaN(d.getTime())&&(range==="all"||d>=cutoff)&&d<=now;};
+ const periodDays=range==="all"?null:Number(range);
+ const previousCutoff=periodDays?new Date(cutoff.getTime()-periodDays*86400000):null;
+ const inPreviousPeriod=value=>{if(!previousCutoff||!value)return false;const d=new Date(value);return !Number.isNaN(d.getTime())&&d>=previousCutoff&&d<cutoff;};
  const allInvoices=read("invoices"),allClients=read("leads");
  const invoices=allInvoices.filter(x=>x.currency===code&&inPeriod(x.date));
  const paid=invoices.filter(x=>x.status==="Paid"),unpaid=invoices.filter(x=>x.status!=="Paid");
@@ -1699,6 +1710,14 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
  const overdue=unpaid.filter(x=>x.dueDate&&x.dueDate<today);
  const total=invoices.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
  const collected=paid.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ const previousInvoices=periodDays?allInvoices.filter(x=>x.currency===code&&inPreviousPeriod(x.date)):[];
+ const previousPaid=previousInvoices.filter(x=>x.status==="Paid");
+ const previousInvoiced=previousInvoices.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ const previousCollected=previousPaid.reduce((sum,x)=>sum+(Number(x.amount)||0),0);
+ const comparison=periodDays?{
+  current:{invoiced:total,collected,outstanding:total-collected,invoices:invoices.length,newClients:allClients.filter(x=>inPeriod(x.created)).length},
+  previous:{invoiced:previousInvoiced,collected:previousCollected,outstanding:previousInvoiced-previousCollected,invoices:previousInvoices.length,newClients:allClients.filter(x=>inPreviousPeriod(x.created)).length}
+ }:null;
  const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
  const stageCounts=stages.map(stage=>({stage,count:allClients.filter(x=>(x.salesStage||x.salesStatus||x.status||"New")===stage).length}));
  const currencies=[...new Set(allInvoices.map(x=>String(x.currency||"").trim()).filter(Boolean))];
@@ -1708,6 +1727,7 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
   reportingPeriod:range==="all"?"All recorded dates":"Last "+range+" days",
   selectedCurrency:code,
   totals:{clientRecords:allClients.length,newClientsInPeriod:allClients.filter(x=>inPeriod(x.created)).length,invoicesInPeriod:invoices.length,invoiced:total,markedPaidValue:collected,recordedOutstandingValue:total-collected,paidInvoiceCount:paid.length,unpaidInvoiceCount:unpaid.length,overdueInvoiceCount:overdue.length},
+  periodComparison:comparison,
   salesPipeline:stageCounts,
   monthlyInvoiceTotals:invoiceByMonth,
   overdueInvoices:overdue.slice(0,30).map(x=>({invoiceNumber:x.number||"Not recorded",amount:Number(x.amount)||0,currency:x.currency,dueDate:x.dueDate||"Not recorded"})),
@@ -1716,16 +1736,23 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
  };
  button.disabled=true;button.textContent="Analysing records…";status.textContent="Preparing a secure, limited business summary for VEXT AI…";result.innerHTML="";
  try{
-  const prompt="You are the VEXT AI Business Analyst. Prepare a concise, professional management briefing using only the structured data provided. Structure it as: Executive snapshot; What the numbers indicate; Sales pipeline observations; Risks and items to check; Recommended next actions (prioritised). Include exact supplied figures where useful. Do not invent benchmarks, causes, forecasts, customer identities or missing facts. Distinguish observations from hypotheses. Never combine currencies or calculate exchange conversions. Explain that paid status is user-recorded, not independently bank-verified. Do not call invoice totals accounting revenue or profit. If there is little data, clearly say that and recommend what records to add. Do not request or expose personal customer information. Keep recommendations practical for a small business. Data: "+JSON.stringify(input);
+  const prompt="You are the VEXT AI Business Analyst. Prepare a concise, professional management briefing using only the structured data provided. Structure it as: Executive snapshot; Period comparison; What the numbers indicate; Sales pipeline observations; Risks and items to check; Recommended next actions (prioritised). When periodComparison is supplied, compare the current period with the immediately preceding equal-length period. Calculate percentage changes only when the previous value is non-zero; otherwise state that percentage change is not meaningful. If periodComparison is null, explain that All time has no equal-length previous period. Include exact supplied figures where useful. Do not invent benchmarks, causes, forecasts, customer identities or missing facts. Distinguish observations from hypotheses. Never combine currencies or calculate exchange conversions. Explain that paid status is user-recorded, not independently bank-verified. Do not call invoice totals accounting revenue or profit. If there is little data, clearly say that and recommend what records to add. Do not request or expose personal customer information. Keep recommendations practical for a small business. Data: "+JSON.stringify(input);
   const token=await getVextAccessToken();
   const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message:prompt,history:[]})});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(payload.error||("Analysis request failed ("+response.status+")"));
   const report=typeof payload.reply==="string"?payload.reply:(typeof payload.output_text==="string"?payload.output_text:"");
   if(!report)throw new Error("The AI service returned an empty analysis.");
-  const savedReport={id:id(),title:"Business analysis · "+input.reportingPeriod,createdAt:new Date().toISOString(),period:input.reportingPeriod,currency:code,content:report,summary:report.replace(/\s+/g," ").slice(0,240),metrics:input.totals};
+  const savedReport={id:id(),title:"Business analysis · "+input.reportingPeriod,createdAt:new Date().toISOString(),period:input.reportingPeriod,currency:code,content:report,summary:report.replace(/\s+/g," ").slice(0,240),metrics:input.totals,periodComparison:comparison};
   const savedReports=read("business_analysis_reports",[]);savedReports.unshift(savedReport);write("business_analysis_reports",savedReports.slice(0,50));
-  result.innerHTML='<h3>Business intelligence briefing</h3><div class="audit-report-date">Generated '+esc(new Date().toLocaleString())+' · '+esc(input.reportingPeriod)+' · '+esc(code)+'</div><div>'+formatAuditReport(report)+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
+  const comparisonHtml=comparison?'<section class="card" style="margin:14px 0;padding:16px"><h3>Period comparison · '+esc(range)+' days vs previous '+esc(range)+' days</h3><p class="muted small">Same currency only · '+esc(code)+' · based on saved VEXT records.</p><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Current period</th><th>Previous period</th></tr></thead><tbody>'+[
+   ["Invoiced",formatMoney(comparison.current.invoiced,code),formatMoney(comparison.previous.invoiced,code)],
+   ["Marked collected",formatMoney(comparison.current.collected,code),formatMoney(comparison.previous.collected,code)],
+   ["Recorded outstanding",formatMoney(comparison.current.outstanding,code),formatMoney(comparison.previous.outstanding,code)],
+   ["Invoices",comparison.current.invoices,comparison.previous.invoices],
+   ["New clients",comparison.current.newClients,comparison.previous.newClients]
+  ].map(row=>'<tr><td>'+esc(row[0])+'</td><td>'+esc(row[1])+'</td><td>'+esc(row[2])+'</td></tr>').join("")+'</tbody></table></div></section>':'<div class="notice" style="margin:14px 0">All-time reporting selected. A previous equal-length period is not available for comparison.</div>';
+  result.innerHTML='<h3>Business intelligence briefing</h3><div class="audit-report-date">Generated '+esc(new Date().toLocaleString())+' · '+esc(input.reportingPeriod)+' · '+esc(code)+'</div>'+comparisonHtml+'<div>'+formatAuditReport(report)+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
   $("copyAnalystReport").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(report);status.textContent="Report copied to clipboard.";}catch{status.textContent="Clipboard access was blocked. Select the report text and copy it manually.";}});
   renderAnalystHistory();
   status.textContent="Analysis complete. Report saved to your VEXT workspace. Review findings before making business decisions.";
