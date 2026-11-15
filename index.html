@@ -2091,7 +2091,7 @@ $("saveSettings").addEventListener("click",()=>{
  const name=$("businessName").value.trim(),country=$("businessCountry").value.trim();
  const website=$("businessWebsite").value.trim();
  if(!name){$("settingsSaveStatus").textContent="Enter your business name before saving.";return}
- if(website&&!/^https?:\\/\\//i.test(website)){$("settingsSaveStatus").textContent="Enter a full website address beginning with https://";return}
+ if(website&&!/^https?:\/\//i.test(website)){$("settingsSaveStatus").textContent="Enter a full website address beginning with https://";return}
  localStorage.setItem(key+"business",name);
  localStorage.setItem(key+"country",country);
  localStorage.setItem(key+"industry",$("businessIndustry").value);
