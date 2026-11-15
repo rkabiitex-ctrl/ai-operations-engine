@@ -115,6 +115,38 @@ th{color:var(--muted);font-weight:600}
 .chat-status{font-size:11px;color:var(--muted);margin-top:9px;min-height:16px}
 @media(max-width:600px){.chat-message{max-width:94%}.chat-compose{align-items:stretch;flex-direction:column}.chat-compose button{width:100%}.chat-shell{max-height:none}}
 
+/* VEXT AI workspace and chat experience */
+.ai-workspace-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:30px 32px;margin-bottom:18px;border:1px solid #24445e;border-radius:18px;background:radial-gradient(circle at 88% 20%,rgba(34,211,238,.17),transparent 28%),linear-gradient(120deg,#10233a,#0b172a 70%);overflow:hidden}
+.ai-workspace-hero h2,.chat-page-heading h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.8px;margin:9px 0}
+.ai-workspace-hero p,.chat-page-heading p{color:#9fb3c9;margin:0;font-size:13px;line-height:1.6}
+.ai-eyebrow{font-size:10px;letter-spacing:1.8px;color:#67d9f5;font-weight:800}
+.ai-hero-mark{width:76px;height:76px;display:grid;place-items:center;border:1px solid #2e6b88;border-radius:22px;background:rgba(34,211,238,.08);font-size:43px;color:#67e8f9;box-shadow:0 0 45px rgba(34,211,238,.12)}
+.ai-tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.ai-tool-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;text-align:left;min-height:170px;padding:17px;border:1px solid #263c56;border-radius:14px;background:linear-gradient(150deg,#14243a,#0d192b);color:#f1f5f9;transition:transform .2s,border-color .2s,background .2s}
+.ai-tool-card:hover{transform:translateY(-3px);border-color:#38bdf8;background:linear-gradient(150deg,#19324b,#102238)}
+.ai-tool-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#173b53;color:#67e8f9;font-size:19px}
+.ai-tool-card strong{font-size:13px}.ai-tool-card small{color:#91a7be;font-size:11px;line-height:1.4}.ai-tool-link{margin-top:auto;color:#67d9f5;font-size:11px;font-weight:700}
+.ai-document-card{padding:24px}.ai-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}.ai-section-heading h2{margin:7px 0}.ai-section-heading p{margin:0}
+.ai-document-badge,.chat-model-label{font-size:9px;letter-spacing:1.2px;font-weight:800;color:#7dd3fc;border:1px solid #28516b;background:#102a40;padding:7px 9px;border-radius:20px;white-space:nowrap}
+.ai-document-form{max-width:820px}.ai-document-form textarea{min-height:105px}.ai-capability-note{font-size:11px;color:#91a7be;margin:18px 0 0}
+.chat-page-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin:0 0 19px}.chat-online{display:flex;align-items:center;gap:8px;font-size:11px;color:#a5f3c5;white-space:nowrap}.chat-online i,.chat-history-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;box-shadow:0 0 10px rgba(74,222,128,.55)}
+.chat-workspace{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;min-height:650px}
+.chat-history-panel,.chat-main-panel{min-width:0;border:1px solid #263b55;border-radius:15px;background:linear-gradient(160deg,#111f33,#0c1729)}
+.chat-history-panel{display:flex;flex-direction:column;padding:16px}.chat-history-heading{display:flex;flex-direction:column;gap:5px;padding-bottom:14px;border-bottom:1px solid #25364e}.chat-history-heading strong{font-size:13px}.chat-history-count{font-size:10px;color:#8198b1}
+.chat-history-list{display:flex;flex-direction:column;gap:5px;overflow-y:auto;max-height:430px;padding:12px 0}.chat-history-item{width:100%;border:1px solid transparent;border-radius:8px;padding:9px;text-align:left;background:transparent;color:#cbd5e1;font-size:11px;line-height:1.4;overflow-wrap:anywhere}.chat-history-item:hover{background:#192c43;border-color:#29445f}.chat-history-item span{display:block;font-size:9px;letter-spacing:.8px;color:#67d9f5;margin-bottom:4px}.chat-history-empty{font-size:11px;color:#8198b1;line-height:1.6;padding:12px 3px}
+.chat-history-foot{display:flex;align-items:center;gap:8px;margin-top:auto;padding:12px 0;color:#8298b0;font-size:10px}.chat-history-dot{width:6px;height:6px}
+.chat-clear-button{width:100%;padding:9px;font-size:11px}
+.chat-main-panel{display:flex;flex-direction:column;padding:18px;min-height:650px}.chat-main-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 0 15px;border-bottom:1px solid #263b55}.chat-main-top strong{display:block;font-size:13px}.chat-main-top span:not(.chat-model-label){display:block;font-size:10px;color:#8198b1;margin-top:4px}
+.chat-prompt-area{padding:15px 0 11px}.chat-prompt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}.chat-prompt-grid button{min-width:0;display:flex;align-items:center;gap:7px;padding:9px;border:1px solid #29425d;border-radius:9px;background:#12243a;color:#67d9f5;text-align:left;font-size:14px}.chat-prompt-grid button span{font-size:10px;color:#c6d5e5;line-height:1.3}.chat-prompt-grid button:hover{border-color:#38bdf8;background:#18314a}
+.chat-main-panel .chat-messages{flex:1;min-height:270px;max-height:none;border:0;border-radius:0;background:transparent;padding:12px 3px;scroll-behavior:smooth}
+.chat-message{max-width:min(78%,680px);padding:14px 16px;margin:12px 0;border-radius:15px;font-size:13px;line-height:1.65;box-shadow:0 5px 18px rgba(0,0,0,.12)}
+.chat-message.user{background:linear-gradient(135deg,#124568,#15506c);border:1px solid #267092;border-bottom-right-radius:5px}
+.chat-message.assistant{background:#17283e;border:1px solid #2c435e;border-bottom-left-radius:5px}
+.chat-message .chat-role{font-size:9px;letter-spacing:1.2px}
+.chat-compose-wrap{border:1px solid #34506b;background:#0b1728;border-radius:13px;padding:9px 10px 7px}.chat-compose{display:flex;gap:10px;align-items:flex-end;margin:0}.chat-compose textarea{min-height:48px;max-height:140px;flex:1;border:0;background:transparent;padding:10px 7px;resize:vertical}.chat-compose textarea:focus{border:0}.chat-compose button{min-width:90px;height:42px;border-radius:9px}.chat-compose button b{font-size:17px;margin-left:5px}.chat-compose-meta{display:flex;justify-content:space-between;gap:12px;padding:5px 7px 0;color:#7f95ad;font-size:9px;line-height:1.5}.chat-privacy-note{margin-top:12px}
+@media(max-width:1050px){.ai-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chat-workspace{grid-template-columns:180px minmax(0,1fr)}.chat-prompt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.ai-workspace-hero{padding:22px}.ai-hero-mark{width:55px;height:55px;font-size:30px}.ai-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-tool-card{min-height:150px;padding:13px}.ai-section-heading{flex-direction:column}.chat-page-heading{align-items:flex-start;flex-direction:column}.chat-workspace{grid-template-columns:1fr;min-height:0}.chat-history-panel{order:2}.chat-history-list{max-height:160px}.chat-main-panel{min-height:620px;padding:12px}.chat-prompt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.chat-message{max-width:94%}.chat-compose{align-items:stretch}.chat-compose button{min-width:78px}.chat-compose-meta{flex-direction:column;gap:3px}}
+
 .employee-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
 .employee-overview>div{background:#0b1528;border:1px solid var(--line);border-radius:10px;padding:15px}
 .employee-overview strong{display:block;font-size:23px;color:var(--blue);margin-bottom:5px}
@@ -570,54 +602,52 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="ai">
- <div class="card">
-  <h2>✧ Business Document Studio</h2>
-  <p class="muted small">Generate structured drafts for your business operations.</p>
-  <div class="field">
-   <label>Document type</label>
-   <select id="docType">
-    <option>Business Proposal</option>
-    <option>Marketing Plan</option>
-    <option>Business Report</option>
-    <option>Customer Follow-up</option>
-    <option>Project Plan</option>
-    <option>Business Strategy</option>
-   </select>
+ <div class="ai-workspace-hero">
+  <div><span class="ai-eyebrow">VEXT INTELLIGENCE / WORKSPACE</span><h2>Your business command centre.</h2><p>Turn ideas into structured business work. Choose a starting point or create a document draft.</p></div>
+  <div class="ai-hero-mark">✧</div>
+ </div>
+ <div class="ai-tool-grid">
+  <button class="ai-tool-card" data-ai-template="Business Strategy" data-ai-prompt="Build a practical business strategy for my company. Include goals, target customers, competitive positioning, revenue streams and a 90-day action plan."><span class="ai-tool-icon">⌘</span><strong>Business strategy</strong><small>Plan your next stage of growth</small><span class="ai-tool-link">Open template →</span></button>
+  <button class="ai-tool-card" data-ai-template="Marketing Plan" data-ai-prompt="Create a marketing plan for my business. Include target audience, positioning, channels, content ideas, campaign schedule and measurable KPIs."><span class="ai-tool-icon">◈</span><strong>Marketing & growth</strong><small>Build a focused customer pipeline</small><span class="ai-tool-link">Open template →</span></button>
+  <button class="ai-tool-card" data-ai-template="Customer Follow-up" data-ai-prompt="Write a professional customer follow-up message. Make it helpful, concise and focused on the customer's needs."><span class="ai-tool-icon">◎</span><strong>Customer success</strong><small>Prepare thoughtful follow-ups</small><span class="ai-tool-link">Open template →</span></button>
+  <button class="ai-tool-card" data-ai-template="Project Plan" data-ai-prompt="Create a practical project plan with objectives, milestones, tasks, owners, timeline, risks and success measures."><span class="ai-tool-icon">▤</span><strong>Operations & projects</strong><small>Organise work into clear steps</small><span class="ai-tool-link">Open template →</span></button>
+ </div>
+ <div class="card ai-document-card">
+  <div class="ai-section-heading"><div><span class="ai-eyebrow">DOCUMENT STUDIO</span><h2>Build a business document</h2><p class="muted small">Choose a format, describe the outcome and create a structured draft.</p></div><span class="ai-document-badge">DRAFT BUILDER</span></div>
+  <div class="ai-document-form">
+   <div class="field"><label for="docType">Document type</label><select id="docType"><option>Business Proposal</option><option>Marketing Plan</option><option>Business Report</option><option>Customer Follow-up</option><option>Project Plan</option><option>Business Strategy</option></select></div>
+   <div class="field"><label for="docPrompt">What do you want to create?</label><textarea id="docPrompt" placeholder="Describe your business, audience and the result you want..."></textarea></div>
+   <div class="action-row"><button class="primary" id="makeDoc">Generate Document</button><button class="secondary" type="button" id="openVextChatFromStudio">Ask VEXT AI instead</button></div>
   </div>
-  <div class="field">
-   <label>Describe what you need</label>
-   <textarea id="docPrompt" placeholder="Example: Create a proposal for a company offering professional cleaning services..."></textarea>
-  </div>
-  <button class="primary" id="makeDoc">Generate Document</button>
   <div id="docOutput" class="output" hidden style="margin-top:18px"></div>
-  <div class="action-row" style="margin-top:12px">
-   <button class="secondary" id="copyDoc" hidden>Copy</button>
-   <button class="secondary" id="downloadDoc" hidden>Download</button>
-  </div>
-  <p class="muted small">This version uses a document template, not a live AI model. AI integration is a future upgrade.</p>
+  <div class="action-row" style="margin-top:12px"><button class="secondary" id="copyDoc" hidden>Copy</button><button class="secondary" id="downloadDoc" hidden>Download</button></div>
+  <p class="ai-capability-note">Document Studio currently creates structured template drafts. For live AI-generated answers, use VEXT AI Chat.</p>
  </div>
 </section>
 
 
 <section class="page" id="chat">
- <div class="card">
-  <div class="chat-top">
-   <div>
-    <h2>◉ VEXT AI Assistant</h2>
-    <p class="muted small">Your dedicated AI workspace, connected to the VEXT AI backend.</p>
-   </div>
-   <button class="secondary" id="clearChat">Clear conversation</button>
-  </div>
-  <div class="chat-shell">
+ <div class="chat-page-heading"><div><span class="ai-eyebrow">VEXT AI / INTELLIGENCE</span><h2>What can we solve today?</h2><p>Think, plan and move your business forward with VEXT AI.</p></div><span class="chat-online"><i></i> AI service ready</span></div>
+ <div class="chat-workspace">
+  <aside class="chat-history-panel">
+   <div class="chat-history-heading"><strong>Conversation</strong><span class="chat-history-count" id="chatHistoryCount">0 messages</span></div>
+   <div class="chat-history-list" id="chatHistoryList"><div class="chat-history-empty">Your conversation will appear here.</div></div>
+   <div class="chat-history-foot"><span class="chat-history-dot"></span>Saved conversation history</div>
+   <button class="secondary chat-clear-button" id="clearChat">Clear conversation</button>
+  </aside>
+  <div class="chat-main-panel">
+   <div class="chat-main-top"><div><strong>VEXT AI Assistant</strong><span>Business intelligence, at your command</span></div><span class="chat-model-label">VEXT AI</span></div>
+   <div class="chat-prompt-area"><span class="ai-eyebrow">QUICK START</span><div class="chat-prompt-grid">
+    <button type="button" data-chat-prompt="Help me create a practical business growth strategy for the next 90 days.">◈ <span>Grow my business</span></button>
+    <button type="button" data-chat-prompt="Help me create a marketing campaign to attract more customers.">✧ <span>Plan a marketing campaign</span></button>
+    <button type="button" data-chat-prompt="Help me improve my sales process and convert more enquiries into customers.">↗ <span>Improve my sales</span></button>
+    <button type="button" data-chat-prompt="Analyse my business idea, identify risks and recommend practical next steps.">◎ <span>Analyse a business idea</span></button>
+   </div></div>
    <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
-   <div class="chat-compose">
-    <textarea id="chatInput" maxlength="8000" placeholder="Ask VEXT AI anything about your business..." aria-label="Message VEXT AI"></textarea>
-    <button class="primary" id="sendChat">Send message</button>
-   </div>
-   <div class="chat-status" id="chatStatus">Connected to VEXT AI service when you send a message.</div>
+   <div class="chat-compose-wrap"><div class="chat-compose"><textarea id="chatInput" maxlength="8000" placeholder="Message VEXT AI... (Enter to send, Shift + Enter for a new line)" aria-label="Message VEXT AI"></textarea><button class="primary" id="sendChat"><span>Send</span> <b>↑</b></button></div><div class="chat-compose-meta"><span id="chatStatus">Connected to VEXT AI service when you send a message.</span><span>AI can make mistakes. Review important decisions.</span></div></div>
   </div>
-  <p class="muted small">Do not enter passwords, payment card details or confidential legal/customer records into this early prototype.</p>
  </div>
+ <p class="muted small chat-privacy-note">For your security, do not enter passwords, payment card details or confidential legal/customer records.</p>
 </section>
 
 
@@ -1044,15 +1074,24 @@ function addChatMessage(role,message){
  area.appendChild(bubble);
  area.scrollTop=area.scrollHeight;
 }
+function renderChatHistoryNav(history){
+ const list=$("chatHistoryList"),count=$("chatHistoryCount");
+ if(!list)return;
+ const userMessages=history.map((item,index)=>({...item,index})).filter(item=>item.role==="user");
+ if(count)count.textContent=history.length+" messages";
+ list.innerHTML=userMessages.length?userMessages.slice().reverse().map(item=>`<button type="button" class="chat-history-item" data-chat-index="${item.index}"><span>YOU ASKED</span>${esc(item.content.slice(0,88))}${item.content.length>88?"…":""}</button>`).join(""):'<div class="chat-history-empty">Ask VEXT AI a question and your conversation will be listed here.</div>';
+}
 function renderChatHistory(){
  const area=$("chatMessages");
  area.replaceChildren();
  const history=loadChatHistory();
  if(!history.length){
-  addChatMessage("assistant","Hello! I'm VEXT AI. How can I help you with your business today?");
-  return;
+  addChatMessage("assistant","Hello! I'm VEXT AI. How can I help you move your business forward today?");
+ }else{
+  history.forEach(item=>addChatMessage(item.role,item.content));
  }
- history.forEach(item=>addChatMessage(item.role,item.content));
+ area.querySelectorAll(".chat-message").forEach((item,index)=>item.dataset.messageIndex=String(index));
+ renderChatHistoryNav(history);
 }
 async function sendChatMessage(){
  const input=$("chatInput"),button=$("sendChat"),status=$("chatStatus");
@@ -1062,6 +1101,7 @@ async function sendChatMessage(){
  addChatMessage("user",message);
  history.push({role:"user",content:message});
  saveChatHistory(history);
+ renderChatHistoryNav(history);
  input.value="";
  button.disabled=true;
  button.textContent="Thinking...";
@@ -1081,6 +1121,7 @@ async function sendChatMessage(){
   addChatMessage("assistant",reply);
   history.push({role:"assistant",content:reply});
   saveChatHistory(history);
+  renderChatHistoryNav(history);
   status.textContent="Response received.";
  }catch(error){
   const messageText="I couldn't reach the AI service. "+(error.message||"Please try again.");
@@ -1103,6 +1144,23 @@ $("clearChat").addEventListener("click",()=>{
  renderChatHistory();
  $("chatStatus").textContent="Conversation cleared.";
 });
+$("chatHistoryList").addEventListener("click",event=>{
+ const item=event.target.closest("[data-chat-index]");if(!item)return;
+ const target=$("chatMessages").querySelector('[data-message-index="'+item.dataset.chatIndex+'"]');
+ if(target)target.scrollIntoView({behavior:"smooth",block:"center"});
+});
+$("chatMessages").addEventListener("click",()=>{});
+document.querySelectorAll("[data-chat-prompt]").forEach(button=>button.addEventListener("click",()=>{
+ $("chatInput").value=button.dataset.chatPrompt;
+ $("chatInput").focus();
+}));
+document.querySelectorAll("[data-ai-template]").forEach(button=>button.addEventListener("click",()=>{
+ $("docType").value=button.dataset.aiTemplate;
+ $("docPrompt").value=button.dataset.aiPrompt;
+ $("docPrompt").focus();
+ $("docPrompt").scrollIntoView({behavior:"smooth",block:"center"});
+}));
+$("openVextChatFromStudio").addEventListener("click",()=>navigate("chat"));
 renderChatHistory();
 
 function renderActivity(){
