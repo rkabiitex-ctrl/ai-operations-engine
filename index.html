@@ -464,6 +464,21 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .settings-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.8fr);gap:15px;align-items:start}.settings-main,.settings-side{display:grid;gap:15px;min-width:0}.settings-card{padding:21px;background:linear-gradient(150deg,#14243a,#0d192b);border:1px solid #263b55;border-radius:14px;min-width:0}.settings-card-heading{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:20px}.settings-card-heading h3,.settings-card h3{font-size:17px;margin:7px 0}.settings-card-heading p,.settings-card>p{font-size:11px;color:#91a7be;line-height:1.6;margin:0}.settings-kicker{font-size:9px;letter-spacing:1.5px;color:#67d9f5;font-weight:800}.settings-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#173b53;color:#67e8f9;font-size:18px;flex-shrink:0}.settings-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}.settings-card .field{min-width:0}.settings-card-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-top:15px;border-top:1px solid #263750}.settings-card-footer .small{max-width:380px;line-height:1.5}.settings-status{font-size:11px;color:#86efac;min-height:15px;margin:10px 0 0}.inline-status{display:inline-block;margin-left:10px}.settings-local-note{font-size:10px!important;color:#8198b1!important;line-height:1.6;margin:12px 0!important}.settings-service-list{display:grid;gap:0}.settings-service{display:flex;align-items:center;gap:11px;padding:13px 0;border-top:1px solid #263750;min-width:0}.settings-service-symbol{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#17334b;color:#67e8f9;flex-shrink:0}.settings-service>div{display:grid;gap:4px;min-width:0;flex:1}.settings-service strong{font-size:11px}.settings-service small{font-size:10px;color:#91a7be;line-height:1.4}.settings-state{font-size:8px;letter-spacing:.8px;font-weight:800;padding:5px 7px;border-radius:20px;white-space:nowrap}.settings-state.connected{background:#123a32;color:#86efac}.settings-state.planned{background:#293348;color:#bac8d8}.settings-security-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid #263750;font-size:11px;color:#cbd5e1}.settings-export-actions{display:grid;gap:8px;margin-top:16px}.settings-export-actions button{width:100%}.settings-note-card{border-color:#31516b;background:linear-gradient(145deg,#122b40,#101c2e)}
 @media(max-width:950px){.settings-layout{grid-template-columns:1fr 1fr}.settings-main{grid-column:1/-1}.settings-side{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}.settings-note-card{grid-column:1/-1}}
 @media(max-width:600px){.settings-hero{padding:21px}.settings-layout,.settings-side{grid-template-columns:1fr}.settings-main,.settings-side{grid-column:auto}.settings-fields{grid-template-columns:1fr}.settings-card{padding:16px}.settings-card-footer{align-items:stretch}.settings-card-footer button{width:100%}}
+
+.employee-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px 30px;border:1px solid #24435d;border-radius:16px;background:radial-gradient(circle at 88% 20%,rgba(34,211,238,.13),transparent 32%),linear-gradient(130deg,#111f34,#0b1528)}
+.employee-hero-copy{max-width:690px}.employee-hero h2{font-size:27px;margin:12px 0 8px}.employee-hero p{color:var(--muted);font-size:13px;line-height:1.7;margin:0}
+.employee-hero-mark{display:grid;place-items:center;flex:0 0 76px;width:76px;height:76px;border:1px solid #2b526b;border-radius:22px;background:#132d43;color:var(--cyan);font-size:38px}
+.employee-overview{margin-top:16px}
+.employee-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.employee-section-count,.employee-role{font-size:10px;letter-spacing:1px;color:#8da9c4}
+.employee-role{margin-top:17px}
+.employee-card h3{margin:7px 0 8px}
+.employee-card p{min-height:76px}
+.employee-state.beta{background:#3a2e18;color:#fcd38d}
+.employee-oversight{display:flex;align-items:flex-start;gap:13px;margin-top:20px;padding:17px 19px;border:1px solid var(--line);border-radius:12px;background:#0d192a}
+.employee-oversight-icon{font-size:20px;color:var(--cyan)}
+.employee-oversight strong{font-size:13px}.employee-oversight p{font-size:12px;line-height:1.6;color:var(--muted);margin:5px 0 0}
+@media(max-width:760px){.employee-hero{padding:22px 18px}.employee-hero-mark{flex-basis:54px;width:54px;height:54px;font-size:28px}.employee-hero h2{font-size:23px}.employee-section-heading{align-items:flex-start;flex-direction:column}.employee-card p{min-height:0}}
 </style>
 </head>
 <body>
@@ -737,72 +752,69 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="employees">
- <div class="card">
-  <div class="action-row" style="justify-content:space-between;align-items:flex-start">
-   <div>
-    <span class="plan-tag">VEXT AI WORKFORCE</span>
-    <h2 style="font-size:25px;margin:10px 0">Your AI team. Ready to help you grow.</h2>
-    <p class="muted small">Explore digital employees for sales, customer service, marketing and business operations. Each employee has a defined role and works under your business instructions.</p>
-   </div>
-   <span class="pill">EARLY ACCESS</span>
+ <div class="employee-hero">
+  <div class="employee-hero-copy">
+   <span class="plan-tag">VEXT AI WORKFORCE</span>
+   <h2>Meet your digital team.</h2>
+   <p>Specialist AI assistants for the everyday work of running a business. Each role has a defined responsibility, clear availability and human oversight.</p>
   </div>
-  <div class="employee-overview">
-   <div><strong>1</strong><span>Available now</span></div>
-   <div><strong>3</strong><span>Planned employees</span></div>
-   <div><strong>24/7</strong><span>Potential coverage</span></div>
-  </div>
+  <div class="employee-hero-mark" aria-hidden="true">✧</div>
+ </div>
+ <div class="employee-overview">
+  <div><strong>2</strong><span>Available employees</span></div>
+  <div><strong>3</strong><span>In development</span></div>
+  <div><strong>5</strong><span>Defined team roles</span></div>
  </div>
  <div class="employee-section-heading">
-  <h2>Available employee</h2>
-  <p class="muted small">Your first VEXT AI employee is connected to the existing Sales Agent.</p>
+  <div><h2>Available now</h2><p class="muted small">These employees open existing VEXT AI tools.</p></div>
+  <span class="employee-section-count">02 ACTIVE</span>
  </div>
  <div class="employee-grid">
   <article class="employee-card employee-live">
    <div class="employee-card-top"><span class="employee-icon">↗</span><span class="employee-state live">AVAILABLE</span></div>
+   <div class="employee-role">SALES & CUSTOMER ACQUISITION</div>
    <h3>AI Sales Representative</h3>
-   <p class="muted small">Engages website visitors, answers product questions, identifies buying intent and captures customer enquiries with consent.</p>
+   <p class="muted small">Engages website visitors, answers product questions and captures customer enquiries with consent. Enquiries can flow into your sales pipeline.</p>
    <div class="employee-tags"><span>Lead capture</span><span>Product guidance</span><span>Sales pipeline</span></div>
-   <div class="employee-card-bottom"><span class="muted small">Connected to Sales Agent</span><button class="primary" id="openSalesEmployee" type="button">Manage employee</button></div>
+   <div class="employee-card-bottom"><span class="muted small">Powered by Sales Agent</span><button class="primary" id="openSalesEmployee" type="button">Open Sales Agent →</button></div>
   </article>
- </div>
- <div class="employee-section-heading">
-  <h2>Coming next</h2>
-  <p class="muted small">These roles are planned. They are not active yet.</p>
- </div>
- <div class="employee-grid">
-  <article class="employee-card">
-   <div class="employee-card-top"><span class="employee-icon">♡</span><span class="employee-state planned">PLANNED</span></div>
-   <h3>AI Customer Support Agent</h3>
-   <p class="muted small">Handles common customer questions, explains services and routes complex issues to a human team member.</p>
-   <div class="employee-tags"><span>Customer care</span><span>FAQ responses</span><span>Escalation</span></div>
-  </article>
-  <article class="employee-card">
-   <div class="employee-card-top"><span class="employee-icon">✧</span><span class="employee-state planned">PLANNED</span></div>
-   <h3>AI Marketing Manager</h3>
-   <p class="muted small">Helps plan campaigns, draft social posts, write promotional content and organize marketing ideas for review.</p>
-   <div class="employee-tags"><span>Campaigns</span><span>Content drafts</span><span>Brand voice</span></div>
-  </article>
-  <article class="employee-card">
-   <div class="employee-card-top"><span class="employee-icon">▥</span><span class="employee-state planned">PLANNED</span></div>
-   <h3>AI Business Analyst</h3>
-   <p class="muted small">Reviews business performance, summarizes key metrics and highlights trends and opportunities from connected data.</p>
-   <div class="employee-tags"><span>Reporting</span><span>Insights</span><span>Trend analysis</span></div>
-  </article>
- </div>
- <div class="employee-section-heading">
-  <h2>Financial oversight</h2>
-  <p class="muted small">A dedicated reviewer for the records your business has entered into VEXT AI.</p>
- </div>
- <div class="employee-grid">
   <article class="employee-card employee-live">
-   <div class="employee-card-top"><span class="employee-icon">⌕</span><span class="employee-state live">AVAILABLE · BETA</span></div>
+   <div class="employee-card-top"><span class="employee-icon">⌕</span><span class="employee-state beta">AVAILABLE · BETA</span></div>
+   <div class="employee-role">FINANCE & RECORDS REVIEW</div>
    <h3>AI Auditor</h3>
-   <p class="muted small">Reviews recorded invoices and basic client records, flags duplicates or missing information, and prepares an evidence-based review for a human decision.</p>
-   <div class="employee-tags"><span>Invoice checks</span><span>Expense visibility</span><span>Risk flags</span><span>Audit reports</span></div>
-   <div class="employee-card-bottom"><span class="muted small">Uses your saved VEXT records</span><button class="primary" id="openAuditor" type="button">Open Audit Centre</button></div>
+   <p class="muted small">Checks saved invoices and client records, flags selected data inconsistencies and prepares an evidence-based report for human review.</p>
+   <div class="employee-tags"><span>Invoice checks</span><span>Data quality</span><span>Audit reports</span></div>
+   <div class="employee-card-bottom"><span class="muted small">Reviews records in VEXT AI</span><button class="primary" id="openAuditor" type="button">Open Audit Centre →</button></div>
   </article>
  </div>
- <div class="notice" style="margin-top:18px">Audit scope: the beta checks records saved in VEXT AI. It does not connect to bank accounts, independently verify receipts, or replace a qualified auditor. A risk flag is not proof of fraud.</div>
+ <div class="employee-section-heading">
+  <div><h2>In development</h2><p class="muted small">Planned roles—not yet available to perform work.</p></div>
+  <span class="employee-section-count">03 PLANNED</span>
+ </div>
+ <div class="employee-grid">
+  <article class="employee-card">
+   <div class="employee-card-top"><span class="employee-icon">♡</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
+   <div class="employee-role">CUSTOMER EXPERIENCE</div>
+   <h3>AI Customer Support Agent</h3>
+   <p class="muted small">Designed to answer common customer questions, explain services and route complex issues to a human team member.</p>
+   <div class="employee-tags"><span>Customer care</span><span>FAQ responses</span><span>Human escalation</span></div>
+  </article>
+  <article class="employee-card">
+   <div class="employee-card-top"><span class="employee-icon">✧</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
+   <div class="employee-role">MARKETING & BRAND</div>
+   <h3>AI Marketing Manager</h3>
+   <p class="muted small">Designed to help plan campaigns, draft social content and organize promotional ideas for approval.</p>
+   <div class="employee-tags"><span>Campaign planning</span><span>Content drafts</span><span>Brand voice</span></div>
+  </article>
+  <article class="employee-card">
+   <div class="employee-card-top"><span class="employee-icon">▥</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
+   <div class="employee-role">BUSINESS INTELLIGENCE</div>
+   <h3>AI Business Analyst</h3>
+   <p class="muted small">Designed to summarize connected business metrics, highlight trends and help identify areas that may need attention.</p>
+   <div class="employee-tags"><span>Performance insights</span><span>Trend summaries</span><span>Reporting</span></div>
+  </article>
+ </div>
+ <div class="employee-oversight"><span class="employee-oversight-icon">盾</span><div><strong>Human oversight stays in control</strong><p>AI employees assist with defined tasks. Review important outputs and decisions before acting. Availability labels describe the current VEXT AI build—not guaranteed 24/7 service or autonomous work.</p></div></div>
 </section>
 
 <section class="page" id="audit">
