@@ -168,6 +168,7 @@ th{color:var(--muted);font-weight:600}
 .employee-tags{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 20px}
 .employee-tags span{font-size:10px;color:#b9c9dc;background:#1a2a40;border:1px solid #2b405b;border-radius:20px;padding:5px 8px}
 .employee-card-bottom{border-top:1px solid var(--line);padding-top:15px}
+ .management-tracker{margin:20px 0;padding:22px;border:1px solid #2b405b;border-radius:15px;background:linear-gradient(160deg,#101e32,#0b1526)}.management-tracker-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.management-tracker-head h3{font-size:20px;margin:7px 0}.management-tracker-head p{margin:0}.management-tracker-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.management-tracker-stats>div{padding:13px;border:1px solid #263b55;border-radius:10px;background:#0b1728}.management-tracker-stats strong{display:block;font-size:22px;color:#7dd3fc}.management-tracker-stats span{font-size:10px;color:#91a7be}.management-action-form{padding:16px;border:1px solid #2b405b;border-radius:11px;background:#0b1728}.management-form-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:12px}.management-action-form .field{margin-bottom:10px}.management-action-form input,.management-action-form select,.management-action-item input,.management-action-item select{padding:10px;font-size:12px}.management-list-heading{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px}.management-list-heading h4{margin:0;font-size:14px}.management-action-list{display:grid;gap:10px}.management-action-item{padding:15px;border:1px solid #293e58;border-radius:11px;background:#111f33}.management-action-item.is-complete{opacity:.78}.management-action-fields{display:grid;grid-template-columns:2fr 1fr .8fr .8fr .8fr;gap:9px}.management-action-item label{display:block;color:#91a7be;font-size:10px;margin:0 0 6px}.management-action-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}.management-action-controls small{color:#8198b1;font-size:10px}.management-action-item.is-complete [data-field="title"]{text-decoration:line-through}@media(max-width:800px){.management-action-fields,.management-form-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.management-tracker{padding:15px}.management-tracker-stats{grid-template-columns:1fr 1fr}.management-action-fields,.management-form-grid{grid-template-columns:1fr}}
 .analyst-report-shell{background:linear-gradient(160deg,#101e32,#0b1526);border:1px solid #2b405b;border-radius:15px;padding:22px;margin-top:14px}.analyst-report-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:15px;border-bottom:1px solid #2b405b}.analyst-report-shell>h2{font-size:23px;margin:17px 0 5px}.analyst-report-body{line-height:1.7}.analyst-report-body h3{font-size:14px;color:#7dd3fc;margin:22px 0 8px;padding-bottom:7px;border-bottom:1px solid #263b55}.analyst-report-body p,.analyst-report-body li{font-size:13px;color:#d5e1ef}.analyst-report-body ul{padding-left:21px}@media(max-width:600px){.analyst-report-shell{padding:15px}.analyst-report-header{align-items:flex-start;flex-direction:column}}#auditChecks{margin-top:12px}#auditResult{line-height:1.65;overflow-wrap:anywhere}#auditResult h3{margin:16px 0 8px}#auditResult ul{padding-left:20px}#auditReportHistory .audit-report-row{padding:13px 0;border-bottom:1px solid var(--line)}#auditReportHistory .audit-report-row:last-child{border-bottom:0}.audit-report-date{font-size:11px;color:var(--muted)}
 @media(max-width:760px){.employee-grid{grid-template-columns:1fr}.employee-overview{grid-template-columns:1fr 1fr}}
 .notice{padding:13px;background:#122b3c;border:1px solid #23506a;
@@ -931,6 +932,11 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <div class="notice">Your report uses business totals, invoice status, dates and sales-stage counts. Customer contact details, private notes and enquiry message contents are not sent. Review recommendations before acting.</div>
   <p id="analystStatus" class="chat-status" role="status" aria-live="polite"></p>
   <div id="analystResult" style="margin-top:16px"></div>
+  <section class="management-tracker"><div class="management-tracker-head"><div><span class="ai-eyebrow">EXECUTION & ACCOUNTABILITY</span><h3>Management Action Tracker</h3><p class="muted small">Turn business priorities into assigned, trackable work.</p></div><span class="ai-document-badge">WORKSPACE TASKS</span></div>
+   <div class="management-tracker-stats"><div><strong id="actionTotal">0</strong><span>Total</span></div><div><strong id="actionPending">0</strong><span>Pending</span></div><div><strong id="actionProgress">0</strong><span>In progress</span></div><div><strong id="actionCompleted">0</strong><span>Completed</span></div></div>
+   <form id="managementActionForm" class="management-action-form"><div class="field"><label for="newActionTitle">Action to complete</label><input id="newActionTitle" maxlength="180" required placeholder="e.g. Verify the latest invoice payment"></div><div class="management-form-grid"><div class="field"><label for="newActionOwner">Assigned owner</label><input id="newActionOwner" maxlength="80" placeholder="Person responsible"></div><div class="field"><label for="newActionPriority">Priority</label><select id="newActionPriority"><option>High</option><option selected>Medium</option><option>Low</option></select></div><div class="field"><label for="newActionDue">Due date</label><input id="newActionDue" type="date"></div></div><button class="primary" type="submit">＋ Add management action</button></form>
+   <div class="management-list-heading"><h4>Action register</h4><span id="actionRegisterCount" class="muted small">0 actions</span></div><div id="managementActionList" class="management-action-list"></div><p id="managementActionStatus" class="chat-status" role="status" aria-live="polite"></p>
+  </section>
   <div class="analyst-history-wrap"><div class="analyst-history-heading"><div><h3>Saved analysis history</h3><p class="muted small">Reopen previous management briefings from your VEXT workspace.</p></div><span id="analystHistoryCount" class="invoice-register-count">0 reports</span></div><div id="analystReportHistory" class="analyst-history-list"></div></div>
  </section>
  <div id="analyticsContent"></div>
@@ -1070,7 +1076,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -1083,7 +1089,7 @@ function workspaceSnapshot(){
   chat_conversations:read("chat_conversations",[]),
   active_chat_id:localStorage.getItem(key+"active_chat_id")||"",
   audit_reports:read("audit_reports",[]),
-  business_analysis_reports:read("business_analysis_reports",[])
+  business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[])
  };
 }
 function setWorkspaceSyncStatus(value,bad=false){
@@ -1149,7 +1155,7 @@ function log(message){
  renderActivity();
 }
 function navigate(page){
- if(page==="analytics"&&typeof renderAnalystHistory==="function")renderAnalystHistory();
+ if(page==="analytics"&&typeof renderAnalystHistory==="function"){renderAnalystHistory();renderManagementActions();}
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
@@ -1679,6 +1685,33 @@ function render(){
  renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
 }
+function renderManagementActions(){
+ const list=$("managementActionList");if(!list)return;
+ const actions=read("management_actions",[]);
+ const count=status=>actions.filter(x=>(x.status||"Pending")===status).length;
+ $("actionTotal").textContent=actions.length;$("actionPending").textContent=count("Pending");$("actionProgress").textContent=count("In Progress");$("actionCompleted").textContent=count("Completed");$("actionRegisterCount").textContent=actions.length+" actions";
+ list.replaceChildren();
+ if(!actions.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No actions yet. Add the first management priority above.";list.append(empty);return;}
+ actions.forEach(action=>{
+  const card=document.createElement("article");card.className="management-action-item"+(action.status==="Completed"?" is-complete":"");card.dataset.managementAction=action.id;
+  const fields=document.createElement("div");fields.className="management-action-fields";
+  const addField=(label,name,value,type,options)=>{const wrap=document.createElement("div"),lab=document.createElement("label"),input=document.createElement(type==="select"?"select":"input");lab.textContent=label;lab.htmlFor="action-"+action.id+"-"+name;input.id=lab.htmlFor;input.dataset.field=name;input.setAttribute("aria-label",label);if(type==="select"){options.forEach(option=>{const o=document.createElement("option");o.value=option;o.textContent=option;input.append(o)});input.value=value||options[0]}else{input.type=type;input.value=value||"";if(name==="title")input.maxLength=180;if(name==="owner")input.maxLength=80;if(name==="owner")input.placeholder="Assign owner"}wrap.append(lab,input);fields.append(wrap)};
+  addField("Action","title",action.title,"text");addField("Owner","owner",action.owner,"text");addField("Priority","priority",action.priority,"select",["High","Medium","Low"]);addField("Due date","dueDate",action.dueDate,"date");addField("Status","status",action.status,"select",["Pending","In Progress","Completed"]);
+  const controls=document.createElement("div");controls.className="management-action-controls";const stamp=document.createElement("small");stamp.textContent="Created "+(action.createdAt?new Date(action.createdAt).toLocaleDateString():"");const buttons=document.createElement("div");buttons.className="action-row";
+  const save=document.createElement("button");save.type="button";save.className="secondary";save.dataset.saveAction="";save.textContent="Save changes";
+  const del=document.createElement("button");del.type="button";del.className="danger";del.dataset.deleteAction="";del.textContent="Delete";
+  buttons.append(save,del);controls.append(stamp,buttons);card.append(fields,controls);list.append(card);
+ });
+}
+$("managementActionForm").addEventListener("submit",event=>{
+ event.preventDefault();const title=$("newActionTitle").value.trim();if(!title)return;
+ const actions=read("management_actions",[]);actions.unshift({id:id(),title,owner:$("newActionOwner").value.trim(),priority:$("newActionPriority").value,status:"Pending",dueDate:$("newActionDue").value,createdAt:new Date().toISOString()});write("management_actions",actions);event.target.reset();$("newActionPriority").value="Medium";renderManagementActions();$("managementActionStatus").textContent="Action added and saved to your VEXT workspace.";log("Management action added: "+title);
+});
+$("managementActionList").addEventListener("click",event=>{
+ const card=event.target.closest("[data-management-action]");if(!card)return;const actionId=card.dataset.managementAction;
+ if(event.target.closest("[data-save-action]")){const actions=read("management_actions",[]),action=actions.find(x=>x.id===actionId);if(!action)return;const val=name=>card.querySelector('[data-field="'+name+'"]').value.trim();const title=val("title");if(!title){$("managementActionStatus").textContent="An action description is required.";return;}action.title=title;action.owner=val("owner");action.priority=val("priority");action.dueDate=val("dueDate");action.status=val("status");action.updatedAt=new Date().toISOString();write("management_actions",actions);renderManagementActions();$("managementActionStatus").textContent="Action updated and synced with your workspace.";log("Management action updated: "+title);return;}
+ if(event.target.closest("[data-delete-action]")){if(!confirm("Delete this management action?"))return;write("management_actions",read("management_actions",[]).filter(x=>x.id!==actionId));renderManagementActions();$("managementActionStatus").textContent="Action deleted.";log("Management action deleted.");}
+});
 function renderAnalystHistory(){
  const reports=read("business_analysis_reports",[]),count=$("analystHistoryCount"),list=$("analystReportHistory");
  if(!count||!list)return;
@@ -1760,7 +1793,7 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
   ].map(row=>'<tr><td>'+esc(row[0])+'</td><td>'+esc(row[1])+'</td><td>'+esc(row[2])+'</td></tr>').join("")+'</tbody></table></div></section>':'<div class="notice" style="margin:14px 0">All-time reporting selected. A previous equal-length period is not available for comparison.</div>';
   result.innerHTML='<section class="analyst-report-shell"><div class="analyst-report-header"><span class="ai-eyebrow">VEXT AI · MANAGEMENT INTELLIGENCE</span><span class="ai-document-badge">CONFIDENTIAL · BUSINESS</span></div><h2>Executive business report</h2><p class="muted small">Performance review and operational priorities</p><div class="audit-report-date">Generated '+esc(new Date().toLocaleString())+' · '+esc(input.reportingPeriod)+' · '+esc(code)+'</div>'+comparisonHtml+'<div class="analyst-report-body">'+formatAuditReport(report)+'</div></section><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
   $("copyAnalystReport").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(report);status.textContent="Report copied to clipboard.";}catch{status.textContent="Clipboard access was blocked. Select the report text and copy it manually.";}});
-  renderAnalystHistory();
+  renderAnalystHistory();renderManagementActions();
   status.textContent="Analysis complete. Report saved to your VEXT workspace. Review findings before making business decisions.";
  }catch(error){status.textContent="Could not generate the analysis: "+(error.message||"Please try again.");}
  finally{button.disabled=false;button.textContent="Generate business analysis";}
