@@ -1170,7 +1170,7 @@ async function sendChatMessage(){
   const response=await fetch(VEXT_CHAT_ENDPOINT,{
    method:"POST",
    headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},
-   body:JSON.stringify({message})
+   body:JSON.stringify({message,history:history.slice(-12)})
   });
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
