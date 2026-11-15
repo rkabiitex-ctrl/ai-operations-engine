@@ -561,6 +561,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
  <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
  <button class="nav" data-page="support">✧ &nbsp; Sales Agent</button>
+ <button class="nav" data-page="customer-support">♡ &nbsp; Customer Support</button>
  <button class="nav" data-page="employees">♙ &nbsp; AI Employees</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
@@ -768,6 +769,29 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  </div>
 </section>
 
+
+<section class="page" id="customer-support">
+ <div class="audit-hero"><div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / CUSTOMER EXPERIENCE</span><h2>AI Customer Support Desk</h2><p class="muted small">A live support assistant for product questions, service guidance and customer issue triage.</p></div><div class="audit-hero-side"><span class="audit-status-dot">● AI SERVICE READY</span><span class="pill">CUSTOMER SUPPORT · BETA</span><div class="audit-hero-mark">♡</div></div></div>
+ <div class="stats">
+  <div class="card"><div class="stat-title">Assistant status</div><div class="stat-number" style="font-size:20px">Live AI</div><div class="stat-foot">Uses the VEXT AI service</div></div>
+  <div class="card"><div class="stat-title">Business knowledge</div><div class="stat-number" style="font-size:20px" id="customerSupportKnowledge">Shared profile</div><div class="stat-foot">Uses saved Sales Agent instructions</div></div>
+  <div class="card"><div class="stat-title">Human oversight</div><div class="stat-number" style="font-size:20px">Enabled</div><div class="stat-foot">Complex cases flagged for review</div></div>
+ </div>
+ <div class="grid">
+  <div class="card"><div class="employee-section-heading"><div><span class="dashboard-eyebrow">LIVE ASSISTANT</span><h2>Test a customer conversation</h2><p class="muted small">Ask a realistic customer question and review the response before using it with customers.</p></div><span class="employee-state live">CONNECTED ON SEND</span></div>
+   <div class="chat-messages" id="customerSupportMessages" aria-live="polite" style="min-height:300px;max-height:460px"></div>
+   <div class="chat-compose"><textarea id="customerSupportInput" maxlength="4000" placeholder="Enter a customer question or complaint… (Enter to send)" aria-label="Customer support test message"></textarea><button class="primary" id="customerSupportSend" type="button">Send message ↑</button></div>
+   <div class="chat-status" id="customerSupportStatus" role="status" aria-live="polite">Ready. Sign in and send a test message to connect to the live AI service.</div>
+   <div class="action-row"><button class="secondary" id="customerSupportClear" type="button">Clear conversation</button><span class="muted small">Test messages are stored in this browser only.</span></div>
+  </div>
+  <div class="card"><span class="dashboard-eyebrow">OPERATING GUIDELINES</span><h2>How this employee works</h2>
+   <ul class="feature-list"><li>Answers using your saved business profile and Sales Agent instructions.</li><li>Does not invent prices, policies, stock, delivery dates or guarantees.</li><li>Flags complaints, refunds, account access and uncertain cases for human review.</li><li>Never asks customers for passwords, verification codes or full payment-card details.</li><li>Drafts guidance only; a human remains responsible for important decisions.</li></ul>
+   <div class="notice" style="margin-top:16px"><strong>Business knowledge source</strong><p class="small">Update products, services, FAQs, opening hours and support policies in the Sales Agent business instructions. This employee uses that shared information.</p><button class="secondary" id="customerSupportOpenTraining" type="button">Open Sales Agent training →</button></div>
+   <p class="muted small" style="margin-top:14px">Internal live AI preview only. A separate public support widget and automatic support-ticket creation are not connected yet.</p>
+  </div>
+ </div>
+</section>
+
 <section class="page" id="employees">
  <div class="employee-hero">
   <div class="employee-hero-copy">
@@ -809,12 +833,13 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <span class="employee-section-count">03 PLANNED</span>
  </div>
  <div class="employee-grid">
-  <article class="employee-card">
-   <div class="employee-card-top"><span class="employee-icon">♡</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
+  <article class="employee-card employee-live">
+   <div class="employee-card-top"><span class="employee-icon">♡</span><span class="employee-state live">AVAILABLE · BETA</span></div>
    <div class="employee-role">CUSTOMER EXPERIENCE</div>
    <h3>AI Customer Support Agent</h3>
-   <p class="muted small">Designed to answer common customer questions, explain services and route complex issues to a human team member.</p>
+   <p class="muted small">Answers customer questions using business knowledge, handles first-line issue triage and flags cases that need a human.</p>
    <div class="employee-tags"><span>Customer care</span><span>FAQ responses</span><span>Human escalation</span></div>
+   <div class="employee-card-bottom"><span class="muted small">Live authenticated AI preview</span><button class="primary" id="openCustomerSupport" type="button">Open Support Desk →</button></div>
   </article>
   <article class="employee-card">
    <div class="employee-card-top"><span class="employee-icon">✧</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
@@ -1193,11 +1218,44 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
+
+$( "openCustomerSupport" ).addEventListener("click",()=>{navigate("customer-support");renderCustomerSupportChat();});
+$("customerSupportOpenTraining").addEventListener("click",()=>navigate("support"));
+function renderCustomerSupportChat(){
+ const area=$("customerSupportMessages");if(!area)return;
+ area.replaceChildren();
+ const settings=getSupportSettings();
+ const welcome=document.createElement("div");welcome.className="chat-message assistant";
+ const role=document.createElement("span");role.className="chat-role";role.textContent=(settings.business||"VEXT AI")+" · CUSTOMER CARE";
+ const body=document.createElement("div");body.textContent="Hello! I’m the customer support assistant for "+(settings.business||"your business")+". How can I help you today?";
+ welcome.append(role,body);area.append(welcome);
+ const history=read("customer_support_preview",[]);
+ history.forEach(item=>{const bubble=document.createElement("div");bubble.className="chat-message "+(item.role==="user"?"user":"assistant");const label=document.createElement("span");label.className="chat-role";label.textContent=item.role==="user"?"CUSTOMER":"SUPPORT ASSISTANT";const content=document.createElement("div");content.textContent=item.content;bubble.append(label,content);area.append(bubble);});
+ area.scrollTop=area.scrollHeight;$("customerSupportKnowledge").textContent=settings.instructions?"Configured":"Needs setup";
+}
+async function askCustomerSupport(){
+ const input=$("customerSupportInput"),button=$("customerSupportSend"),status=$("customerSupportStatus"),question=input.value.trim();if(!question)return;
+ const settings=getSupportSettings(),history=read("customer_support_preview",[]),urgent=/(refund|chargeback|complaint|angry|legal|lawsuit|account hacked|security breach|fraud|medical emergency)/i.test(question);
+ history.push({role:"user",content:question});write("customer_support_preview",history.slice(-30));renderCustomerSupportChat();input.value="";button.disabled=true;button.textContent="Thinking…";status.textContent="Connecting to the VEXT AI service…";
+ const prompt="You are the first-line customer support agent for "+settings.business+". Be calm, empathetic, concise and professional.\nBUSINESS KNOWLEDGE (only source of business facts):\n"+(settings.instructions||"No detailed business knowledge has been configured. Ask clarifying questions and recommend human confirmation for business-specific facts.")+"\nRULES:\n- Never invent prices, policies, stock, availability, delivery dates, warranties or guarantees.\n- If an answer is not in the knowledge, say a team member must confirm it.\n- For complaints, refunds, billing disputes, account/security matters, legal threats or safety issues, show empathy and recommend a human team member. Do not promise resolution.\n- Never request passwords, one-time codes or full payment-card details.\n- If a human must take over, append [HUMAN REVIEW REQUIRED] on a new line.\nCUSTOMER MESSAGE:\n"+question;
+ try{
+  const token=await getVextAccessToken(),response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message:prompt})}),data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("AI request failed ("+response.status+")"));
+  let reply=typeof data.reply==="string"?data.reply.trim():"";if(!reply)throw new Error("The AI service returned an empty response.");
+  const flagged=urgent||reply.includes("[HUMAN REVIEW REQUIRED]");reply=reply.replace(/\n?\[HUMAN REVIEW REQUIRED\]/g,"").trim();if(flagged)reply+="\n\nHuman review recommended before responding or taking action.";
+  history.push({role:"assistant",content:reply});write("customer_support_preview",history.slice(-30));renderCustomerSupportChat();status.textContent=flagged?"Response ready · Human review recommended.":"Response received · Check business-specific details before sending.";
+ }catch(error){history.push({role:"assistant",content:"I couldn’t reach the AI service. "+(error.message||"Please try again.")});write("customer_support_preview",history.slice(-30));renderCustomerSupportChat();status.textContent="Connection problem. Check your sign-in and AI backend.";}
+ finally{button.disabled=false;button.textContent="Send message ↑";input.focus();}
+}
+$("customerSupportSend").addEventListener("click",askCustomerSupport);
+$("customerSupportInput").addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();askCustomerSupport();}});
+$("customerSupportClear").addEventListener("click",()=>{write("customer_support_preview",[]);renderCustomerSupportChat();$("customerSupportStatus").textContent="Conversation cleared.";});
+
 
 $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
 $("openBusinessAnalyst").addEventListener("click",()=>{navigate("analytics");$("analystResult").innerHTML="";$("analystStatus").textContent="Choose a reporting period, then generate your business analysis.";});
