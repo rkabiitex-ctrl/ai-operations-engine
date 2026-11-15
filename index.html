@@ -208,6 +208,15 @@ th{color:var(--muted);font-weight:600}
 @media(max-width:1100px){.pricing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.pricing-grid,.pricing-faq{grid-template-columns:1fr}.plan-description{min-height:0}}
 
+
+/* Premium invoice management */
+.invoice-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:27px 30px;margin-bottom:16px;border:1px solid #24445e;border-radius:17px;background:radial-gradient(circle at 85% 20%,rgba(34,211,238,.15),transparent 28%),linear-gradient(120deg,#10243c,#0b1729 72%)}
+.invoice-hero h2{font-size:clamp(24px,3vw,31px);letter-spacing:-.8px;margin:8px 0}.invoice-hero p{margin:0;color:#9fb3c9;font-size:13px;line-height:1.6}.invoice-hero-mark{width:65px;height:65px;display:grid;place-items:center;border:1px solid #2e6b88;border-radius:18px;background:#12334a;color:#67e8f9;font-size:32px}
+.invoice-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.invoice-kpi{padding:17px;border:1px solid #263b55;border-radius:13px;background:linear-gradient(150deg,#14243a,#0d192b);min-width:0}.invoice-kpi>span{display:block;color:#91a7be;font-size:9px;letter-spacing:1.2px}.invoice-kpi>strong{display:block;font-size:clamp(19px,2vw,25px);margin:12px 0 5px;overflow-wrap:anywhere}.invoice-kpi>small{font-size:10px;color:#8198b1}
+.invoice-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(220px,.8fr);gap:14px;margin-bottom:16px}.invoice-create-card,.invoice-guidance,.invoice-register-card{margin:0;padding:22px}.invoice-section-head,.invoice-register-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}.invoice-section-head h3,.invoice-register-head h3,.invoice-guidance h3{font-size:17px;margin:7px 0}.invoice-section-head p,.invoice-register-head p{margin:0}.invoice-step,.invoice-register-count{font-size:9px;color:#7dd3fc;border:1px solid #28516b;background:#102a40;padding:7px 9px;border-radius:20px;white-space:nowrap}.invoice-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}.invoice-field-wide{grid-column:1/-1}.invoice-form-grid .field{margin-bottom:12px}.invoice-form-grid input,.invoice-form-grid select{padding:12px}.invoice-form-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #263750;padding-top:15px;margin-top:3px}.invoice-form-footer span{font-size:10px;color:#91a7be}.invoice-form-footer b{color:#f1f5f9}.invoice-guidance{background:radial-gradient(circle at 85% 15%,rgba(34,211,238,.11),transparent 32%),linear-gradient(150deg,#14243a,#0d192b)}.invoice-guidance-icon{font-size:27px;color:#67e8f9;margin:20px 0 12px}.invoice-guidance p{font-size:12px;color:#9fb3c9;line-height:1.7}.invoice-guidance-rule{height:1px;background:#293e57;margin:20px 0}.invoice-guidance-foot{font-size:11px;color:#cde7f4}.invoice-guidance-foot small{display:block;color:#8198b1;margin:6px 0 0 14px}.invoice-register-head{align-items:center;margin-bottom:15px}.invoice-tools{display:flex;gap:10px;margin-bottom:13px}.invoice-tools input{max-width:380px}.invoice-tools select{max-width:170px}.invoice-status{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:20px;font-size:10px;white-space:nowrap}.invoice-status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}.invoice-status.paid{background:#123a32;color:#86efac}.invoice-status.unpaid{background:#3b2e1c;color:#fcd38d}.invoice-status.overdue{background:#482333;color:#fda4af}.invoice-date-cell{color:#b6c5d8;white-space:nowrap}.invoice-actions{display:flex;gap:6px;flex-wrap:wrap}.invoice-actions button{padding:8px 10px;font-size:10px}.invoice-customer{font-weight:700;color:#e5eef8}.invoice-number{font-size:11px;color:#67d9f5;font-weight:700}.invoice-description{display:block;color:#8198b1;font-size:10px;margin-top:4px;max-width:240px;white-space:normal}.invoice-overdue-note{font-size:9px;color:#fda4af;margin-top:4px}
+@media(max-width:1000px){.invoice-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.invoice-layout{grid-template-columns:1fr}.invoice-guidance{display:none}}
+@media(max-width:600px){.invoice-hero{padding:21px}.invoice-hero-mark{width:50px;height:50px;font-size:25px}.invoice-create-card,.invoice-register-card{padding:15px}.invoice-form-grid{grid-template-columns:1fr}.invoice-field-wide{grid-column:auto}.invoice-form-footer{align-items:flex-start;flex-direction:column}.invoice-tools{flex-direction:column}.invoice-tools input,.invoice-tools select{max-width:none}.invoice-register-head{align-items:flex-start;flex-direction:column}}
+
 /* VEXT AI account access */
 #vextAuthGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#12345a 0,#07111f 48%,#050b14 100%);font-family:inherit;color:#edf6ff}
 #vextAuthGate[hidden]{display:none!important}#vextAuthCard{width:min(100%,430px);padding:30px;border:1px solid #24466a;border-radius:20px;background:#0c1b2c;box-shadow:0 24px 80px #0009}
@@ -852,20 +861,38 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="invoices">
- <div class="card">
-  <h2>Create Invoice</h2>
-  <form id="invoiceForm">
-   <div class="field"><label>Customer</label><input id="invClient" required maxlength="100"></div>
-   <div class="field"><label>Description</label><input id="invDescription" required maxlength="200"></div>
-   <div class="field"><label>Invoice currency</label><select id="invCurrency"></select></div>
-   <div class="field"><label>Amount</label><input id="invAmount" type="number" min="0.01" step="0.01" required></div>
-   <button class="primary">Create Invoice</button>
-  </form>
+ <div class="invoice-hero">
+  <div><span class="ai-eyebrow">FINANCE OPERATIONS</span><h2>Invoices &amp; Payments</h2><p>Issue professional invoices, track collections and stay ahead of due dates.</p></div>
+  <div class="invoice-hero-mark">▤</div>
  </div>
- <div class="card">
-  <h2>Invoice Register</h2>
+ <div class="invoice-kpis">
+  <article class="invoice-kpi"><span>INVOICES · <b id="invoiceCurrencyLabel">USD</b></span><strong id="invoiceKpiCount">0</strong><small>Recorded in selected currency</small></article>
+  <article class="invoice-kpi"><span>TOTAL INVOICED</span><strong id="invoiceKpiTotal">$0.00</strong><small>Issued invoice value</small></article>
+  <article class="invoice-kpi"><span>COLLECTED</span><strong id="invoiceKpiPaid">$0.00</strong><small>Marked as paid</small></article>
+  <article class="invoice-kpi"><span>OUTSTANDING</span><strong id="invoiceKpiOutstanding">$0.00</strong><small id="invoiceKpiOverdue">0 overdue invoices</small></article>
+ </div>
+ <div class="invoice-layout">
+  <section class="card invoice-create-card">
+   <div class="invoice-section-head"><div><span class="ai-eyebrow">NEW DOCUMENT</span><h3>Create an invoice</h3><p class="muted small">Complete the details below. Your existing records remain unchanged.</p></div><span class="invoice-step">01 / CREATE</span></div>
+   <form id="invoiceForm" class="invoice-form-grid">
+    <div class="field invoice-field-wide"><label for="invClient">Bill to · Customer</label><input id="invClient" list="invoiceClientOptions" required maxlength="100" placeholder="Enter customer or choose a saved client"><datalist id="invoiceClientOptions"></datalist></div>
+    <div class="field invoice-field-wide"><label for="invDescription">Description / service</label><input id="invDescription" required maxlength="200" placeholder="e.g. Website design and development"></div>
+    <div class="field"><label for="invDate">Issue date</label><input id="invDate" type="date" required></div>
+    <div class="field"><label for="invDueDate">Due date</label><input id="invDueDate" type="date" required></div>
+    <div class="field"><label for="invCurrency">Invoice currency</label><select id="invCurrency"></select></div>
+    <div class="field"><label for="invAmount">Total amount</label><input id="invAmount" type="number" min="0.01" step="0.01" required placeholder="0.00"></div>
+    <div class="invoice-form-footer invoice-field-wide"><span>Payment status will start as <b>Unpaid</b>.</span><button class="primary" type="submit">＋ Create invoice</button></div>
+   </form>
+  </section>
+  <aside class="card invoice-guidance">
+   <span class="ai-eyebrow">COLLECTION CONTROL</span><div class="invoice-guidance-icon">◷</div><h3>Stay on top of payments</h3><p>Invoices with a past due date and an unpaid status are automatically highlighted as overdue.</p><div class="invoice-guidance-rule"></div><div class="invoice-guidance-foot"><span class="dashboard-live-dot">●</span> Currency-safe reporting <small>Each currency is reported separately.</small></div>
+  </aside>
+ </div>
+ <section class="card invoice-register-card">
+  <div class="invoice-register-head"><div><span class="ai-eyebrow">ACCOUNTS RECEIVABLE</span><h3>Invoice register</h3><p class="muted small">Search, review, print and update payment status.</p></div><span class="invoice-register-count" id="invoiceRegisterCount">0 records</span></div>
+  <div class="invoice-tools"><input id="invoiceSearch" type="search" placeholder="Search invoice number or customer..." aria-label="Search invoices"><select id="invoiceStatusFilter" aria-label="Filter invoices"><option value="all">All statuses</option><option value="Unpaid">Unpaid</option><option value="Paid">Paid</option><option value="Overdue">Overdue</option></select></div>
   <div class="table-wrap" id="invoiceTable"></div>
- </div>
+ </section>
 </section>
 
 <section class="page" id="analytics">
@@ -1132,7 +1159,7 @@ $("runAudit").addEventListener("click",async()=>{
  status.textContent="VEXT AI is reviewing the available records. Please wait.";
  result.innerHTML="";
  try{
-  const invoiceData=data.invoices.slice(0,500).map(x=>({number:x.number||"",client:x.client||"",description:x.description||"",amount:Number(x.amount)||0,currency:x.currency||"",status:x.status||"",date:x.date||""}));
+  const invoiceData=data.invoices.slice(0,500).map(x=>({number:x.number||"",client:x.client||"",description:x.description||"",amount:Number(x.amount)||0,currency:x.currency||"",status:x.status||"",date:x.date||"",dueDate:x.dueDate||""}));
   const auditInput={
    invoiceCount:data.invoices.length,clientRecordCount:data.clients.length,
    automatedChecksRun:true,
@@ -1461,16 +1488,43 @@ function closeClientProfile(){
  $("clientProfilePanel").hidden=true;$("clientProfilePanel").dataset.clientId="";
  $("clientProfileContent").innerHTML="";
 }
+function invoiceIsOverdue(invoice){
+ return invoice.status!=="Paid"&&!!invoice.dueDate&&invoice.dueDate<new Date().toISOString().slice(0,10);
+}
 function renderInvoices(){
- const invoices=read("invoices");
- $("invoiceTable").innerHTML=invoices.length?
- `<table><thead><tr><th>Number</th><th>Customer</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>
- ${invoices.map(x=>`<tr><td>${esc(x.number)}</td><td>${esc(x.client)}</td>
- <td>${formatMoney(x.amount,x.currency)}</td><td><span class="pill">${esc(x.status)}</span></td>
- <td><button class="secondary" data-print="${esc(x.id)}">Print</button>
- <button class="secondary" data-paid="${esc(x.id)}">${x.status==="Paid"?"Unpay":"Paid"}</button>
- <button class="danger" data-delete-invoice="${esc(x.id)}">Delete</button></td></tr>`).join("")}
- </tbody></table>`:'<div class="empty">No invoices created yet.</div>';
+ const all=read("invoices"),code=currentCurrency();
+ const invoices=all.filter(x=>x.currency===code);
+ const paid=invoices.filter(x=>x.status==="Paid");
+ const overdue=invoices.filter(invoiceIsOverdue);
+ const total=invoices.reduce((sum,x)=>sum+Number(x.amount||0),0);
+ const collected=paid.reduce((sum,x)=>sum+Number(x.amount||0),0);
+ $("invoiceCurrencyLabel").textContent=code;
+ $("invoiceKpiCount").textContent=invoices.length;
+ $("invoiceKpiTotal").textContent=formatMoney(total,code);
+ $("invoiceKpiPaid").textContent=formatMoney(collected,code);
+ $("invoiceKpiOutstanding").textContent=formatMoney(total-collected,code);
+ $("invoiceKpiOverdue").textContent=overdue.length+" overdue invoice"+(overdue.length===1?"":"s");
+ const clients=read("leads");
+ $("invoiceClientOptions").innerHTML=clients.map(x=>x.name?'<option value="'+esc(x.name)+'"></option>':"").join("");
+ const query=String($("invoiceSearch")?.value||"").trim().toLowerCase();
+ const filter=$("invoiceStatusFilter")?.value||"all";
+ const visible=invoices.filter(x=>{
+  const matches=!query||String(x.number||"").toLowerCase().includes(query)||String(x.client||"").toLowerCase().includes(query);
+  const state=invoiceIsOverdue(x)?"Overdue":(x.status||"Unpaid");
+  return matches&&(filter==="all"||filter===state);
+ });
+ $("invoiceRegisterCount").textContent=visible.length+" of "+invoices.length+" records";
+ $("invoiceTable").innerHTML=visible.length?
+ `<table><thead><tr><th>Invoice</th><th>Customer</th><th>Issue date</th><th>Due date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+ ${visible.map(x=>{const overdue=invoiceIsOverdue(x),status=overdue?"Overdue":(x.status||"Unpaid");return `<tr>
+ <td><span class="invoice-number">${esc(x.number||"Unnumbered")}</span><span class="invoice-description">${esc(x.description||"")}</span></td>
+ <td><span class="invoice-customer">${esc(x.client||"Unnamed customer")}</span></td>
+ <td class="invoice-date-cell">${x.date?esc(new Date(x.date).toLocaleDateString()):"—"}</td>
+ <td class="invoice-date-cell">${x.dueDate?esc(new Date(x.dueDate+"T00:00:00").toLocaleDateString()):'<span class="muted">Not set</span>'}${overdue?'<div class="invoice-overdue-note">Past due</div>':""}</td>
+ <td><strong>${formatMoney(x.amount,x.currency)}</strong></td>
+ <td><span class="invoice-status ${overdue?"overdue":status==="Paid"?"paid":"unpaid"}">${status}</span></td>
+ <td><div class="invoice-actions"><button class="secondary" data-print="${esc(x.id)}">Print</button><button class="secondary" data-paid="${esc(x.id)}">${x.status==="Paid"?"Mark unpaid":"Mark paid"}</button><button class="danger" data-delete-invoice="${esc(x.id)}">Delete</button></div></td></tr>`}).join("")}
+ </tbody></table>`:'<div class="empty">No invoices match this view. Create an invoice or adjust your search and filters.</div>';
 }
 function renderAnalytics(){
  const leads=read("leads"),inv=read("invoices");
@@ -1584,16 +1638,22 @@ $("leadTable").addEventListener("click",e=>{
  write("leads",read("leads").filter(x=>x.id!==b.dataset.deleteLead));
  log("Client record deleted.");render();
 });
+$("invDate").value=new Date().toISOString().slice(0,10);
+$("invoiceSearch").addEventListener("input",renderInvoices);
+$("invoiceStatusFilter").addEventListener("change",renderInvoices);
 $("invoiceForm").addEventListener("submit",e=>{
  e.preventDefault();
- const amount=Number($("invAmount").value);
+ const amount=Number($("invAmount").value),issueDate=$("invDate").value,dueDate=$("invDueDate").value;
  if(!Number.isFinite(amount)||amount<=0){alert("Enter a valid amount.");return}
+ if(!issueDate||!dueDate){alert("Enter both the issue date and due date.");return}
+ if(dueDate<issueDate){alert("The due date cannot be earlier than the issue date.");return}
  const invoices=read("invoices");
  const number="VX-"+new Date().getFullYear()+"-"+String(invoices.length+1).padStart(4,"0");
  invoices.push({id:id(),number,client:$("invClient").value.trim(),
- description:$("invDescription").value.trim(),amount,
- currency:$("invCurrency").value,status:"Unpaid",date:new Date().toISOString()});
+ description:$("invDescription").value.trim(),amount,currency:$("invCurrency").value,
+ status:"Unpaid",date:new Date(issueDate+"T12:00:00").toISOString(),dueDate});
  write("invoices",invoices);e.target.reset();
+ $("invDate").value=new Date().toISOString().slice(0,10);
  $("invCurrency").value=currentCurrency();
  log("Invoice "+number+" created.");render();
 });
@@ -1622,7 +1682,7 @@ $("invoiceTable").addEventListener("click",e=>{
   .total{font-size:25px;font-weight:bold;margin-top:35px}</style></head><body>
   <h1>VEXT AI</h1><h2>INVOICE</h2><hr>
   <p>Invoice: ${esc(x.number)}</p><p>Date: ${esc(new Date(x.date).toLocaleDateString())}</p>
-  <p>Customer: ${esc(x.client)}</p><p>Description: ${esc(x.description)}</p>
+  <p>Customer: ${esc(x.client)}</p><p>Description: ${esc(x.description)}</p><p>Due date: ${esc(x.dueDate||"Not set")}</p>
   <p>Status: ${esc(x.status)}</p><hr>
   <div class="total">Total: ${esc(formatMoney(x.amount,x.currency))}</div>
   <p>Thank you for your business.</p><script>window.onload=()=>window.print()<\/script>
