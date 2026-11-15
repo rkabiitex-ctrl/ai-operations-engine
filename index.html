@@ -1910,7 +1910,7 @@ $("invoiceTable").addEventListener("click",e=>{
   const invoice=read("invoices").find(v=>v.id===edit.dataset.editInvoice);if(!invoice)return;
   $("editInvoiceId").value=invoice.id;$("editInvoiceClient").value=invoice.client||"";$("editInvoiceDescription").value=invoice.description||"";
   $("editInvoiceIssueDate").value=invoice.date?new Date(invoice.date).toISOString().slice(0,10):"";
-  $("editInvoiceDueDate").value=invoice.dueDate||"";$("editInvoiceAmount").value=Number(invoice.amount||0);$("editInvoiceCurrency").value=invoice.currency||currentCurrency();
+  $("editInvoiceDueDate").value=invoice.dueDate||"";$("editInvoiceAmount").value=Number(invoice.amount||0);$("editInvoiceCurrency").innerHTML=$("invCurrency").innerHTML;$("editInvoiceCurrency").value=invoice.currency||currentCurrency();
   $("invoiceEditStatus").textContent="";$("invoiceEditModal").hidden=false;$("editInvoiceClient").focus();return;
  }
  const paid=e.target.closest("[data-paid]");
