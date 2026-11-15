@@ -133,6 +133,7 @@ th{color:var(--muted);font-weight:600}
 .chat-workspace{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px;min-height:650px}
 .chat-history-panel,.chat-main-panel{min-width:0;border:1px solid #263b55;border-radius:15px;background:linear-gradient(160deg,#111f33,#0c1729)}
 .chat-history-panel{display:flex;flex-direction:column;padding:16px}.chat-history-heading{display:flex;flex-direction:column;gap:5px;padding-bottom:14px;border-bottom:1px solid #25364e}.chat-history-heading strong{font-size:13px}.chat-history-count{font-size:10px;color:#8198b1}
+.chat-history-heading-row{display:flex;justify-content:space-between;align-items:center;gap:8px}.chat-new-button{padding:7px 9px;font-size:10px;white-space:nowrap}.chat-history-item.active{background:#17334b;border-color:#28617c;color:#fff}.chat-history-item{cursor:pointer;transition:background .15s,border-color .15s}
 .chat-history-list{display:flex;flex-direction:column;gap:5px;overflow-y:auto;max-height:430px;padding:12px 0}.chat-history-item{width:100%;border:1px solid transparent;border-radius:8px;padding:9px;text-align:left;background:transparent;color:#cbd5e1;font-size:11px;line-height:1.4;overflow-wrap:anywhere}.chat-history-item:hover{background:#192c43;border-color:#29445f}.chat-history-item span{display:block;font-size:9px;letter-spacing:.8px;color:#67d9f5;margin-bottom:4px}.chat-history-empty{font-size:11px;color:#8198b1;line-height:1.6;padding:12px 3px}
 .chat-history-foot{display:flex;align-items:center;gap:8px;margin-top:auto;padding:12px 0;color:#8298b0;font-size:10px}.chat-history-dot{width:6px;height:6px}
 .chat-clear-button{width:100%;padding:9px;font-size:11px}
@@ -630,7 +631,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  <div class="chat-page-heading"><div><span class="ai-eyebrow">VEXT AI / INTELLIGENCE</span><h2>What can we solve today?</h2><p>Think, plan and move your business forward with VEXT AI.</p></div><span class="chat-online"><i></i> AI service ready</span></div>
  <div class="chat-workspace">
   <aside class="chat-history-panel">
-   <div class="chat-history-heading"><strong>Conversation</strong><span class="chat-history-count" id="chatHistoryCount">0 messages</span></div>
+   <div class="chat-history-heading"><div class="chat-history-heading-row"><strong>Conversations</strong><button type="button" class="primary chat-new-button" id="newChat">＋ New chat</button></div><span class="chat-history-count" id="chatHistoryCount">0 chats</span></div>
    <div class="chat-history-list" id="chatHistoryList"><div class="chat-history-empty">Your conversation will appear here.</div></div>
    <div class="chat-history-foot"><span class="chat-history-dot"></span>Saved conversation history</div>
    <button class="secondary chat-clear-button" id="clearChat">Clear conversation</button>
@@ -944,7 +945,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -953,7 +954,9 @@ function workspaceSnapshot(){
   country:localStorage.getItem(key+"country")||"",
   support_settings:read("support_settings",{}),
   support_business_id:localStorage.getItem(key+"support_business_id")||"",
-  chat_history:read("chat_history",[])
+  chat_history:read("chat_history",[]),
+  chat_conversations:read("chat_conversations",[]),
+  active_chat_id:localStorage.getItem(key+"active_chat_id")||""
  };
 }
 function setWorkspaceSyncStatus(value,bad=false){
@@ -990,7 +993,7 @@ function scheduleWorkspaceSync(delay=900){
  vextWorkspaceSyncTimer=setTimeout(()=>syncWorkspaceNow(),delay);
 }
 function applyWorkspaceSnapshot(workspace){
- const rawKeys=["currency","business","country","support_business_id"];
+ const rawKeys=["currency","business","country","support_business_id","active_chat_id"];
  VEXT_WORKSPACE_KEYS.forEach(name=>{
   if(!Object.prototype.hasOwnProperty.call(workspace,name)){localStorage.removeItem(key+name);return}
   const value=workspace[name];
@@ -1053,13 +1056,65 @@ async function getVextAccessToken(){
  return window.vextGetAccessToken();
 }
 function loadChatHistory(){
+ const conversations=read("chat_conversations",[]);
+ const activeId=localStorage.getItem(key+"active_chat_id")||"";
+ const active=conversations.find(item=>item.id===activeId);
+ if(active)return Array.isArray(active.messages)?active.messages:[];
  try{
-  const saved=JSON.parse(localStorage.getItem(key+"chat_history")||"[]");
-  return Array.isArray(saved)?saved:[];
+  const legacy=JSON.parse(localStorage.getItem(key+"chat_history")||"[]");
+  return Array.isArray(legacy)?legacy:[];
  }catch{return []}
 }
 function saveChatHistory(items){
- try{localStorage.setItem(key+"chat_history",JSON.stringify(items.slice(-60)));scheduleWorkspaceSync()}catch{}
+ try{
+  const conversations=read("chat_conversations",[]);
+  let activeId=localStorage.getItem(key+"active_chat_id")||"";
+  let active=conversations.find(item=>item.id===activeId);
+  if(!active){
+   active={id:id(),title:"Previous conversation",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),messages:[]};
+   conversations.unshift(active);activeId=active.id;localStorage.setItem(key+"active_chat_id",activeId);
+  }
+  active.messages=items.slice(-100);
+  active.updatedAt=new Date().toISOString();
+  const firstQuestion=active.messages.find(item=>item.role==="user")?.content||"New conversation";
+  if(active.title==="Previous conversation"||active.title==="New conversation")active.title=firstQuestion.slice(0,48)+(firstQuestion.length>48?"…":"");
+  localStorage.setItem(key+"chat_conversations",JSON.stringify(conversations.slice(0,40)));
+  localStorage.setItem(key+"chat_history",JSON.stringify(active.messages));
+  scheduleWorkspaceSync();
+ }catch(error){console.error("VEXT chat save:",error)}
+}
+function ensureChatConversations(){
+ let conversations=read("chat_conversations",[]);
+ if(!Array.isArray(conversations))conversations=[];
+ if(!conversations.length){
+  let legacy=[];try{legacy=JSON.parse(localStorage.getItem(key+"chat_history")||"[]")}catch{}
+  if(Array.isArray(legacy)&&legacy.length){
+   conversations=[{id:id(),title:(legacy.find(x=>x.role==="user")?.content||"Previous conversation").slice(0,48),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),messages:legacy}];
+  }
+ }
+ if(!conversations.length)conversations=[{id:id(),title:"New conversation",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),messages:[]}];
+ let activeId=localStorage.getItem(key+"active_chat_id")||"";
+ if(!conversations.some(x=>x.id===activeId))activeId=conversations[0].id;
+ localStorage.setItem(key+"chat_conversations",JSON.stringify(conversations));
+ localStorage.setItem(key+"active_chat_id",activeId);
+ const active=conversations.find(x=>x.id===activeId);
+ localStorage.setItem(key+"chat_history",JSON.stringify(active.messages||[]));
+}
+function startNewChat(){
+ const conversations=read("chat_conversations",[]);
+ const fresh={id:id(),title:"New conversation",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),messages:[]};
+ conversations.unshift(fresh);
+ localStorage.setItem(key+"chat_conversations",JSON.stringify(conversations.slice(0,40)));
+ localStorage.setItem(key+"active_chat_id",fresh.id);
+ localStorage.setItem(key+"chat_history","[]");
+ scheduleWorkspaceSync();renderChatHistory();$("chatInput").focus();
+}
+function openChatConversation(conversationId){
+ const conversations=read("chat_conversations",[]);
+ const selected=conversations.find(item=>item.id===conversationId);if(!selected)return;
+ localStorage.setItem(key+"active_chat_id",selected.id);
+ localStorage.setItem(key+"chat_history",JSON.stringify(selected.messages||[]));
+ renderChatHistory();
 }
 function addChatMessage(role,message){
  const area=$("chatMessages");
@@ -1075,11 +1130,15 @@ function addChatMessage(role,message){
  area.scrollTop=area.scrollHeight;
 }
 function renderChatHistoryNav(history){
- const list=$("chatHistoryList"),count=$("chatHistoryCount");
- if(!list)return;
- const userMessages=history.map((item,index)=>({...item,index})).filter(item=>item.role==="user");
- if(count)count.textContent=history.length+" messages";
- list.innerHTML=userMessages.length?userMessages.slice().reverse().map(item=>`<button type="button" class="chat-history-item" data-chat-index="${item.index}"><span>YOU ASKED</span>${esc(item.content.slice(0,88))}${item.content.length>88?"…":""}</button>`).join(""):'<div class="chat-history-empty">Ask VEXT AI a question and your conversation will be listed here.</div>';
+ const list=$("chatHistoryList"),count=$("chatHistoryCount");if(!list)return;
+ const conversations=read("chat_conversations",[]),activeId=localStorage.getItem(key+"active_chat_id")||"";
+ if(count)count.textContent=conversations.length+" saved chats";
+ list.innerHTML=conversations.map(item=>{
+  const first=item.messages?.find(message=>message.role==="user")?.content||"New conversation";
+  const title=item.title&&item.title!=="New conversation"?item.title:first;
+  const active=item.id===activeId;
+  return `<button type="button" class="chat-history-item ${active?"active":""}" data-chat-id="${esc(item.id)}"><span>${active?"CURRENT CHAT":"SAVED CHAT"}</span>${esc(title.slice(0,70))}</button>`;
+ }).join("")||'<div class="chat-history-empty">Start a new chat to begin.</div>';
 }
 function renderChatHistory(){
  const area=$("chatMessages");
@@ -1137,17 +1196,19 @@ $("sendChat").addEventListener("click",sendChatMessage);
 $("chatInput").addEventListener("keydown",e=>{
  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChatMessage()}
 });
+$("newChat").addEventListener("click",startNewChat);
 $("clearChat").addEventListener("click",()=>{
- if(!confirm("Clear this conversation from this browser?"))return;
- localStorage.removeItem(key+"chat_history");
- scheduleWorkspaceSync();
- renderChatHistory();
- $("chatStatus").textContent="Conversation cleared.";
+ if(!confirm("Delete this conversation? Other saved chats will remain."))return;
+ const activeId=localStorage.getItem(key+"active_chat_id")||"";
+ let conversations=read("chat_conversations",[]).filter(item=>item.id!==activeId);
+ if(!conversations.length)conversations=[{id:id(),title:"New conversation",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),messages:[]}];
+ localStorage.setItem(key+"chat_conversations",JSON.stringify(conversations));
+ localStorage.setItem(key+"active_chat_id",conversations[0].id);
+ localStorage.setItem(key+"chat_history",JSON.stringify(conversations[0].messages||[]));
+ scheduleWorkspaceSync();renderChatHistory();$("chatStatus").textContent="Conversation deleted.";
 });
 $("chatHistoryList").addEventListener("click",event=>{
- const item=event.target.closest("[data-chat-index]");if(!item)return;
- const target=$("chatMessages").querySelector('[data-message-index="'+item.dataset.chatIndex+'"]');
- if(target)target.scrollIntoView({behavior:"smooth",block:"center"});
+ const item=event.target.closest("[data-chat-id]");if(item)openChatConversation(item.dataset.chatId);
 });
 $("chatMessages").addEventListener("click",()=>{});
 document.querySelectorAll("[data-chat-prompt]").forEach(button=>button.addEventListener("click",()=>{
@@ -1161,6 +1222,7 @@ document.querySelectorAll("[data-ai-template]").forEach(button=>button.addEventL
  $("docPrompt").scrollIntoView({behavior:"smooth",block:"center"});
 }));
 $("openVextChatFromStudio").addEventListener("click",()=>navigate("chat"));
+ensureChatConversations();
 renderChatHistory();
 
 function renderActivity(){
