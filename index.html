@@ -358,7 +358,17 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .crm-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;flex-wrap:wrap;margin:2px 0 18px}
 .crm-heading h2{font-size:25px;margin:7px 0}
 .crm-heading p{margin:0}
-.crm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.crm-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.crm-stat-overdue{border-color:rgba(244,110,110,.35)}
+.crm-directory-tools{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;margin-bottom:14px}
+.crm-directory-tools #leadSearch{margin:0}
+.crm-followup-tag{display:inline-block;font-size:11px;padding:5px 8px;border-radius:8px;background:rgba(139,160,184,.12);color:#c2d2e2;white-space:nowrap}
+.crm-followup-tag.overdue{background:rgba(235,85,85,.15);color:#ff9a9a}
+.crm-followup-tag.today{background:rgba(242,177,75,.15);color:#ffd18a}
+.crm-followup-tag.upcoming{background:rgba(67,198,220,.13);color:#8fe5f2}
+.crm-followup-tag.complete{color:#91d6b1}
+@media(max-width:1050px){.crm-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.crm-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.crm-directory-tools{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.crm-edit-grid{grid-template-columns:1fr}}
 .crm-stat{padding:17px 19px;border:1px solid rgba(123,157,190,.18);border-radius:14px;background:linear-gradient(145deg,#13243b,#0c192b)}
 .crm-stat span,.crm-stat small{display:block;color:#91a7c0;font-size:11px}
 .crm-stat strong{display:block;font-size:27px;letter-spacing:-.8px;margin:8px 0 5px}
@@ -725,10 +735,12 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <div><span class="dashboard-eyebrow">CUSTOMER RELATIONSHIP MANAGEMENT</span><h2>Client Management</h2><p class="muted small">Keep customer details, conversations and follow-ups organized in one place.</p></div>
   <span class="pill">CUSTOMER CRM</span>
  </div>
- <div class="crm-stats">
-  <div class="crm-stat"><span>Total clients</span><strong id="crmTotal">0</strong><small>All saved customer records</small></div>
-  <div class="crm-stat"><span>With website enquiries</span><strong id="crmEnquiries">0</strong><small>Customers with saved conversations</small></div>
-  <div class="crm-stat"><span>Follow-ups to plan</span><strong id="crmFollowups">0</strong><small>Customers with a next action</small></div>
+ <div class="crm-stats crm-stats-pro">
+  <div class="crm-stat"><span>Total clients</span><strong id="crmTotal">0</strong><small>Saved customer records</small></div>
+  <div class="crm-stat"><span>Website enquiries</span><strong id="crmEnquiries">0</strong><small>Customers with conversations</small></div>
+  <div class="crm-stat crm-stat-overdue"><span>Overdue follow-ups</span><strong id="crmOverdue">0</strong><small>Past their scheduled date</small></div>
+  <div class="crm-stat"><span>Due today</span><strong id="crmDueToday">0</strong><small>Needs attention today</small></div>
+  <div class="crm-stat"><span>Upcoming</span><strong id="crmUpcoming">0</strong><small>Scheduled for later</small></div>
  </div>
  <div class="grid crm-layout">
   <div class="card">
@@ -744,7 +756,12 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   </div>
   <div class="card crm-directory-card">
    <div class="crm-card-heading"><div><h2>Customer directory</h2><p class="muted small">Search and open a customer profile.</p></div><span class="crm-directory-count" id="crmDirectoryCount">0 records</span></div>
-   <input id="leadSearch" aria-label="Search customers" placeholder="Search by name, email, phone, country or interest...">
+   <div class="crm-directory-tools">
+    <input id="leadSearch" aria-label="Search customers" placeholder="Search by name, email, phone, country or interest...">
+    <select id="crmFollowupFilter" aria-label="Filter follow-ups">
+     <option value="all">All customers</option><option value="overdue">Overdue</option><option value="today">Due today</option><option value="upcoming">Upcoming</option><option value="unscheduled">No date set</option>
+    </select>
+   </div>
    <div class="table-wrap" id="leadTable"></div>
   </div>
  </div>
@@ -1091,22 +1108,45 @@ function crmInterestSummary(client){
  const summary=firstSentence.length<=92?firstSentence:firstSentence.slice(0,89).trimEnd()+"…";
  return summary.replace(/\\s+/g," ");
 }
+function crmFollowupState(client){
+ const stage=client.salesStage||client.enquiryHistory?.at(-1)?.salesStage||"New";
+ if(["Won","Lost"].includes(stage))return "complete";
+ const date=String(client.nextFollowUpDate||"").trim();
+ if(!date)return "unscheduled";
+ const today=new Date();const localToday=[today.getFullYear(),String(today.getMonth()+1).padStart(2,"0"),String(today.getDate()).padStart(2,"0")].join("-");
+ return date<localToday?"overdue":date===localToday?"today":"upcoming";
+}
+function crmFollowupLabel(client){
+ const state=crmFollowupState(client);
+ if(state==="overdue")return "Overdue";
+ if(state==="today")return "Due today";
+ if(state==="upcoming")return "Upcoming · "+client.nextFollowUpDate;
+ if(state==="complete")return "Closed";
+ return "Not scheduled";
+}
 function renderLeads(){
  const leads=read("leads");
  const q=$("leadSearch").value.toLowerCase();
- const filtered=leads.filter(x=>
- [x.name,x.email,x.phone,x.country,x.interest,x.salesStage,x.nextAction].join(" ").toLowerCase().includes(q));
+ const filter=$("crmFollowupFilter")?.value||"all";
+ const counts={overdue:0,today:0,upcoming:0};
+ leads.forEach(x=>{const state=crmFollowupState(x);if(counts[state]!==undefined)counts[state]++;});
  $("crmTotal").textContent=leads.length;
  $("crmEnquiries").textContent=leads.filter(x=>Array.isArray(x.enquiryHistory)&&x.enquiryHistory.length).length;
- $("crmFollowups").textContent=leads.filter(x=>String(x.nextAction||"").trim()).length;
+ $("crmOverdue").textContent=counts.overdue;
+ $("crmDueToday").textContent=counts.today;
+ $("crmUpcoming").textContent=counts.upcoming;
+ const filtered=leads.filter(x=>
+ [x.name,x.email,x.phone,x.country,x.interest,x.salesStage,x.nextAction,x.nextFollowUpDate].join(" ").toLowerCase().includes(q)
+ ).filter(x=>filter==="all"||(filter==="unscheduled"?crmFollowupState(x)==="unscheduled":crmFollowupState(x)===filter));
  $("crmDirectoryCount").textContent=filtered.length+" record"+(filtered.length===1?"":"s");
  $("leadTable").innerHTML=filtered.length?
- `<table><thead><tr><th>Customer</th><th>Contact</th><th>Sales status</th><th>Profile</th></tr></thead><tbody>
- ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;const stage=x.salesStage||x.enquiryHistory?.at(-1)?.salesStage||"New";return `<tr>
+ `<table><thead><tr><th>Customer</th><th>Contact</th><th>Sales status</th><th>Follow-up</th><th>Profile</th></tr></thead><tbody>
+ ${filtered.map(x=>{const historyCount=Array.isArray(x.enquiryHistory)?x.enquiryHistory.length:0;const stage=x.salesStage||x.enquiryHistory?.at(-1)?.salesStage||"New";const state=crmFollowupState(x);return `<tr>
  <td><strong>${esc(x.name||"Unnamed client")}</strong><br><small>${esc(crmInterestSummary(x))}</small>${historyCount?`<br><small>${historyCount} website ${historyCount===1?"enquiry":"enquiries"}</small>`:""}</td>
  <td>${esc(x.email||x.phone||"—")}</td><td><span class="pill">${esc(stage)}</span></td>
+ <td><span class="crm-followup-tag ${state}">${esc(crmFollowupLabel(x))}</span></td>
  <td><button class="secondary" data-open-client="${esc(x.id)}">View profile</button></td></tr>`}).join("")}
- </tbody></table>`:'<div class="empty">No matching clients yet. Add a client or import website enquiries from the Sales Agent.</div>';
+ </tbody></table>`:'<div class="empty">No customers match this search or follow-up filter.</div>';
  const selected=$("clientProfilePanel").dataset.clientId;
  if(selected&&leads.some(x=>x.id===selected))renderClientProfile(selected);
  else if(selected)closeClientProfile();
@@ -1129,6 +1169,7 @@ function renderClientProfile(clientId){
   <div class="crm-edit-grid">
    <div class="field"><label for="clientSalesStage">Sales status</label><select id="clientSalesStage">${stages.map(s=>`<option value="${s}" ${s===currentStage?"selected":""}>${s}</option>`).join("")}</select></div>
    <div class="field"><label for="clientNextAction">Next follow-up action</label><input id="clientNextAction" maxlength="300" value="${esc(client.nextAction||"")}" placeholder="e.g. Contact customer with a quote"></div>
+   <div class="field"><label for="clientFollowupDate">Follow-up date</label><input id="clientFollowupDate" type="date" value="${esc(client.nextFollowUpDate||"")}"><small class="muted">Set a date to track overdue, today's and upcoming follow-ups.</small></div>
   </div>
   <div class="field"><label for="clientNotes">Internal notes</label><textarea id="clientNotes" maxlength="2000" rows="3" placeholder="Add useful context for your team...">${esc(client.notes||"")}</textarea></div>
   <div class="action-row"><button class="primary" id="saveClientProfile" type="button">Save profile updates</button><span class="chat-status" id="clientProfileStatus" role="status"></span></div>
@@ -1216,6 +1257,7 @@ $("leadForm").addEventListener("submit",e=>{
  write("leads",leads);e.target.reset();log("New client registered.");render();
 });
 $("leadSearch").addEventListener("input",renderLeads);
+$("crmFollowupFilter").addEventListener("change",renderLeads);
 $("leadTable").addEventListener("click",e=>{
  const open=e.target.closest("[data-open-client]");
  if(open){renderClientProfile(open.dataset.openClient);$("clientProfilePanel").scrollIntoView({behavior:"smooth",block:"start"});}
@@ -1227,16 +1269,20 @@ $("clientProfileContent").addEventListener("click",e=>{
  const previousStage=client.salesStage||client.enquiryHistory?.at(-1)?.salesStage||"New";
  const previousAction=String(client.nextAction||"").trim();
  const previousNotes=String(client.notes||"").trim();
+ const previousFollowupDate=String(client.nextFollowUpDate||"").trim();
  const nextStage=$("clientSalesStage").value;
  const nextAction=$("clientNextAction").value.trim();
+ const nextFollowupDate=$("clientFollowupDate").value;
  const nextNotes=$("clientNotes").value.trim();
  const savedAt=new Date().toISOString();
  client.activityLog=Array.isArray(client.activityLog)?client.activityLog:[];
  if(previousStage!==nextStage)client.activityLog.push({kind:"status",title:"Sales status changed",detail:previousStage+" → "+nextStage,at:savedAt,status:nextStage});
  if(previousAction!==nextAction)client.activityLog.push({kind:"followup",title:"Next follow-up action updated",detail:nextAction||"Follow-up action cleared",at:savedAt});
  if(previousNotes!==nextNotes)client.activityLog.push({kind:"note",title:"Internal note updated",detail:nextNotes||"Internal notes cleared",at:savedAt});
+ if(previousFollowupDate!==nextFollowupDate)client.activityLog.push({kind:"followup-date",title:"Follow-up date updated",detail:nextFollowupDate?("Scheduled for "+nextFollowupDate):"Follow-up date cleared",at:savedAt});
  client.salesStage=nextStage;
  client.nextAction=nextAction;
+ client.nextFollowUpDate=nextFollowupDate;
  client.notes=nextNotes;
  write("leads",all);log("Client profile updated for "+(client.name||"customer")+".");
  $("clientProfileStatus").textContent="Profile updates saved.";
