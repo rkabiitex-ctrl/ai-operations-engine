@@ -360,6 +360,13 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .crm-heading p{margin:0}
 .crm-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:18px}
 .crm-stat-overdue{border-color:rgba(244,110,110,.35)}
+.crm-reminder-center{margin-bottom:18px}
+.crm-reminder-feed{display:grid;gap:8px}
+.crm-reminder-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:11px 12px;border:1px solid rgba(123,157,190,.14);border-radius:10px;background:rgba(8,20,35,.55)}
+.crm-reminder-row strong,.crm-reminder-row small{display:block}
+.crm-reminder-row strong{font-size:12px}
+.crm-reminder-row small{font-size:11px;color:#91a7c0;margin-top:4px;overflow-wrap:anywhere}
+@media(max-width:600px){.crm-reminder-row{grid-template-columns:1fr auto}.crm-reminder-row button{grid-column:1/-1}}
 .crm-directory-tools{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;margin-bottom:14px}
 .crm-directory-tools #leadSearch{margin:0}
 .crm-followup-tag{display:inline-block;font-size:11px;padding:5px 8px;border-radius:8px;background:rgba(139,160,184,.12);color:#c2d2e2;white-space:nowrap}
@@ -734,6 +741,10 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  <div class="crm-heading">
   <div><span class="dashboard-eyebrow">CUSTOMER RELATIONSHIP MANAGEMENT</span><h2>Client Management</h2><p class="muted small">Keep customer details, conversations and follow-ups organized in one place.</p></div>
   <span class="pill">CUSTOMER CRM</span>
+ </div>
+ <div class="card crm-reminder-center">
+  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">SALES TASKS</span><h2>Reminder centre</h2><p class="muted small">Customers with follow-ups due today or overdue.</p></div><button class="secondary" id="enableCrmNotifications" type="button">Enable browser alerts</button></div>
+  <div id="crmReminderFeed" class="crm-reminder-feed"><div class="empty">Loading follow-up reminders…</div></div>
  </div>
  <div class="crm-stats crm-stats-pro">
   <div class="crm-stat"><span>Total clients</span><strong id="crmTotal">0</strong><small>Saved customer records</small></div>
@@ -1124,6 +1135,24 @@ function crmFollowupLabel(client){
  if(state==="complete")return "Closed";
  return "Not scheduled";
 }
+function renderCrmReminderAlerts(leads){
+ const due=leads.filter(x=>["overdue","today"].includes(crmFollowupState(x))).sort((a,b)=>String(a.nextFollowUpDate||"").localeCompare(String(b.nextFollowUpDate||"")));
+ $("crmReminderFeed").innerHTML=due.length?due.slice(0,8).map(x=>`<div class="crm-reminder-row"><div><strong>${esc(x.name||"Unnamed customer")}</strong><small>${esc(x.nextAction||"Follow up with this customer")}</small></div><span class="crm-followup-tag ${crmFollowupState(x)}">${esc(crmFollowupLabel(x))}</span><button class="secondary" data-reminder-client="${esc(x.id)}">Open</button></div>`).join(""):'<div class="empty">No follow-ups are due today. You are all caught up.</div>';
+ const enabled=localStorage.getItem("vext_crm_browser_alerts")==="true";
+ const btn=$("enableCrmNotifications");
+ if(btn)btn.textContent=enabled?"Browser alerts enabled":"Enable browser alerts";
+ if(enabled&&"Notification" in window&&Notification.permission==="granted"){
+  const today=new Date().toISOString().slice(0,10);
+  due.forEach(x=>{
+   const key="vext_crm_notice_"+String(x.id)+"_"+today;
+   if(localStorage.getItem(key))return;
+   const state=crmFollowupState(x);
+   const notice=new Notification(state==="overdue"?"Overdue customer follow-up":"Customer follow-up due today",{body:(x.name||"Customer")+": "+(x.nextAction||"Contact this customer"),tag:key});
+   notice.onclick=()=>{window.focus();renderClientProfile(x.id);$("clientProfilePanel").scrollIntoView({behavior:"smooth",block:"start"});notice.close();};
+   localStorage.setItem(key,"1");
+  });
+ }
+}
 function renderLeads(){
  const leads=read("leads");
  const q=$("leadSearch").value.toLowerCase();
@@ -1135,6 +1164,7 @@ function renderLeads(){
  $("crmOverdue").textContent=counts.overdue;
  $("crmDueToday").textContent=counts.today;
  $("crmUpcoming").textContent=counts.upcoming;
+ renderCrmReminderAlerts(leads);
  const filtered=leads.filter(x=>
  [x.name,x.email,x.phone,x.country,x.interest,x.salesStage,x.nextAction,x.nextFollowUpDate].join(" ").toLowerCase().includes(q)
  ).filter(x=>filter==="all"||(filter==="unscheduled"?crmFollowupState(x)==="unscheduled":crmFollowupState(x)===filter));
@@ -1258,6 +1288,17 @@ $("leadForm").addEventListener("submit",e=>{
 });
 $("leadSearch").addEventListener("input",renderLeads);
 $("crmFollowupFilter").addEventListener("change",renderLeads);
+$("enableCrmNotifications").addEventListener("click",async()=>{
+ if(!("Notification" in window)){alert("This browser does not support desktop notifications.");return;}
+ const permission=await Notification.requestPermission();
+ if(permission==="granted"){localStorage.setItem("vext_crm_browser_alerts","true");renderCrmReminderAlerts(read("leads"));}
+ else{localStorage.setItem("vext_crm_browser_alerts","false");alert("Browser alerts were not enabled. You can change this in your browser's site settings.");}
+});
+$("crmReminderFeed").addEventListener("click",e=>{
+ const button=e.target.closest("[data-reminder-client]");if(!button)return;
+ renderClientProfile(button.dataset.reminderClient);
+ $("clientProfilePanel").scrollIntoView({behavior:"smooth",block:"start"});
+});
 $("leadTable").addEventListener("click",e=>{
  const open=e.target.closest("[data-open-client]");
  if(open){renderClientProfile(open.dataset.openClient);$("clientProfilePanel").scrollIntoView({behavior:"smooth",block:"start"});}
