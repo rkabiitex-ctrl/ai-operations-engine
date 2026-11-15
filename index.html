@@ -217,6 +217,12 @@ th{color:var(--muted);font-weight:600}
 @media(max-width:1000px){.invoice-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.invoice-layout{grid-template-columns:1fr}.invoice-guidance{display:none}}
 @media(max-width:600px){.invoice-hero{padding:21px}.invoice-hero-mark{width:50px;height:50px;font-size:25px}.invoice-create-card,.invoice-register-card{padding:15px}.invoice-form-grid{grid-template-columns:1fr}.invoice-field-wide{grid-column:auto}.invoice-form-footer{align-items:flex-start;flex-direction:column}.invoice-tools{flex-direction:column}.invoice-tools input,.invoice-tools select{max-width:none}.invoice-register-head{align-items:flex-start;flex-direction:column}}
 
+
+/* Executive business analytics */
+.analytics-hero{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:27px 30px;margin-bottom:15px;border:1px solid #24445e;border-radius:17px;background:radial-gradient(circle at 85% 15%,rgba(34,211,238,.15),transparent 30%),linear-gradient(120deg,#10243c,#0b1729 72%)}.analytics-hero h2{font-size:clamp(24px,3vw,31px);letter-spacing:-.8px;margin:8px 0}.analytics-hero p{font-size:13px;line-height:1.6;color:#9fb3c9;margin:0;max-width:600px}.analytics-hero-controls{min-width:175px;display:grid;gap:7px}.analytics-hero-controls label{font-size:9px;letter-spacing:1.1px;color:#91a7be}.analytics-hero-controls select{padding:9px;font-size:11px}.analytics-hero-controls span{font-size:10px;color:#67d9f5}.analytics-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:15px}.analytics-kpi{background:linear-gradient(150deg,#14243a,#0d192b);border:1px solid #263b55;border-radius:13px;padding:17px;min-width:0}.analytics-kpi span{display:block;color:#91a7be;font-size:9px;letter-spacing:1px}.analytics-kpi strong{display:block;font-size:clamp(19px,2vw,25px);margin:11px 0 5px;overflow-wrap:anywhere}.analytics-kpi small{font-size:10px;color:#8198b1}.analytics-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(250px,.85fr);gap:14px;margin-bottom:15px}.analytics-panel{background:linear-gradient(145deg,#111f34,#0d192b);border:1px solid #263b55;border-radius:13px;padding:20px;min-width:0}.analytics-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}.analytics-panel-head h3{font-size:14px;margin:5px 0}.analytics-panel-head p{font-size:10px;color:#8198b1;margin:0}.analytics-chart{height:190px;display:flex;align-items:flex-end;gap:9px;padding:12px 4px 0;border-bottom:1px solid #2a3c54}.analytics-bar-group{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;min-width:0}.analytics-bar-value{font-size:9px;color:#a9c1d8;white-space:nowrap}.analytics-bar{width:min(100%,34px);min-height:3px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#22d3ee,#2563a6);box-shadow:0 0 16px rgba(34,211,238,.1)}.analytics-bar-label{font-size:9px;color:#8198b1;white-space:nowrap}.analytics-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:10px;color:#91a7be}.analytics-legend i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22d3ee;margin-right:5px}.analytics-stat-row{display:flex;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid #263750;font-size:11px;color:#9fb3c9}.analytics-stat-row:last-child{border-bottom:0}.analytics-stat-row strong{color:#f1f5f9}.analytics-progress{height:7px;background:#263750;border-radius:9px;overflow:hidden;margin-top:7px}.analytics-progress span{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#38bdf8,#22d3ee)}.analytics-signals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.analytics-signal{border:1px solid #263b55;border-radius:11px;background:#101d30;padding:15px}.analytics-signal b{display:block;font-size:12px;margin-bottom:6px}.analytics-signal p{font-size:10px;line-height:1.6;color:#91a7be;margin:0}.analytics-empty{padding:22px;text-align:center;color:#8198b1;font-size:11px;border:1px dashed #334760;border-radius:10px}.analytics-footnote{font-size:10px;color:#8198b1;line-height:1.6;margin:12px 2px 0}
+@media(max-width:950px){.analytics-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.analytics-layout{grid-template-columns:1fr}}
+@media(max-width:600px){.analytics-hero{align-items:stretch;flex-direction:column;padding:21px}.analytics-hero-controls{max-width:none}.analytics-panel{padding:15px}.analytics-signals{grid-template-columns:1fr}.analytics-chart{gap:4px}.analytics-bar-label{font-size:8px}}
+
 /* VEXT AI account access */
 #vextAuthGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 20% 15%,#12345a 0,#07111f 48%,#050b14 100%);font-family:inherit;color:#edf6ff}
 #vextAuthGate[hidden]{display:none!important}#vextAuthCard{width:min(100%,430px);padding:30px;border:1px solid #24466a;border-radius:20px;background:#0c1b2c;box-shadow:0 24px 80px #0009}
@@ -896,11 +902,11 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="analytics">
- <div class="card">
-  <h2>Business Analytics</h2>
-  <p class="muted small">An overview calculated from your saved records.</p>
-  <div id="analyticsContent"></div>
+ <div class="analytics-hero">
+  <div><span class="ai-eyebrow">BUSINESS INTELLIGENCE</span><h2>Business performance</h2><p>Understand your sales, customers and collections from the records in your VEXT workspace.</p></div>
+  <div class="analytics-hero-controls"><label for="analyticsRange">REPORTING PERIOD</label><select id="analyticsRange"><option value="30">Last 30 days</option><option value="90">Last 90 days</option><option value="365">Last 12 months</option><option value="all">All time</option></select><span id="analyticsCurrencyLabel">Currency: USD</span></div>
  </div>
+ <div id="analyticsContent"></div>
 </section>
 
 <section class="page" id="settings">
@@ -1527,20 +1533,58 @@ function renderInvoices(){
  </tbody></table>`:'<div class="empty">No invoices match this view. Create an invoice or adjust your search and filters.</div>';
 }
 function renderAnalytics(){
- const leads=read("leads"),inv=read("invoices");
- const paid=inv.filter(x=>x.status==="Paid");
- const total=inv.reduce((s,x)=>s+Number(x.amount),0);
- const paidTotal=paid.reduce((s,x)=>s+Number(x.amount),0);
- const rate=inv.length?Math.round(paid.length/inv.length*100):0;
+ const leads=read("leads"),allInvoices=read("invoices"),code=currentCurrency();
+ const range=$("analyticsRange")?.value||"30",now=new Date(),cutoff=new Date(now);
+ if(range!=="all")cutoff.setDate(cutoff.getDate()-Number(range));
+ const inPeriod=value=>{if(!value)return false;const d=new Date(value);return !Number.isNaN(d.getTime())&&(range==="all"||d>=cutoff)&&d<=now;};
+ const invoices=allInvoices.filter(x=>x.currency===code);
+ const periodInvoices=invoices.filter(x=>inPeriod(x.date));
+ const periodLeads=leads.filter(x=>inPeriod(x.created));
+ const paid=periodInvoices.filter(x=>x.status==="Paid");
+ const outstanding=periodInvoices.filter(x=>x.status!=="Paid");
+ const total=periodInvoices.reduce((s,x)=>s+Number(x.amount||0),0);
+ const paidTotal=paid.reduce((s,x)=>s+Number(x.amount||0),0);
+ const due=outstanding.filter(x=>x.dueDate&&x.dueDate<now.toISOString().slice(0,10));
+ const rate=periodInvoices.length?Math.round(paid.length/periodInvoices.length*100):0;
+ $("analyticsCurrencyLabel").textContent="Currency: "+code;
+ const monthCount=range==="30"?6:range==="90"?6:12;
+ const buckets=[];
+ for(let i=monthCount-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);buckets.push({key:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),label:d.toLocaleDateString(undefined,{month:"short"}),value:0,count:0});}
+ periodInvoices.forEach(x=>{const d=new Date(x.date);if(Number.isNaN(d.getTime()))return;const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");const b=buckets.find(v=>v.key===key);if(b){b.value+=Number(x.amount||0);b.count++;}});
+ const max=Math.max(1,...buckets.map(x=>x.value));
+ const chart=buckets.map(b=>'<div class="analytics-bar-group"><span class="analytics-bar-value">'+(b.value?esc(formatMoney(b.value,code)):"—")+'</span><div class="analytics-bar" style="height:'+Math.max(2,Math.round(b.value/max*100))+'%"></div><span class="analytics-bar-label">'+esc(b.label)+'</span></div>').join("");
+ const stages=["New","Contacted","Qualified","Proposal","Won","Lost"];
+ const stageCounts=stages.map(stage=>({stage,count:leads.filter(x=>(x.salesStatus||x.status||"New")===stage).length}));
+ const stageMax=Math.max(1,...stageCounts.map(x=>x.count));
+ const signals=[];
+ if(due.length)signals.push({title:due.length+" overdue invoice"+(due.length===1?"":"s"),body:"Review overdue "+code+" invoices and agree the next collection action."});
+ if(periodInvoices.some(x=>x.status!=="Paid"&&!x.dueDate))signals.push({title:"Missing due dates",body:"Some unpaid invoices have no structured due date. Add one to improve collection tracking."});
+ if(periodInvoices.some(x=>!String(x.client||"").trim()))signals.push({title:"Invoices without a customer",body:"Review invoice records with no customer name before relying on customer-level reporting."});
+ if(!signals.length)signals.push({title:"No immediate record alerts",body:"No overdue or missing-field signals were detected in the selected "+code+" invoice records. This is not a full financial audit."});
  $("analyticsContent").innerHTML=`
- <p>Clients registered: <strong>${leads.length}</strong></p>
- <p>Invoices issued: <strong>${inv.length}</strong></p>
- <p>Total invoice value (mixed currencies): <strong>${total.toLocaleString()}</strong></p>
- <p>Paid invoice value (mixed currencies): <strong>${paidTotal.toLocaleString()}</strong></p>
- <p>Paid invoice count: <strong>${paid.length}</strong></p>
- <p>Invoice payment rate: <strong>${rate}%</strong></p>
- <div class="bar"><span style="width:${rate}%"></span></div>
- <p class="muted small">Totals above combine original invoice amounts and may contain different currencies. They are not a converted financial total.</p>`;
+ <div class="analytics-kpis">
+  <article class="analytics-kpi"><span>NEW CLIENTS · SELECTED PERIOD</span><strong>${periodLeads.length}</strong><small>${leads.length} client records overall</small></article>
+  <article class="analytics-kpi"><span>INVOICED · ${code}</span><strong>${formatMoney(total,code)}</strong><small>${periodInvoices.length} invoices in selected period</small></article>
+  <article class="analytics-kpi"><span>COLLECTED · ${code}</span><strong>${formatMoney(paidTotal,code)}</strong><small>${paid.length} invoices marked paid</small></article>
+  <article class="analytics-kpi"><span>OUTSTANDING · ${code}</span><strong>${formatMoney(total-paidTotal,code)}</strong><small>${due.length} overdue invoices in this period</small></article>
+ </div>
+ <div class="analytics-layout">
+  <section class="analytics-panel"><div class="analytics-panel-head"><div><span class="ai-eyebrow">REVENUE ACTIVITY</span><h3>Invoice value over time</h3><p>Issued invoice value by month · ${code}</p></div><span class="pill">${range==="all"?"Recent 12 months":range==="365"?"12 months":range==="90"?"90 days":"30 days"}</span></div>
+   ${periodInvoices.length?'<div class="analytics-chart">'+chart+'</div><div class="analytics-legend"><span><i></i> Invoice value</span><span>'+periodInvoices.length+' invoices recorded</span></div>':'<div class="analytics-empty">No invoices in this period and currency yet. Create invoices to build your trend.</div>'}
+  </section>
+  <section class="analytics-panel"><div class="analytics-panel-head"><div><span class="ai-eyebrow">COLLECTION HEALTH</span><h3>Payment performance</h3><p>Based on invoice count, not payment value.</p></div></div>
+   <div class="analytics-stat-row"><span>Paid invoices</span><strong>${paid.length}</strong></div><div class="analytics-stat-row"><span>Unpaid invoices</span><strong>${outstanding.length}</strong></div><div class="analytics-stat-row"><span>Payment rate</span><strong>${rate}%</strong></div><div class="analytics-progress"><span style="width:${rate}%"></span></div><div class="analytics-stat-row"><span>Overdue invoices</span><strong>${due.length}</strong></div>
+  </section>
+ </div>
+ <div class="analytics-layout">
+  <section class="analytics-panel"><div class="analytics-panel-head"><div><span class="ai-eyebrow">CUSTOMER PIPELINE</span><h3>Client sales stages</h3><p>${leads.length} client records · all time</p></div></div>
+   ${leads.length?stageCounts.map(x=>'<div class="analytics-stat-row"><span>'+x.stage+'</span><strong>'+x.count+'</strong></div><div class="analytics-progress"><span style="width:'+Math.round(x.count/stageMax*100)+'%"></span></div>').join(""):'<div class="analytics-empty">Client pipeline data will appear when clients are added.</div>'}
+  </section>
+  <section class="analytics-panel"><div class="analytics-panel-head"><div><span class="ai-eyebrow">OPERATIONS WATCH</span><h3>Items to review</h3><p>Signals calculated from saved workspace records.</p></div></div>
+   <div class="analytics-signals">${signals.map(x=>'<article class="analytics-signal"><b>'+esc(x.title)+'</b><p>'+esc(x.body)+'</p></article>').join("")}</div>
+  </section>
+ </div>
+ <p class="analytics-footnote">Reporting currency: ${code}. Invoice amounts in other currencies are excluded, not converted. Revenue activity represents invoice value issued, not recognised accounting revenue. Payment status reflects records marked Paid; no bank, payment gateway or external accounting data is checked. Client stage counts use saved CRM status fields and may default to New.</p>`;
 }
 function renderDashboardOverview(leads,inv,code){
  const currencyInvoices=inv.filter(x=>x.currency===code);
@@ -1573,6 +1617,7 @@ function render(){
  renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
 }
+$("analyticsRange").addEventListener("change",renderAnalytics);
 $("currency").value=read("currency","USD");
 $("currency").addEventListener("change",()=>{
  write("currency",currentCurrency());render();
