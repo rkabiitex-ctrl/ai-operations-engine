@@ -180,7 +180,9 @@ export default {
               const maxItems = key === "chat_history" ? 60 : (key === "audit_reports" ? 50 : 5000);
               if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
               workspace[key] = value;
-            } else if (key === "active_chat_id") {\n              workspace[key] = clean(value, 100);\n            } else if (key === "support_settings") {
+            } else if (key === "active_chat_id") {
+              workspace[key] = clean(value, 100);
+            } else if (key === "support_settings") {
               if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "support_settings must be an object." }, 400, cors);
               workspace[key] = {
                 business: clean(value.business, 100),
