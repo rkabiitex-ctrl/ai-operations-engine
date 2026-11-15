@@ -168,6 +168,7 @@ th{color:var(--muted);font-weight:600}
 .employee-tags{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 20px}
 .employee-tags span{font-size:10px;color:#b9c9dc;background:#1a2a40;border:1px solid #2b405b;border-radius:20px;padding:5px 8px}
 .employee-card-bottom{border-top:1px solid var(--line);padding-top:15px}
+#auditChecks{margin-top:12px}#auditResult{line-height:1.65;overflow-wrap:anywhere}#auditResult h3{margin:16px 0 8px}#auditResult ul{padding-left:20px}#auditReportHistory .audit-report-row{padding:13px 0;border-bottom:1px solid var(--line)}#auditReportHistory .audit-report-row:last-child{border-bottom:0}.audit-report-date{font-size:11px;color:var(--muted)}
 @media(max-width:760px){.employee-grid{grid-template-columns:1fr}.employee-overview{grid-template-columns:1fr 1fr}}
 .notice{padding:13px;background:#122b3c;border:1px solid #23506a;
  border-radius:9px;color:#bae6fd;font-size:12px;line-height:1.5}
@@ -511,6 +512,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
  <button class="nav" data-page="analytics">▥ &nbsp; Analytics</button>
+ <button class="nav" data-page="audit">⌕ &nbsp; Audit Centre</button>
  <button class="nav" data-page="settings">⚙ &nbsp; Settings</button>
  <button class="nav" data-page="pricing">＄ &nbsp; Pricing</button>
  <div class="sidebar-bottom">
@@ -765,7 +767,44 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
    <div class="employee-tags"><span>Reporting</span><span>Insights</span><span>Trend analysis</span></div>
   </article>
  </div>
- <div class="notice" style="margin-top:18px">Human oversight matters: AI employees should only access the business data needed for their role. Important actions and customer commitments should be reviewed by an authorized person.</div>
+ <div class="employee-section-heading">
+  <h2>Financial oversight</h2>
+  <p class="muted small">A dedicated reviewer for the records your business has entered into VEXT AI.</p>
+ </div>
+ <div class="employee-grid">
+  <article class="employee-card employee-live">
+   <div class="employee-card-top"><span class="employee-icon">⌕</span><span class="employee-state live">AVAILABLE · BETA</span></div>
+   <h3>AI Auditor</h3>
+   <p class="muted small">Reviews recorded invoices and basic client records, flags duplicates or missing information, and prepares an evidence-based review for a human decision.</p>
+   <div class="employee-tags"><span>Invoice checks</span><span>Expense visibility</span><span>Risk flags</span><span>Audit reports</span></div>
+   <div class="employee-card-bottom"><span class="muted small">Uses your saved VEXT records</span><button class="primary" id="openAuditor" type="button">Open Audit Centre</button></div>
+  </article>
+ </div>
+ <div class="notice" style="margin-top:18px">Audit scope: the beta checks records saved in VEXT AI. It does not connect to bank accounts, independently verify receipts, or replace a qualified auditor. A risk flag is not proof of fraud.</div>
+</section>
+
+<section class="page" id="audit">
+ <div class="crm-heading">
+  <div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / FINANCIAL OVERSIGHT</span><h2>AI Audit Centre</h2><p class="muted small">Review recorded invoices, identify data-quality issues and generate a report for human review.</p></div>
+  <span class="pill">AUDITOR BETA</span>
+ </div>
+ <div class="stats">
+  <div class="card"><div class="stat-title">Recorded invoices</div><div class="stat-number" id="auditInvoiceCount">0</div><div class="stat-foot">Available for review</div></div>
+  <div class="card"><div class="stat-title">Unpaid invoices</div><div class="stat-number" id="auditUnpaidCount">0</div><div class="stat-foot">Marked unpaid in VEXT</div></div>
+  <div class="card"><div class="stat-title">Recorded clients</div><div class="stat-number" id="auditClientCount">0</div><div class="stat-foot">Client records only</div></div>
+  <div class="card"><div class="stat-title">Potential data issues</div><div class="stat-number" id="auditIssueCount">0</div><div class="stat-foot">Rule-based checks · not fraud findings</div></div>
+ </div>
+ <div class="card" style="margin-top:16px">
+  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">AUDIT REVIEW</span><h2>Run a business records review</h2><p class="muted small">VEXT AI checks duplicate invoice numbers, missing invoice fields, invalid amounts and payment-record inconsistencies.</p></div><button class="primary" id="runAudit" type="button">Run AI audit</button></div>
+  <div id="auditChecks" class="notice">Preparing your saved records…</div>
+  <p id="auditStatus" class="chat-status" role="status" aria-live="polite"></p>
+  <div id="auditResult" style="margin-top:16px"></div>
+ </div>
+ <div class="card" style="margin-top:16px">
+  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">AUDIT HISTORY</span><h2>Saved reports</h2><p class="muted small">Reports are saved to your VEXT workspace.</p></div></div>
+  <div id="auditReportHistory"><div class="empty">No audit reports yet.</div></div>
+ </div>
+ <div class="notice" style="margin-top:16px">Important: this is a preliminary records review, not a statutory, forensic or independent financial audit. VEXT AI cannot verify cash, bank statements, receipts or transactions that have not been entered. Review every finding before taking action.</div>
 </section>
 
 <section class="page" id="leads">
@@ -945,7 +984,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -956,7 +995,8 @@ function workspaceSnapshot(){
   support_business_id:localStorage.getItem(key+"support_business_id")||"",
   chat_history:read("chat_history",[]),
   chat_conversations:read("chat_conversations",[]),
-  active_chat_id:localStorage.getItem(key+"active_chat_id")||""
+  active_chat_id:localStorage.getItem(key+"active_chat_id")||"",
+  audit_reports:read("audit_reports",[])
  };
 }
 function setWorkspaceSyncStatus(value,bad=false){
@@ -1026,11 +1066,81 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent",employees:"AI Employees",analytics:"Business Analytics",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
+
+$("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
+function auditRuleChecks(){
+ const invoices=read("invoices"),clients=read("leads"),issues=[];
+ const seen=new Set();
+ invoices.forEach((invoice,index)=>{
+  const number=String(invoice.number||"").trim().toLowerCase();
+  if(!number)issues.push({level:"warning",text:"Invoice record "+(index+1)+" has no invoice number."});
+  else if(seen.has(number))issues.push({level:"warning",text:"Duplicate invoice number recorded: "+invoice.number+"."});
+  else seen.add(number);
+  if(!String(invoice.client||"").trim())issues.push({level:"warning",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has no customer name."});
+  if(!Number.isFinite(Number(invoice.amount))||Number(invoice.amount)<=0)issues.push({level:"warning",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has a missing or invalid amount."});
+  if(!/^[A-Z]{3}$/.test(String(invoice.currency||"")))issues.push({level:"warning",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has a missing or unusual currency code."});
+  if(!["Paid","Unpaid"].includes(invoice.status))issues.push({level:"review",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has an unrecognized payment status."});
+  if(invoice.status==="Paid"&&!invoice.paidAt)issues.push({level:"review",text:"Invoice "+(invoice.number||("#"+(index+1)))+" is marked Paid but has no recorded payment date."});
+ });
+ return {invoices,clients,issues};
+}
+function renderAuditCentre(){
+ const data=auditRuleChecks();
+ $("auditInvoiceCount").textContent=data.invoices.length;
+ $("auditUnpaidCount").textContent=data.invoices.filter(x=>x.status!=="Paid").length;
+ $("auditClientCount").textContent=data.clients.length;
+ $("auditIssueCount").textContent=data.issues.length;
+ $("auditChecks").innerHTML=data.issues.length?'<strong>'+data.issues.length+' item(s) need review</strong><ul>'+data.issues.map(x=>'<li>'+esc(x.text)+'</li>').join("")+'</ul>':'<strong>No basic data-quality issues detected.</strong><p class="small">This only means the available rule checks passed; it does not prove the records are complete or accurate.</p>';
+ const reports=read("audit_reports",[]);
+ $("auditReportHistory").innerHTML=reports.length?reports.slice(0,10).map((report,index)=>'<div class="audit-report-row"><strong>'+esc(report.title||"Business records review")+'</strong><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"Date not recorded")+'</div><div class="small">'+esc((report.summary||"Report saved").slice(0,220))+'</div><button class="secondary" type="button" data-audit-report="'+index+'" style="margin-top:8px">View report</button></div>').join(""):'<div class="empty">No audit reports yet.</div>';
+}
+$("auditReportHistory").addEventListener("click",event=>{
+ const button=event.target.closest("[data-audit-report]");if(!button)return;
+ const report=read("audit_reports",[])[Number(button.dataset.auditReport)];if(!report)return;
+ $("auditResult").innerHTML='<h3>'+esc(report.title||"Audit report")+'</h3><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"")+'</div><div>'+esc(report.content||report.summary||"No report text saved.").replace(/\n/g,"<br>")+'</div>';
+});
+$("runAudit").addEventListener("click",async()=>{
+ const button=$("runAudit"),status=$("auditStatus"),result=$("auditResult");
+ const data=auditRuleChecks();
+ if(!data.invoices.length&&!data.clients.length){
+  status.textContent="Add some invoices or client records before running an audit.";
+  result.innerHTML="";return;
+ }
+ button.disabled=true;button.textContent="Reviewing records…";
+ status.textContent="VEXT AI is reviewing the available records. Please wait.";
+ result.innerHTML="";
+ try{
+  const invoiceData=data.invoices.slice(0,500).map(x=>({number:x.number||"",description:x.description||"",amount:Number(x.amount)||0,currency:x.currency||"",status:x.status||"",date:x.date||""}));
+  const auditInput={
+   invoiceCount:data.invoices.length,clientRecordCount:data.clients.length,
+   ruleBasedChecks:data.issues,
+   invoices:invoiceData,
+   note:"Only invoice fields and aggregate client count are provided. No client contact details are included."
+  };
+  const prompt="Act as VEXT AI's preliminary internal-controls reviewer. Review only the supplied VEXT AI records. Do not claim to have checked bank accounts, receipts, cash, tax compliance, employee activity or external systems. Do not accuse anyone of fraud. Distinguish observed record issues from possible risks and recommendations. If data is insufficient, say so. Highlight currency separation and do not add different currencies together. Produce a concise professional report with: Executive summary; Confirmed record checks; Items requiring human verification; Practical recommendations; Scope and limitations. Cite invoice numbers for each specific finding. Never invent missing values. Data: "+JSON.stringify(auditInput);
+  const token=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT,{
+   method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+   body:JSON.stringify({message:prompt,history:[]})
+  });
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(payload.error||("Audit request failed ("+response.status+")"));
+  const reportText=typeof payload.reply==="string"?payload.reply:"";
+  if(!reportText)throw new Error("The AI service returned an empty audit report.");
+  const report={id:id(),title:"Business records review",createdAt:new Date().toISOString(),summary:reportText.replace(/\s+/g," ").slice(0,260),content:reportText,invoiceCount:data.invoices.length,issueCount:data.issues.length};
+  const reports=read("audit_reports",[]);reports.unshift(report);write("audit_reports",reports.slice(0,50));
+  result.innerHTML='<h3>Audit report</h3><div class="audit-report-date">'+esc(new Date(report.createdAt).toLocaleString())+'</div><div>'+esc(reportText).replace(/\n/g,"<br>")+'</div>';
+  status.textContent="Report generated and saved to your VEXT workspace.";
+  renderAuditCentre();
+ }catch(error){status.textContent="Could not complete the audit: "+(error.message||"Please try again.");}
+ finally{button.disabled=false;button.textContent="Run AI audit";}
+});
+
 
 let pricingBilling="monthly";
 document.querySelectorAll("[data-billing]").forEach(button=>button.addEventListener("click",()=>{
