@@ -1312,35 +1312,38 @@ async function generateMarketingCampaign(){
  if(!offer){$("marketingStatus").textContent="Please describe the product, service or offer first.";return;}
  if(!audience){$("marketingStatus").textContent="Please specify the target audience first.";return;}
  button.disabled=true;button.textContent="Creating campaign…";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;
- $("marketingStatus").textContent="Preparing your campaign in 3 complete sections…";$("marketingResult").textContent="Starting campaign generation…";
+ $("marketingStatus").textContent="Preparing your campaign in 6 focused sections…";$("marketingResult").textContent="Starting campaign generation…";
  const settings=getSupportSettings();
  const context="Act as a senior, ethical marketing strategist for "+(settings.business||"the user's business")+". Create a practical, specific campaign draft using only supplied facts.\nBUSINESS KNOWLEDGE:\n"+(settings.instructions||"No additional business information supplied.")+"\nCAMPAIGN BRIEF:\nOffer: "+offer+"\nObjective: "+objective+"\nAudience: "+audience+"\nChannel: "+channel+"\nTone: "+tone+"\nExtra details: "+(notes||"None supplied")+"\nGLOBAL RULES: Do not invent prices, discounts, product features, customer testimonials, statistics, certifications, guarantees, results, research or performance data. Clearly label assumptions. Use platform-appropriate language. This is a draft for human review; do not claim to publish or launch anything.";
  const parts=[
-  {title:"PART 1 — CAMPAIGN STRATEGY",task:"Write sections 1–3 only: (1) campaign concept, core message and creative direction; (2) audience insight with assumptions clearly labelled and recommended positioning; (3) campaign structure, customer journey, primary and secondary calls to action, and a short practical DM handling flow. Make this section complete and useful. Do not write content variations, a calendar or metrics."},
-  {title:"PART 2 — THREE CONTENT VARIATIONS",task:"Write section 4 only: exactly THREE complete, distinct content/ad variations for the selected channel. For each provide format, objective, opening hook, visual/scene direction, on-screen text if relevant, a ready-to-review caption/ad copy, and CTA. Make the actual copy complete, not just an outline. Do not write strategy, calendar or metrics."},
-  {title:"PART 3 — EXECUTION AND MEASUREMENT",task:"Write sections 5–7 only: (5) a practical 7-day execution schedule in a table with day, activity and purpose; (6) measurable success metrics to track, explaining what to compare without inventing targets or expected results; (7) a checklist of facts, assets, approvals and operational details the business owner must verify before publishing. Include sensible human-review safeguards. Finish the campaign."}
+  {title:"PART 1 — CAMPAIGN STRATEGY",task:"Write only: campaign concept and core message; creative direction; defined audience; clearly labelled audience assumptions; recommended positioning; campaign structure, customer journey, primary and secondary CTA; short DM handling flow; and facts to verify before any product recommendation. Be complete but concise. Do not write content variations, schedule or metrics."},
+  {title:"PART 2 — CONTENT VARIATION 1",task:"Create exactly ONE complete Instagram content/ad variation. Include format, objective, opening hook, visual/scene direction, on-screen text where useful, a fully written ready-to-review caption/ad copy, and CTA. Finish every sentence. Do not create other variations or campaign sections."},
+  {title:"PART 3 — CONTENT VARIATION 2",task:"Create exactly ONE complete, distinct Instagram content/ad variation. Include format, objective, opening hook, visual/scene direction, on-screen text where useful, a fully written ready-to-review caption/ad copy, and CTA. Finish every sentence. Do not create other variations or campaign sections."},
+  {title:"PART 4 — CONTENT VARIATION 3",task:"Create exactly ONE complete, distinct Instagram content/ad variation. Include format, objective, opening hook, visual/scene direction, on-screen text where useful, a fully written ready-to-review caption/ad copy, and CTA. Finish every sentence. Do not create other variations or campaign sections."},
+  {title:"PART 5 — SEVEN-DAY EXECUTION SCHEDULE",task:"Create a complete practical 7-day execution schedule in a table with Day, Activity and Purpose columns. Include preparation and approvals before publishing, content activity, responsible DM handling and a final review. Clearly state that actions are conditional on owner approval and available capacity. Do not write metrics."},
+  {title:"PART 6 — SUCCESS METRICS AND PRE-PUBLISH CHECKLIST",task:"Provide a concise complete metrics table with metric, how to track and what to compare. Include reach/views, engagement, saves/shares, profile actions, qualified DMs, response time, verified sales/conversions and paid-vs-organic distinction where relevant. Do not invent targets. Then provide a practical pre-publish verification checklist covering product facts, pricing/stock, US service and shipping coverage, terms, assets/rights, account access, budget approval, DM staffing, privacy and consent. Finish with a clear human-approval reminder."}
  ];
  try{
   const token=await getVextAccessToken();
   if(!token)throw new Error("Please sign in again before generating a campaign.");
   const completed=[];
   for(let i=0;i<parts.length;i++){
-   $("marketingStatus").textContent="Generating section "+(i+1)+" of 3: "+parts[i].title+"…";
-   const message=context+"\n\n"+parts[i].title+"\n"+parts[i].task+"\nKeep the response focused and complete. Use clear headings. Do not refer to other parts.";
-   const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:1800})});
+   $("marketingStatus").textContent="Generating section "+(i+1)+" of 6: "+parts[i].title+"…";
+   const message=context+"\n\n"+parts[i].title+"\n"+parts[i].task+"\nKeep this section focused and complete. Use clear headings. Do not refer to missing sections. Do not end mid-sentence or mid-table.";
+   const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:1100})});
    const data=await response.json().catch(()=>({}));
    if(!response.ok)throw new Error(data.error||("AI request failed in section "+(i+1)+" ("+response.status+")."));
    const part=typeof data.reply==="string"?data.reply.trim():"";
    if(!part)throw new Error("The AI service returned an empty response for section "+(i+1)+".");
    completed.push("## "+parts[i].title+"\n\n"+part);
-   $("marketingResult").textContent=completed.join("\n\n---\n\n");
+   $("marketingResult").textContent="VEXT GLOBAL ELECTRONICS — CAMPAIGN DRAFT\nFor human review and approval. Nothing has been published or launched.\n\n"+completed.join("\n\n---\n\n");
   }
   const result="VEXT GLOBAL ELECTRONICS — CAMPAIGN DRAFT\nFor human review and approval. Nothing has been published or launched.\n\n"+completed.join("\n\n---\n\n");
-  marketingCurrentDraft=result;$("marketingResult").textContent=result;$("copyMarketing").disabled=false;$("saveMarketing").disabled=false;$("marketingStatus").textContent="All 3 campaign sections generated. Review all claims before publishing.";
+  marketingCurrentDraft=result;$("marketingResult").textContent=result;$("copyMarketing").disabled=false;$("saveMarketing").disabled=false;$("marketingStatus").textContent="All 6 campaign sections generated. Review all claims before publishing.";
  }catch(error){
   const partial=$("marketingResult").textContent;
-  $("marketingStatus").textContent="Campaign generation stopped before all sections finished.";
-  $("marketingResult").textContent=(partial&&partial!=="Starting campaign generation…"?partial+"\n\n":"")+"Generation error: "+(error.message||"Please try again.")+"\n\nYour incomplete draft has not been enabled for saving. Please retry.";
+  $("marketingStatus").textContent="Campaign generation stopped before all 6 sections finished.";
+  $("marketingResult").textContent=(partial&&partial!=="Starting campaign generation…"?partial+"\n\n":"")+"Generation error: "+(error.message||"Please try again.")+"\n\nThe incomplete draft cannot be saved. Please retry.";
  }finally{button.disabled=false;button.textContent="Generate campaign plan ✧";}
 }
 $("generateMarketing").addEventListener("click",generateMarketingCampaign);
