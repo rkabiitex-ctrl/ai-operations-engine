@@ -479,7 +479,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .employee-oversight-icon{font-size:20px;color:var(--cyan)}
 .employee-oversight strong{font-size:13px}.employee-oversight p{font-size:12px;line-height:1.6;color:var(--muted);margin:5px 0 0}
 @media(max-width:760px){.employee-hero{padding:22px 18px}.employee-hero-mark{flex-basis:54px;width:54px;height:54px;font-size:28px}.employee-hero h2{font-size:23px}.employee-section-heading{align-items:flex-start;flex-direction:column}.employee-card p{min-height:0}}
-</style>
+.analyst-history-wrap{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.analyst-history-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.analyst-history-heading h3{margin:0 0 5px}.analyst-history-list{display:grid;gap:8px}.analyst-history-item{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:#0b1528;color:var(--white);text-align:left}.analyst-history-item:hover{border-color:var(--blue);background:#10233a}.analyst-history-item strong,.analyst-history-item small{display:block}.analyst-history-item strong{font-size:12px}.analyst-history-item small{font-size:10px;color:var(--muted);margin-top:5px}.analyst-history-item b{font-size:11px;color:var(--cyan);white-space:nowrap}@media(max-width:520px){.analyst-history-item{align-items:flex-start;flex-direction:column}}</style>
 </head>
 <body>
 
@@ -931,6 +931,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
   <div class="notice">Your report uses business totals, invoice status, dates and sales-stage counts. Customer contact details, private notes and enquiry message contents are not sent. Review recommendations before acting.</div>
   <p id="analystStatus" class="chat-status" role="status" aria-live="polite"></p>
   <div id="analystResult" style="margin-top:16px"></div>
+  <div class="analyst-history-wrap"><div class="analyst-history-heading"><div><h3>Saved analysis history</h3><p class="muted small">Reopen previous management briefings from your VEXT workspace.</p></div><span id="analystHistoryCount" class="invoice-register-count">0 reports</span></div><div id="analystReportHistory" class="analyst-history-list"></div></div>
  </section>
  <div id="analyticsContent"></div>
 </section>
@@ -1069,7 +1070,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -1081,7 +1082,8 @@ function workspaceSnapshot(){
   chat_history:read("chat_history",[]),
   chat_conversations:read("chat_conversations",[]),
   active_chat_id:localStorage.getItem(key+"active_chat_id")||"",
-  audit_reports:read("audit_reports",[])
+  audit_reports:read("audit_reports",[]),
+  business_analysis_reports:read("business_analysis_reports",[])
  };
 }
 function setWorkspaceSyncStatus(value,bad=false){
@@ -1147,6 +1149,7 @@ function log(message){
  renderActivity();
 }
 function navigate(page){
+ if(page==="analytics"&&typeof renderAnalystHistory==="function")renderAnalystHistory();
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
@@ -1670,6 +1673,19 @@ function render(){
  renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
 }
+function renderAnalystHistory(){
+ const reports=read("business_analysis_reports",[]),count=$("analystHistoryCount"),list=$("analystReportHistory");
+ if(!count||!list)return;
+ count.textContent=reports.length+" report"+(reports.length===1?"":"s");
+ list.innerHTML=reports.length?reports.map((report,index)=>'<button class="analyst-history-item" type="button" data-analyst-report="'+index+'"><span><strong>'+esc(report.title||"Business analysis")+'</strong><small>'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"")+' · '+esc(report.period||"")+' · '+esc(report.currency||"")+'</small></span><b>Open report →</b></button>').join(""):'<div class="empty">No saved business analyses yet. Generate your first report above.</div>';
+}
+$("analystReportHistory").addEventListener("click",event=>{
+ const button=event.target.closest("[data-analyst-report]");if(!button)return;
+ const report=read("business_analysis_reports",[])[Number(button.dataset.analystReport)];if(!report)return;
+ $("analystResult").innerHTML='<h3>'+esc(report.title||"Business analysis")+'</h3><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"")+' · '+esc(report.period||"")+' · '+esc(report.currency||"")+'</div><div>'+formatAuditReport(report.content||"No report text saved.")+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
+ $("copyAnalystReport").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(report.content||"");$("analystStatus").textContent="Saved report copied to clipboard.";}catch{$("analystStatus").textContent="Clipboard access was blocked. Select the report text and copy it manually.";}});
+ $("analystStatus").textContent="Opened a saved report. Your history remains available in this workspace.";
+});
 $("analyticsRange").addEventListener("change",()=>{renderAnalytics();$("analystResult").innerHTML="";$("analystStatus").textContent="Reporting period changed. Generate a fresh analysis to use the updated period.";});
 $("runBusinessAnalysis").addEventListener("click",async()=>{
  const button=$("runBusinessAnalysis"),status=$("analystStatus"),result=$("analystResult");
@@ -1707,9 +1723,12 @@ $("runBusinessAnalysis").addEventListener("click",async()=>{
   if(!response.ok)throw new Error(payload.error||("Analysis request failed ("+response.status+")"));
   const report=typeof payload.reply==="string"?payload.reply:(typeof payload.output_text==="string"?payload.output_text:"");
   if(!report)throw new Error("The AI service returned an empty analysis.");
+  const savedReport={id:id(),title:"Business analysis · "+input.reportingPeriod,createdAt:new Date().toISOString(),period:input.reportingPeriod,currency:code,content:report,summary:report.replace(/\s+/g," ").slice(0,240),metrics:input.totals};
+  const savedReports=read("business_analysis_reports",[]);savedReports.unshift(savedReport);write("business_analysis_reports",savedReports.slice(0,50));
   result.innerHTML='<h3>Business intelligence briefing</h3><div class="audit-report-date">Generated '+esc(new Date().toLocaleString())+' · '+esc(input.reportingPeriod)+' · '+esc(code)+'</div><div>'+formatAuditReport(report)+'</div><div class="action-row" style="margin-top:16px"><button class="secondary" id="copyAnalystReport" type="button">Copy report</button></div>';
   $("copyAnalystReport").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(report);status.textContent="Report copied to clipboard.";}catch{status.textContent="Clipboard access was blocked. Select the report text and copy it manually.";}});
-  status.textContent="Analysis complete. Review the findings before making business decisions.";
+  renderAnalystHistory();
+  status.textContent="Analysis complete. Report saved to your VEXT workspace. Review findings before making business decisions.";
  }catch(error){status.textContent="Could not generate the analysis: "+(error.message||"Please try again.");}
  finally{button.disabled=false;button.textContent="Generate business analysis";}
 });
