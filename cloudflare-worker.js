@@ -170,17 +170,17 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
             const value = body.workspace[key];
-            if (["leads", "invoices", "logs", "chat_history"].includes(key)) {
+            if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports"].includes(key)) {
               if (!Array.isArray(value)) return json({ error: key + " must be an array." }, 400, cors);
-              const maxItems = key === "chat_history" ? 60 : 5000;
+              const maxItems = key === "chat_history" ? 60 : (key === "audit_reports" ? 50 : 5000);
               if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
               workspace[key] = value;
-            } else if (key === "support_settings") {
+            } else if (key === "active_chat_id") {\n              workspace[key] = clean(value, 100);\n            } else if (key === "support_settings") {
               if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "support_settings must be an object." }, 400, cors);
               workspace[key] = {
                 business: clean(value.business, 100),
