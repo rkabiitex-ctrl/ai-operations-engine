@@ -53,7 +53,7 @@ async function authenticateUser(request) {
   return user && typeof user.id === "string" ? user : null;
 }
 
-async function callAI(env, instructions, message) {
+async function callAI(env, instructions, input) {
   if (!env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not configured in Worker secrets.");
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -64,7 +64,7 @@ async function callAI(env, instructions, message) {
     body: JSON.stringify({
       model: env.OPENAI_MODEL || DEFAULT_MODEL,
       instructions,
-      input: message,
+      input,
       max_output_tokens: 700
     })
   });
@@ -132,10 +132,19 @@ export default {
         const body = await readJson(request);
         const message = clean(body && body.message, 8000);
         if (!message) return json({ error: "Please provide a message." }, 400, cors);
+        const suppliedHistory = Array.isArray(body && body.history) ? body.history : [];
+        const conversation = suppliedHistory.slice(-12).map(item => ({
+          role: item && item.role === "assistant" ? "assistant" : "user",
+          content: clean(item && item.content, 3000)
+        })).filter(item => item.content);
+        if (!conversation.length || conversation[conversation.length - 1].role !== "user" ||
+            conversation[conversation.length - 1].content !== message) {
+          conversation.push({ role: "user", content: message });
+        }
         const reply = await callAI(
           env,
-          "You are VEXT AI, a helpful business assistant. Give clear, practical and responsible guidance.",
-          message
+          "You are VEXT AI, a helpful business assistant. Use the recent conversation messages to understand follow-up questions and references. Stay within the current conversation; do not invent missing details. Give clear, practical and responsible guidance.",
+          conversation
         );
         return json({ reply }, 200, cors);
       }
