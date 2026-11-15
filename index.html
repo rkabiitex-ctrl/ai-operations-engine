@@ -562,6 +562,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
  <button class="nav" data-page="support">✧ &nbsp; Sales Agent</button>
  <button class="nav" data-page="customer-support">♡ &nbsp; Customer Support</button>
+ <button class="nav" data-page="marketing">✧ &nbsp; Marketing Manager</button>
  <button class="nav" data-page="employees">♙ &nbsp; AI Employees</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
@@ -792,6 +793,38 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  </div>
 </section>
 
+
+<section class="page" id="marketing">
+ <div class="audit-hero"><div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / GROWTH & BRAND</span><h2>AI Marketing Studio</h2><p class="muted small">Build practical campaigns, channel plans and ready-to-review marketing content for your business.</p></div><div class="audit-hero-side"><span class="audit-status-dot">● AI SERVICE READY</span><span class="pill">MARKETING MANAGER · BETA</span><div class="audit-hero-mark">✧</div></div></div>
+ <div class="stats">
+  <div class="card"><div class="stat-title">AI connection</div><div class="stat-number" style="font-size:20px">Live AI</div><div class="stat-foot">Uses your VEXT AI service</div></div>
+  <div class="card"><div class="stat-title">Business profile</div><div class="stat-number" style="font-size:20px" id="marketingBusinessName">Your business</div><div class="stat-foot">Shared business context</div></div>
+  <div class="card"><div class="stat-title">Campaign drafts</div><div class="stat-number" id="marketingDraftCount">0</div><div class="stat-foot">Saved in this browser</div></div>
+ </div>
+ <div class="grid">
+  <div class="card">
+   <span class="dashboard-eyebrow">CAMPAIGN BRIEF</span><h2>What do you want to promote?</h2><p class="muted small">Give the Marketing Manager a clear brief. It will create a draft for your review—not publish anything.</p>
+   <label for="marketingOffer">Product, service or offer</label><textarea id="marketingOffer" rows="3" maxlength="1500" placeholder="Describe what you sell and the offer you want to promote…"></textarea>
+   <label for="marketingObjective" style="margin-top:12px">Campaign objective</label><select id="marketingObjective"><option>Generate qualified leads</option><option>Increase sales</option><option>Build brand awareness</option><option>Promote a new product</option><option>Re-engage existing customers</option><option>Drive website visits</option></select>
+   <label for="marketingAudience" style="margin-top:12px">Target audience</label><input id="marketingAudience" maxlength="500" placeholder="e.g. Small business owners in the United States"/>
+   <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <div><label for="marketingChannel">Main channel</label><select id="marketingChannel"><option>Social media</option><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>TikTok</option><option>Email</option><option>Google Ads</option><option>Multi-channel</option></select></div>
+    <div><label for="marketingTone">Brand tone</label><select id="marketingTone"><option>Professional and trustworthy</option><option>Friendly and conversational</option><option>Bold and energetic</option><option>Premium and refined</option><option>Educational and helpful</option></select></div>
+   </div>
+   <label for="marketingNotes" style="margin-top:12px">Extra details (optional)</label><textarea id="marketingNotes" rows="2" maxlength="1000" placeholder="Budget, location, deadline, brand rules or details to avoid…"></textarea>
+   <button class="primary" id="generateMarketing" type="button" style="margin-top:16px">Generate campaign plan ✧</button>
+   <div class="chat-status" id="marketingStatus" role="status" aria-live="polite">Complete the brief, then generate your campaign draft.</div>
+  </div>
+  <div class="card">
+   <div class="employee-section-heading"><div><span class="dashboard-eyebrow">AI-GENERATED WORK</span><h2>Campaign output</h2><p class="muted small">Review, edit and approve all content before publishing.</p></div><span class="employee-state live">DRAFT ONLY</span></div>
+   <div id="marketingResult" class="notice" style="min-height:340px;white-space:pre-wrap">Your campaign strategy and content will appear here.</div>
+   <div class="action-row" style="margin-top:12px"><button class="secondary" id="copyMarketing" type="button" disabled>Copy campaign</button><button class="secondary" id="saveMarketing" type="button" disabled>Save draft</button></div>
+   <div class="notice" style="margin-top:18px"><strong>Marketing safeguards</strong><p class="small">The assistant must not invent testimonials, customer results, product claims, prices or guarantees. It does not publish ads, spend money or send messages. Verify claims, audience targeting and platform policies before launch.</p></div>
+  </div>
+ </div>
+ <div class="card" style="margin-top:18px"><div class="employee-section-heading"><div><span class="dashboard-eyebrow">WORKSPACE LIBRARY</span><h2>Saved campaign drafts</h2><p class="muted small">Drafts are stored locally in this browser.</p></div></div><div id="marketingHistory" class="notice">No saved campaigns yet.</div></div>
+</section>
+
 <section class="page" id="employees">
  <div class="employee-hero">
   <div class="employee-hero-copy">
@@ -841,12 +874,13 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
    <div class="employee-tags"><span>Customer care</span><span>FAQ responses</span><span>Human escalation</span></div>
    <div class="employee-card-bottom"><span class="muted small">Live authenticated AI preview</span><button class="primary" id="openCustomerSupport" type="button">Open Support Desk →</button></div>
   </article>
-  <article class="employee-card">
-   <div class="employee-card-top"><span class="employee-icon">✧</span><span class="employee-state planned">IN DEVELOPMENT</span></div>
+  <article class="employee-card employee-live">
+   <div class="employee-card-top"><span class="employee-icon">✧</span><span class="employee-state live">AVAILABLE · BETA</span></div>
    <div class="employee-role">MARKETING & BRAND</div>
    <h3>AI Marketing Manager</h3>
-   <p class="muted small">Designed to help plan campaigns, draft social content and organize promotional ideas for approval.</p>
+   <p class="muted small">Creates campaign strategies, channel plans, advertising concepts and social content tailored to your business brief.</p>
    <div class="employee-tags"><span>Campaign planning</span><span>Content drafts</span><span>Brand voice</span></div>
+   <div class="employee-card-bottom"><span class="muted small">Live authenticated AI studio</span><button class="primary" id="openMarketingManager" type="button">Open Marketing Studio →</button></div>
   </article>
   <article class="employee-card employee-live">
    <div class="employee-card-top"><span class="employee-icon">▥</span><span class="employee-state live">AVAILABLE · BETA</span></div>
@@ -1218,7 +1252,7 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"AI Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
@@ -1255,6 +1289,43 @@ async function askCustomerSupport(){
 $("customerSupportSend").addEventListener("click",askCustomerSupport);
 $("customerSupportInput").addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();askCustomerSupport();}});
 $("customerSupportClear").addEventListener("click",()=>{write("customer_support_preview",[]);renderCustomerSupportChat();$("customerSupportStatus").textContent="Conversation cleared.";});
+
+function marketingDrafts(){const items=read("marketing_drafts",[]);return Array.isArray(items)?items:[];}
+function renderMarketingHistory(){
+ const drafts=marketingDrafts(),area=$("marketingHistory");$("marketingDraftCount").textContent=String(drafts.length);
+ area.replaceChildren();
+ if(!drafts.length){area.textContent="No saved campaigns yet.";return;}
+ drafts.slice(0,8).forEach((draft,index)=>{const row=document.createElement("div");row.className="action-row";row.style.borderBottom="1px solid var(--border)";row.style.padding="10px 0";
+ const info=document.createElement("div");const title=document.createElement("strong");title.textContent=draft.title||"Campaign draft";const date=document.createElement("div");date.className="muted small";date.textContent=new Date(draft.createdAt).toLocaleString();info.append(title,date);
+ const actions=document.createElement("div");const open=document.createElement("button");open.className="secondary";open.type="button";open.textContent="Open";open.addEventListener("click",()=>{marketingCurrentDraft=draft.content;$("marketingResult").textContent=draft.content;$("copyMarketing").disabled=false;$("saveMarketing").disabled=true;});
+ const del=document.createElement("button");del.className="secondary";del.type="button";del.textContent="Delete";del.style.marginLeft="6px";del.addEventListener("click",()=>{write("marketing_drafts",marketingDrafts().filter((_,i)=>i!==index));renderMarketingHistory();});
+ actions.append(open,del);row.append(info,actions);area.append(row);
+ });
+}
+let marketingCurrentDraft="";
+function openMarketingManager(){
+ const settings=getSupportSettings();$("marketingBusinessName").textContent=settings.business||"Your business";$("marketingResult").textContent="Your campaign strategy and content will appear here.";$("marketingStatus").textContent="Complete the brief, then generate your campaign draft.";marketingCurrentDraft="";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;renderMarketingHistory();
+}
+$("openMarketingManager").addEventListener("click",()=>{navigate("marketing");openMarketingManager();});
+async function generateMarketingCampaign(){
+ const offer=$("marketingOffer").value.trim(),objective=$("marketingObjective").value,audience=$("marketingAudience").value.trim(),channel=$("marketingChannel").value,tone=$("marketingTone").value,notes=$("marketingNotes").value.trim(),button=$("generateMarketing");
+ if(!offer){$("marketingStatus").textContent="Please describe the product, service or offer first.";return;}
+ if(!audience){$("marketingStatus").textContent="Please specify the target audience first.";return;}
+ button.disabled=true;button.textContent="Creating campaign…";$("marketingStatus").textContent="Connecting to the VEXT AI service…";$("marketingResult").textContent="Developing your campaign strategy and content…";
+ const settings=getSupportSettings();
+ const prompt="Act as a senior, ethical marketing strategist for "+(settings.business||"the user's business")+". Create a useful, specific campaign draft using only the facts supplied.\nBUSINESS KNOWLEDGE:\n"+(settings.instructions||"No additional business information supplied.")+"\nCAMPAIGN BRIEF:\nOffer: "+offer+"\nObjective: "+objective+"\nAudience: "+audience+"\nChannel: "+channel+"\nTone: "+tone+"\nExtra details: "+(notes||"None supplied")+"\nDELIVER IN THIS ORDER:\n1. Campaign concept and core message.\n2. Audience insight and positioning (label assumptions clearly).\n3. Recommended campaign structure and call to action.\n4. Three content/ad variations suitable for the chosen channel.\n5. A short 7-day execution schedule.\n6. Success metrics to track (do not invent expected results).\n7. Facts or details the business owner must verify before publishing.\nRULES: Do not invent prices, discounts, product features, customer testimonials, statistics, certifications, guarantees or results. Do not imply research or performance data you do not have. Keep copy platform-appropriate. Mark assumptions clearly. This is a draft for human approval; do not claim to publish or launch anything.";
+ try{
+  const token=await getVextAccessToken(),response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message:prompt})}),data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("AI request failed ("+response.status+")"));
+  const result=typeof data.reply==="string"?data.reply.trim():"";if(!result)throw new Error("The AI service returned an empty response.");
+  marketingCurrentDraft=result;$("marketingResult").textContent=result;$("copyMarketing").disabled=false;$("saveMarketing").disabled=false;$("marketingStatus").textContent="Campaign draft generated. Review all claims before publishing.";
+ }catch(error){$("marketingResult").textContent="Unable to generate the campaign. "+(error.message||"Please try again.");$("marketingStatus").textContent="Connection problem. Check your sign-in and AI backend.";}
+ finally{button.disabled=false;button.textContent="Generate campaign plan ✧";}
+}
+$("generateMarketing").addEventListener("click",generateMarketingCampaign);
+$("copyMarketing").addEventListener("click",()=>{if(marketingCurrentDraft)navigator.clipboard.writeText(marketingCurrentDraft).then(()=>$("marketingStatus").textContent="Campaign copied to clipboard.").catch(()=>$("marketingStatus").textContent="Copy was blocked by the browser.");});
+$("saveMarketing").addEventListener("click",()=>{if(!marketingCurrentDraft)return;const drafts=marketingDrafts();drafts.unshift({title:$("marketingOffer").value.trim().slice(0,65)||"Campaign draft",content:marketingCurrentDraft,createdAt:new Date().toISOString()});write("marketing_drafts",drafts.slice(0,30));$("saveMarketing").disabled=true;$("marketingStatus").textContent="Campaign draft saved in this browser.";renderMarketingHistory();});
+
 
 
 $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
