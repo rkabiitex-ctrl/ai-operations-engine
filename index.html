@@ -457,6 +457,13 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 @media(max-width:1000px){.crm-layout{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.crm-stats{grid-template-columns:1fr 1fr}.crm-edit-grid{grid-template-columns:1fr}.crm-profile-grid{grid-template-columns:1fr 1fr}.crm-stat{padding:14px}.crm-stat strong{font-size:23px}}
 
+
+/* VEXT AI Settings control centre */
+.settings-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:27px 30px;margin-bottom:17px;border:1px solid #24445e;border-radius:17px;background:radial-gradient(circle at 86% 15%,rgba(34,211,238,.16),transparent 27%),linear-gradient(120deg,#10243c,#0b1729 72%)}
+.settings-hero h2{font-size:clamp(24px,3vw,31px);letter-spacing:-.8px;margin:8px 0}.settings-hero p{margin:0;color:#9fb3c9;font-size:13px;line-height:1.6}.settings-hero-mark{width:62px;height:62px;display:grid;place-items:center;border:1px solid #2e6b88;border-radius:18px;background:#12334a;color:#67e8f9;font-size:30px}
+.settings-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.8fr);gap:15px;align-items:start}.settings-main,.settings-side{display:grid;gap:15px;min-width:0}.settings-card{padding:21px;background:linear-gradient(150deg,#14243a,#0d192b);border:1px solid #263b55;border-radius:14px;min-width:0}.settings-card-heading{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:20px}.settings-card-heading h3,.settings-card h3{font-size:17px;margin:7px 0}.settings-card-heading p,.settings-card>p{font-size:11px;color:#91a7be;line-height:1.6;margin:0}.settings-kicker{font-size:9px;letter-spacing:1.5px;color:#67d9f5;font-weight:800}.settings-icon{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#173b53;color:#67e8f9;font-size:18px;flex-shrink:0}.settings-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}.settings-card .field{min-width:0}.settings-card-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-top:15px;border-top:1px solid #263750}.settings-card-footer .small{max-width:380px;line-height:1.5}.settings-status{font-size:11px;color:#86efac;min-height:15px;margin:10px 0 0}.inline-status{display:inline-block;margin-left:10px}.settings-local-note{font-size:10px!important;color:#8198b1!important;line-height:1.6;margin:12px 0!important}.settings-service-list{display:grid;gap:0}.settings-service{display:flex;align-items:center;gap:11px;padding:13px 0;border-top:1px solid #263750;min-width:0}.settings-service-symbol{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#17334b;color:#67e8f9;flex-shrink:0}.settings-service>div{display:grid;gap:4px;min-width:0;flex:1}.settings-service strong{font-size:11px}.settings-service small{font-size:10px;color:#91a7be;line-height:1.4}.settings-state{font-size:8px;letter-spacing:.8px;font-weight:800;padding:5px 7px;border-radius:20px;white-space:nowrap}.settings-state.connected{background:#123a32;color:#86efac}.settings-state.planned{background:#293348;color:#bac8d8}.settings-security-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid #263750;font-size:11px;color:#cbd5e1}.settings-export-actions{display:grid;gap:8px;margin-top:16px}.settings-export-actions button{width:100%}.settings-note-card{border-color:#31516b;background:linear-gradient(145deg,#122b40,#101c2e)}
+@media(max-width:950px){.settings-layout{grid-template-columns:1fr 1fr}.settings-main{grid-column:1/-1}.settings-side{grid-column:1/-1;grid-template-columns:repeat(2,minmax(0,1fr))}.settings-note-card{grid-column:1/-1}}
+@media(max-width:600px){.settings-hero{padding:21px}.settings-layout,.settings-side{grid-template-columns:1fr}.settings-main,.settings-side{grid-column:auto}.settings-fields{grid-template-columns:1fr}.settings-card{padding:16px}.settings-card-footer{align-items:stretch}.settings-card-footer button{width:100%}}
 </style>
 </head>
 <body>
@@ -910,20 +917,46 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 </section>
 
 <section class="page" id="settings">
- <div class="card">
-  <h2>Business Settings</h2>
-  <div class="field"><label>Business name</label><input id="businessName" maxlength="100" placeholder="VEXT AI"></div>
-  <div class="field"><label>Business country</label><input id="businessCountry" maxlength="80" placeholder="Your country"></div>
-  <button class="primary" id="saveSettings">Save Settings</button>
+ <div class="settings-hero">
+  <div><span class="ai-eyebrow">WORKSPACE CONTROL CENTRE</span><h2>Business settings</h2><p>Configure your business identity, regional preferences and workspace data.</p></div>
+  <div class="settings-hero-mark">⚙</div>
  </div>
- <div class="card">
-  <h2>Data & Backups</h2>
-  <p class="muted small">Export your records to keep a backup.</p>
-  <div class="action-row">
-   <button class="secondary" id="exportData">Export JSON Backup</button>
-   <button class="secondary" id="exportCSV">Export Clients CSV</button>
+ <div class="settings-layout">
+  <div class="settings-main">
+   <section class="settings-card">
+    <div class="settings-card-heading"><div><span class="settings-kicker">01 · COMPANY IDENTITY</span><h3>Business profile</h3><p>Keep your business details consistent across your workspace.</p></div><span class="settings-icon">▣</span></div>
+    <div class="settings-fields">
+     <div class="field"><label for="businessName">Business name</label><input id="businessName" maxlength="100" placeholder="Your business name"></div>
+     <div class="field"><label for="businessIndustry">Industry</label><select id="businessIndustry"><option value="">Select an industry</option><option>Technology & Software</option><option>Retail & E-commerce</option><option>Professional Services</option><option>Finance & Accounting</option><option>Education</option><option>Healthcare</option><option>Hospitality & Tourism</option><option>Manufacturing</option><option>Real Estate</option><option>Other</option></select></div>
+     <div class="field"><label for="businessWebsite">Business website</label><input id="businessWebsite" type="url" maxlength="200" placeholder="https://example.com"></div>
+     <div class="field"><label for="businessCountry">Business country</label><input id="businessCountry" maxlength="80" placeholder="e.g. Uganda"></div>
+    </div>
+    <div class="settings-card-footer"><span class="muted small">Business name and country sync with your signed-in cloud workspace.</span><button class="primary" id="saveSettings">Save business profile</button></div>
+    <p id="settingsSaveStatus" class="settings-status" role="status" aria-live="polite"></p>
+   </section>
+   <section class="settings-card">
+    <div class="settings-card-heading"><div><span class="settings-kicker">02 · REGIONAL CONFIGURATION</span><h3>Regional preferences</h3><p>Set the display defaults used on this device.</p></div><span class="settings-icon">◎</span></div>
+    <div class="settings-fields">
+     <div class="field"><label for="businessTimezone">Time zone</label><select id="businessTimezone"><option value="Africa/Kampala">Africa/Kampala · East Africa Time</option><option value="Africa/Nairobi">Africa/Nairobi · East Africa Time</option><option value="Africa/Lagos">Africa/Lagos · West Africa Time</option><option value="Europe/London">Europe/London</option><option value="Europe/Paris">Europe/Paris</option><option value="America/New_York">America/New_York</option><option value="America/Chicago">America/Chicago</option><option value="America/Los_Angeles">America/Los_Angeles</option><option value="Asia/Dubai">Asia/Dubai</option><option value="Asia/Kolkata">Asia/Kolkata</option><option value="Asia/Singapore">Asia/Singapore</option><option value="Australia/Sydney">Australia/Sydney</option><option value="UTC">UTC</option></select></div>
+     <div class="field"><label for="businessLanguage">Workspace language</label><select id="businessLanguage"><option value="en">English</option><option value="fr">French</option><option value="es">Spanish</option><option value="de">German</option><option value="pt">Portuguese</option><option value="sw">Swahili</option></select></div>
+    </div>
+    <p class="settings-local-note">Regional preferences are currently stored on this device. The currency selector in the top bar controls financial display currency.</p>
+    <button class="secondary" id="saveRegionalSettings">Save regional preferences</button><span id="regionalSaveStatus" class="settings-status inline-status" role="status" aria-live="polite"></span>
+   </section>
+   <section class="settings-card">
+    <div class="settings-card-heading"><div><span class="settings-kicker">03 · CONNECTED SERVICES</span><h3>Integrations</h3><p>See which services are connected and which are planned.</p></div><span class="settings-icon">⌘</span></div>
+    <div class="settings-service-list">
+     <div class="settings-service"><span class="settings-service-symbol">✦</span><div><strong>VEXT AI workspace</strong><small>Supabase sign-in and Cloudflare workspace sync</small></div><span class="settings-state connected">CORE SERVICES</span></div>
+     <div class="settings-service"><span class="settings-service-symbol">＄</span><div><strong>Payment providers</strong><small>Payment collection and subscription billing are not connected yet.</small></div><span class="settings-state planned">NOT CONNECTED</span></div>
+     <div class="settings-service"><span class="settings-service-symbol">↗</span><div><strong>External business apps</strong><small>Accounting, calendar and messaging integrations are future work.</small></div><span class="settings-state planned">PLANNED</span></div>
+    </div>
+   </section>
   </div>
-  <p class="muted small">Do not store passwords, payment card numbers or confidential customer information in this prototype.</p>
+  <aside class="settings-side">
+   <section class="settings-card settings-security-card"><span class="settings-kicker">ACCOUNT PROTECTION</span><h3>Account & security</h3><p>Your VEXT account sign-in is managed through the secure authentication service.</p><div class="settings-security-row"><span>Authentication</span><strong class="settings-state connected">ENABLED</strong></div><div class="settings-security-row"><span>Workspace sync</span><strong class="settings-state connected">AVAILABLE</strong></div><p class="settings-local-note">Never share your password or API keys. Sign out using the account control in the top bar when using a shared device.</p></section>
+   <section class="settings-card"><span class="settings-kicker">DATA MANAGEMENT</span><h3>Data & backups</h3><p>Download copies of your business records for your own safekeeping.</p><div class="settings-export-actions"><button class="secondary" id="exportData">Export JSON backup</button><button class="secondary" id="exportCSV">Export clients CSV</button></div><p class="settings-local-note">Exports contain business records. Store downloaded files securely and only share them with authorised people.</p></section>
+   <section class="settings-card settings-note-card"><span class="settings-kicker">IMPORTANT</span><h3>Data integrity</h3><p>Changing these settings will not delete or modify your existing clients, enquiries, invoices or audit reports.</p></section>
+  </aside>
  </div>
 </section>
 
@@ -2045,15 +2078,33 @@ function download(content,name,type="text/plain"){
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 $("downloadDoc").addEventListener("click",()=>download(generated,"VEXT-AI-document.txt"));
-$("businessName").value=localStorage.getItem(key+"business")||"VEXT AI";
-$("businessCountry").value=localStorage.getItem(key+"country")||"";
+function loadBusinessSettings(){
+ $("businessName").value=localStorage.getItem(key+"business")||"VEXT AI";
+ $("businessCountry").value=localStorage.getItem(key+"country")||"";
+ $("businessIndustry").value=localStorage.getItem(key+"industry")||"";
+ $("businessWebsite").value=localStorage.getItem(key+"business_website")||"";
+ $("businessTimezone").value=localStorage.getItem(key+"timezone")||"Africa/Kampala";
+ $("businessLanguage").value=localStorage.getItem(key+"language")||"en";
+}
+loadBusinessSettings();
 $("saveSettings").addEventListener("click",()=>{
- const name=$("businessName").value.trim();
- if(!name){alert("Enter your business name.");return}
+ const name=$("businessName").value.trim(),country=$("businessCountry").value.trim();
+ const website=$("businessWebsite").value.trim();
+ if(!name){$("settingsSaveStatus").textContent="Enter your business name before saving.";return}
+ if(website&&!/^https?:\\/\\//i.test(website)){$("settingsSaveStatus").textContent="Enter a full website address beginning with https://";return}
  localStorage.setItem(key+"business",name);
- localStorage.setItem(key+"country",$("businessCountry").value.trim());
+ localStorage.setItem(key+"country",country);
+ localStorage.setItem(key+"industry",$("businessIndustry").value);
+ localStorage.setItem(key+"business_website",website);
  scheduleWorkspaceSync();
- log("Business settings saved.");alert("Settings saved.");
+ log("Business profile settings saved.");
+ $("settingsSaveStatus").textContent="Business profile saved. Cloud sync has been requested for your business name and country.";
+});
+$("saveRegionalSettings").addEventListener("click",()=>{
+ localStorage.setItem(key+"timezone",$("businessTimezone").value);
+ localStorage.setItem(key+"language",$("businessLanguage").value);
+ $("regionalSaveStatus").textContent="Regional preferences saved on this device.";
+ log("Regional preferences updated.");
 });
 $("exportData").addEventListener("click",()=>{
  download(JSON.stringify({leads:read("leads"),invoices:read("invoices"),
