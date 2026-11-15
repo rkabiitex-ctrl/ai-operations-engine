@@ -53,7 +53,7 @@ async function authenticateUser(request) {
   return user && typeof user.id === "string" ? user : null;
 }
 
-async function callAI(env, instructions, input) {
+async function callAI(env, instructions, input, maxOutputTokens = 700) {
   if (!env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is not configured in Worker secrets.");
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -65,7 +65,7 @@ async function callAI(env, instructions, input) {
       model: env.OPENAI_MODEL || DEFAULT_MODEL,
       instructions,
       input,
-      max_output_tokens: 700
+      max_output_tokens: maxOutputTokens
     })
   });
   const data = await response.json().catch(() => ({}));
@@ -141,10 +141,15 @@ export default {
             conversation[conversation.length - 1].content !== message) {
           conversation.push({ role: "user", content: message });
         }
+        const requestedOutputTokens = Number(body && body.maxOutputTokens);
+        const maxOutputTokens = Number.isFinite(requestedOutputTokens)
+          ? Math.min(2400, Math.max(700, Math.floor(requestedOutputTokens)))
+          : 700;
         const reply = await callAI(
           env,
           "You are VEXT AI, a helpful business assistant. Use the recent conversation messages to understand follow-up questions and references. Stay within the current conversation; do not invent missing details. Give clear, practical and responsible guidance.",
-          conversation
+          conversation,
+          maxOutputTokens
         );
         return json({ reply }, 200, cors);
       }
