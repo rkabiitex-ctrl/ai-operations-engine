@@ -496,6 +496,16 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .audit-checks-wrap{padding:15px;border:1px solid #263e58;border-radius:12px;background:#0b1728}.audit-section-label{font-size:9px;letter-spacing:1.4px;font-weight:800;color:#7dd3fc;margin-bottom:11px}#auditChecks{margin-top:0!important;background:transparent;border:0;padding:0;color:#c8d7e7}.audit-result{margin-top:15px!important;padding:0 2px}.audit-history-list{min-height:60px}.audit-report-row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:15px 2px!important;border-bottom:1px solid #263a52!important}.audit-report-row:last-child{border-bottom:0!important}.audit-report-date{margin-top:4px}.audit-disclaimer{margin-top:16px!important;padding:16px 18px;border-color:#66502b;background:#241f17;color:#e8d6b4;line-height:1.7}.audit-disclaimer strong{display:block;color:#f6d99d;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px}
 @media(max-width:760px){.audit-hero{align-items:flex-start;flex-direction:column;padding:22px}.audit-hero-side{justify-content:flex-start}.audit-panel{padding:17px}.audit-panel-heading{align-items:flex-start;flex-direction:column}.audit-panel-heading .primary{width:100%}.audit-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:420px){.audit-hero-side{gap:8px}.audit-hero-mark{width:48px;height:48px}.audit-kpi{padding:14px}.audit-kpi .stat-number{font-size:23px}.audit-report-row{align-items:flex-start;flex-direction:column}}
+
+/* VEXT NEXUS command centre */
+.nexus-hero{display:flex;justify-content:space-between;align-items:center;gap:22px;padding:30px;margin-bottom:18px;border:1px solid #28516b;border-radius:18px;background:radial-gradient(circle at 88% 15%,rgba(56,189,248,.2),transparent 29%),linear-gradient(120deg,#142e49,#0b1729 72%)}
+.nexus-hero h2{font-size:clamp(25px,3vw,36px);letter-spacing:-1px;margin:9px 0}.nexus-hero p{max-width:700px;color:#a9bed2;font-size:13px;line-height:1.7;margin:0}.nexus-orb{width:82px;height:82px;flex:0 0 82px;display:grid;place-items:center;border:1px solid #367a9b;border-radius:25px;background:rgba(34,211,238,.09);color:#8be8ff;font-size:40px;box-shadow:0 0 50px rgba(34,211,238,.14)}.nexus-kicker{font-size:9px;font-weight:850;letter-spacing:1.8px;color:#7dddf4}
+.nexus-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}.nexus-stat{padding:17px 19px;border:1px solid rgba(123,157,190,.18);border-radius:14px;background:linear-gradient(145deg,#13243b,#0c192b)}.nexus-stat span,.nexus-stat small{display:block;color:#91a7c0;font-size:10px}.nexus-stat span{text-transform:uppercase;letter-spacing:1px}.nexus-stat strong{display:block;font-size:27px;margin:9px 0 4px}
+.nexus-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:16px;align-items:start}.nexus-panel{padding:21px;border:1px solid rgba(123,157,190,.18);border-radius:15px;background:linear-gradient(150deg,#14243a,#0d192b);min-width:0}.nexus-panel-heading{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:17px}.nexus-panel-heading h3{font-size:16px;margin:6px 0}.nexus-panel-heading p{font-size:11px;color:#91a7be;margin:0;line-height:1.55}
+.nexus-agent-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.nexus-agent{display:flex;gap:11px;align-items:flex-start;width:100%;padding:13px;border:1px solid #2a405b;border-radius:12px;background:#0d1b2e;color:#edf5ff;text-align:left}.nexus-agent:hover,.nexus-agent.selected{border-color:#38bdf8;background:#112941}.nexus-agent-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:#173b53;color:#7dddf4}.nexus-agent strong,.nexus-agent small{display:block}.nexus-agent strong{font-size:12px;margin:1px 0 5px}.nexus-agent small{color:#91a7be;font-size:10px;line-height:1.45}.nexus-agent-state{display:inline-block;margin-top:8px;color:#91d9b4;font-size:9px}
+.nexus-form textarea{min-height:130px}.nexus-form select{width:100%}.nexus-form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}.nexus-status{min-height:18px;margin-top:11px;color:#91a7be;font-size:11px;line-height:1.5}.nexus-task-list{display:grid;gap:12px}.nexus-task{padding:16px;border:1px solid rgba(123,157,190,.17);border-radius:12px;background:#0b182a;min-width:0}.nexus-task-top{display:flex;justify-content:space-between;gap:12px}.nexus-task-top strong{font-size:12px}.nexus-task-meta{font-size:10px;color:#8fa5bd;margin-top:5px;line-height:1.5}.nexus-task-status{display:inline-flex;white-space:nowrap;padding:5px 8px;border-radius:20px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.2);color:#a8e8fb;font-size:9px;font-weight:800}.nexus-task-status.approved{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.22);color:#9ce7b7}.nexus-task-status.failed{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.2);color:#fda4af}.nexus-task-prompt{font-size:11px;color:#b7c8d9;line-height:1.6;margin:12px 0;overflow-wrap:anywhere}.nexus-task-result{padding:13px;border:1px solid #263d58;border-radius:10px;background:#081321;color:#dce8f5;font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;overflow:auto}.nexus-task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.nexus-task-actions button{font-size:10px;padding:8px 11px;min-height:34px}.nexus-empty{padding:24px 12px;text-align:center;color:#8198b1;font-size:11px;line-height:1.7;border:1px dashed #2b405b;border-radius:11px}.nexus-guardrail{margin-top:15px;padding:12px;border:1px solid rgba(56,189,248,.2);border-radius:10px;background:rgba(14,116,144,.1);color:#b9d9e8;font-size:10px;line-height:1.6}
+@media(max-width:1050px){.nexus-layout{grid-template-columns:1fr}}@media(max-width:760px){.nexus-hero{padding:22px}.nexus-orb{width:60px;height:60px;flex-basis:60px;font-size:29px}.nexus-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.nexus-agent-grid{grid-template-columns:1fr}}@media(max-width:480px){.nexus-hero{padding:18px}.nexus-orb{display:none}.nexus-form-row{grid-template-columns:1fr}.nexus-stat{padding:14px}.nexus-stat strong{font-size:23px}}
+
 </style>
 </head>
 <body>
@@ -555,8 +565,9 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 <div class="app">
 <aside class="sidebar">
  <div class="brand">VEXT<span> AI</span></div>
- <div class="tagline">GLOBAL BUSINESS ENGINE</div>
+ <div class="tagline">GLOBAL AI ECOSYSTEM</div>
  <div class="nav-label">WORKSPACE</div>
+ <button class="nav" data-page="nexus">✧ &nbsp; VEXT NEXUS</button>
  <button class="nav active" data-page="dashboard">◈ &nbsp; Dashboard</button>
  <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
  <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
@@ -574,7 +585,7 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
  <div class="sidebar-bottom">
   <span class="pill">● SYSTEM ACTIVE</span>
   <p>VEXT AI Global Edition</p>
-  <p>Version 3.0 Prototype</p>
+  <p>VEXT AI · NEXUS EDITION</p>
  </div>
 </aside>
 
@@ -657,6 +668,31 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
    <h2>Recent activity</h2>
    <div id="activityFeed"></div>
   </div>
+ </div>
+</section>
+
+
+<section class="page" id="nexus">
+ <div class="nexus-hero"><div><span class="nexus-kicker">VEXT AI / CENTRAL INTELLIGENCE</span><h2>Meet VEXT NEXUS.</h2><p>One command centre for specialised AI employees. Assign a task, choose the right specialist and review the work before using it. NEXUS uses your existing VEXT AI intelligence service.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:17px"><span class="pill">✦ AI coordination</span><span class="pill">Human review</span><span class="pill">Private workspace</span></div></div><div class="nexus-orb" aria-hidden="true">✧</div></div>
+ <div class="nexus-stats"><div class="nexus-stat"><span>Total assignments</span><strong id="nexusTotalTasks">0</strong><small>Tasks saved in this workspace</small></div><div class="nexus-stat"><span>Awaiting review</span><strong id="nexusReviewTasks">0</strong><small>Drafts requiring your decision</small></div><div class="nexus-stat"><span>Approved drafts</span><strong id="nexusApprovedTasks">0</strong><small>Reviewed by you</small></div><div class="nexus-stat"><span>AI specialists</span><strong>5</strong><small>Available on demand</small></div></div>
+ <div class="nexus-layout"><div style="display:grid;gap:16px;min-width:0">
+  <section class="nexus-panel"><div class="nexus-panel-heading"><div><span class="nexus-kicker">SPECIALIST NETWORK</span><h3>Choose your AI employee</h3><p>Each specialist uses role-specific instructions for its assignment.</p></div><span class="ai-document-badge">5 SPECIALISTS</span></div>
+   <div class="nexus-agent-grid" id="nexusAgentGrid">
+    <button type="button" class="nexus-agent selected" data-nexus-agent="Business Analyst"><span class="nexus-agent-icon">◈</span><span><strong>Business Analyst</strong><small>Business questions, performance and opportunities.</small><span class="nexus-agent-state">Available on demand</span></span></button>
+    <button type="button" class="nexus-agent" data-nexus-agent="Growth Strategist"><span class="nexus-agent-icon">↗</span><span><strong>Growth Strategist</strong><small>Customer acquisition, marketing and growth plans.</small><span class="nexus-agent-state">Available on demand</span></span></button>
+    <button type="button" class="nexus-agent" data-nexus-agent="Finance Analyst"><span class="nexus-agent-icon">▤</span><span><strong>Finance Analyst</strong><small>Supplied financial records and draft analysis.</small><span class="nexus-agent-state">Available on demand</span></span></button>
+    <button type="button" class="nexus-agent" data-nexus-agent="Customer Success Agent"><span class="nexus-agent-icon">◎</span><span><strong>Customer Success</strong><small>Customer communication and service workflows.</small><span class="nexus-agent-state">Available on demand</span></span></button>
+    <button type="button" class="nexus-agent" data-nexus-agent="Operations Planner"><span class="nexus-agent-icon">⌘</span><span><strong>Operations Planner</strong><small>Tasks, milestones and operating plans.</small><span class="nexus-agent-state">Available on demand</span></span></button>
+   </div>
+  </section>
+  <section class="nexus-panel"><div class="nexus-panel-heading"><div><span class="nexus-kicker">NEW ASSIGNMENT</span><h3>Give NEXUS a task</h3><p>Describe the outcome you need. The selected specialist prepares a draft for review.</p></div></div>
+   <form class="nexus-form" id="nexusTaskForm"><div class="nexus-form-row"><div class="field"><label for="nexusAgentSelect">Assign specialist</label><select id="nexusAgentSelect"><option>Business Analyst</option><option>Growth Strategist</option><option>Finance Analyst</option><option>Customer Success Agent</option><option>Operations Planner</option></select></div><div class="field"><label for="nexusPriority">Priority</label><select id="nexusPriority"><option>Normal</option><option>High</option><option>Low</option></select></div></div>
+    <div class="field"><label for="nexusTaskPrompt">What should this specialist work on?</label><textarea id="nexusTaskPrompt" maxlength="3000" required placeholder="Example: Review our marketing approach and prepare a practical 30-day plan to attract more customers."></textarea></div>
+    <div class="action-row"><button class="primary" id="nexusRunTask" type="submit">✧ Assign task to NEXUS</button><button class="secondary" id="nexusClearPrompt" type="button">Clear</button></div><div class="nexus-status" id="nexusTaskStatus" role="status" aria-live="polite">Ready when you are. Assignments use the connected VEXT AI service.</div>
+   </form><div class="nexus-guardrail"><strong>Human control:</strong> NEXUS prepares recommendations and drafts. It does not send messages, spend money, publish content or change business records automatically. Review every result before acting on it.</div>
+  </section>
+ </div>
+ <section class="nexus-panel"><div class="nexus-panel-heading"><div><span class="nexus-kicker">MISSION CONTROL</span><h3>Assignments & results</h3><p>Inspect drafts and approve or archive reviewed outputs.</p></div><span class="ai-document-badge" id="nexusTaskCountLabel">0 TASKS</span></div><div class="nexus-task-list" id="nexusTaskList"><div class="nexus-empty">No assignments yet.<br>Give NEXUS its first task.</div></div></section>
  </div>
 </section>
 
@@ -1168,7 +1204,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -1181,7 +1217,8 @@ function workspaceSnapshot(){
   chat_conversations:read("chat_conversations",[]),
   active_chat_id:localStorage.getItem(key+"active_chat_id")||"",
   audit_reports:read("audit_reports",[]),
-  business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[])
+  business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
+  nexus_tasks:read("nexus_tasks",[])
  };
 }
 function setWorkspaceSyncStatus(value,bad=false){
@@ -1246,12 +1283,64 @@ function log(message){
  write("logs",logs.slice(0,12));
  renderActivity();
 }
+
+const NEXUS_AGENT_GUIDANCE={
+ "Business Analyst":"You are the VEXT NEXUS Business Analyst. Analyse the user's stated business question and supplied facts. Identify observations, uncertainties, risks and practical opportunities. Never invent company data or market statistics.",
+ "Growth Strategist":"You are the VEXT NEXUS Growth Strategist. Prepare ethical, realistic customer acquisition, positioning, marketing and growth plans. Avoid guaranteed outcomes, fabricated research, spam and deceptive tactics.",
+ "Finance Analyst":"You are the VEXT NEXUS Finance Analyst. Explain only supplied financial information. Distinguish invoiced amounts, cash collected, costs and profit. Never invent figures or guarantee investment outcomes.",
+ "Customer Success Agent":"You are the VEXT NEXUS Customer Success Agent. Prepare empathetic customer messages, support playbooks and service workflows. Never invent company policies, prices, refunds or product facts. Flag cases needing a human.",
+ "Operations Planner":"You are the VEXT NEXUS Operations Planner. Convert the user's goal into milestones, owners, dependencies, timelines, risks and measurable completion criteria. Do not claim tasks have been executed."
+};
+function renderNexus(){
+ const tasks=read("nexus_tasks",[]).slice().sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
+ $("nexusTotalTasks").textContent=tasks.length;$("nexusReviewTasks").textContent=tasks.filter(t=>t.status==="Awaiting review").length;$("nexusApprovedTasks").textContent=tasks.filter(t=>t.status==="Approved").length;$("nexusTaskCountLabel").textContent=tasks.length+" TASK"+(tasks.length===1?"":"S");
+ const list=$("nexusTaskList");list.replaceChildren();
+ if(!tasks.length){const empty=document.createElement("div");empty.className="nexus-empty";empty.textContent="No assignments yet. Choose a specialist and give NEXUS its first task.";list.append(empty);return;}
+ tasks.slice(0,30).forEach(task=>{
+  const card=document.createElement("article");card.className="nexus-task";const top=document.createElement("div");top.className="nexus-task-top";const identity=document.createElement("div"),name=document.createElement("strong"),meta=document.createElement("div");name.textContent=task.agent||"VEXT NEXUS";meta.className="nexus-task-meta";meta.textContent=(task.priority||"Normal")+" priority · "+(task.createdAt?new Date(task.createdAt).toLocaleString():"Saved task");identity.append(name,meta);
+  const badge=document.createElement("span");badge.className="nexus-task-status"+(task.status==="Approved"?" approved":task.status==="Failed"?" failed":"");badge.textContent=task.status||"Saved";top.append(identity,badge);card.append(top);
+  const prompt=document.createElement("p");prompt.className="nexus-task-prompt";prompt.textContent=task.prompt||"";card.append(prompt);
+  if(task.result){const result=document.createElement("div");result.className="nexus-task-result";result.textContent=task.result;card.append(result);}
+  if(task.error){const error=document.createElement("p");error.className="nexus-task-meta";error.style.color="#fda4af";error.textContent="Could not complete: "+task.error;card.append(error);}
+  const actions=document.createElement("div");actions.className="nexus-task-actions";
+  if(task.status==="Awaiting review"){const approve=document.createElement("button");approve.type="button";approve.className="primary";approve.dataset.nexusApprove=task.id;approve.textContent="Approve draft";actions.append(approve);}
+  if(task.status!=="Archived"){const archive=document.createElement("button");archive.type="button";archive.className="secondary";archive.dataset.nexusArchive=task.id;archive.textContent="Archive";actions.append(archive);}
+  if(actions.children.length)card.append(actions);list.append(card);
+ });
+}
+function selectNexusAgent(agent){$("nexusAgentSelect").value=agent;document.querySelectorAll("[data-nexus-agent]").forEach(b=>b.classList.toggle("selected",b.dataset.nexusAgent===agent));}
+$("nexusAgentGrid").addEventListener("click",e=>{const b=e.target.closest("[data-nexus-agent]");if(b)selectNexusAgent(b.dataset.nexusAgent)});
+$("nexusAgentSelect").addEventListener("change",()=>selectNexusAgent($("nexusAgentSelect").value));
+$("nexusClearPrompt").addEventListener("click",()=>{$("nexusTaskPrompt").value="";$("nexusTaskPrompt").focus()});
+$("nexusTaskForm").addEventListener("submit",async e=>{
+ e.preventDefault();const prompt=$("nexusTaskPrompt").value.trim(),agent=$("nexusAgentSelect").value,priority=$("nexusPriority").value,button=$("nexusRunTask"),status=$("nexusTaskStatus");
+ if(prompt.length<8){status.textContent="Please describe the task in at least 8 characters.";return;}
+ button.disabled=true;button.textContent="NEXUS is working…";status.textContent="Sending your assignment to the VEXT AI service…";
+ const task={id:id(),agent,priority,prompt,status:"Running",createdAt:new Date().toISOString(),result:""};const tasks=read("nexus_tasks",[]);tasks.unshift(task);write("nexus_tasks",tasks.slice(0,100));renderNexus();
+ const message=(NEXUS_AGENT_GUIDANCE[agent]||NEXUS_AGENT_GUIDANCE["Business Analyst"])+"\n\nVEXT NEXUS RULES:\n- Use only facts supplied in this request. State assumptions and missing information.\n- Produce a structured, actionable professional deliverable.\n- Do not claim access to external accounts, websites, private databases or live data.\n- Do not claim to have executed actions, contacted people, published content, changed records or spent money.\n- Identify material risks and where human verification is required.\n\nPRIORITY: "+priority+"\nUSER TASK:\n"+prompt;
+ try{
+  const token=await getVextAccessToken(),response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:2400,history:[]})}),data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("AI request failed ("+response.status+")"));
+  const result=typeof data.reply==="string"?data.reply.trim():(typeof data.output_text==="string"?data.output_text.trim():"");if(!result)throw new Error("The AI service returned an empty response.");
+  const current=read("nexus_tasks",[]),saved=current.find(x=>x.id===task.id);if(saved){saved.result=result;saved.status="Awaiting review";saved.completedAt=new Date().toISOString();write("nexus_tasks",current);}
+  log("VEXT NEXUS "+agent+" prepared a draft for review.");status.textContent="Draft prepared. Review the result in Mission Control before using it.";
+ }catch(error){const current=read("nexus_tasks",[]),saved=current.find(x=>x.id===task.id);if(saved){saved.status="Failed";saved.error=error.message||"Please try again.";write("nexus_tasks",current);}status.textContent="NEXUS could not complete this assignment: "+(error.message||"Please try again.");}
+ finally{button.disabled=false;button.textContent="✧ Assign task to NEXUS";renderNexus();}
+});
+$("nexusTaskList").addEventListener("click",e=>{
+ const approve=e.target.closest("[data-nexus-approve]"),archive=e.target.closest("[data-nexus-archive]");if(!approve&&!archive)return;
+ const tasks=read("nexus_tasks",[]),task=tasks.find(x=>x.id===(approve?approve.dataset.nexusApprove:archive.dataset.nexusArchive));if(!task)return;
+ if(approve&&task.status==="Awaiting review"){task.status="Approved";task.approvedAt=new Date().toISOString();log("VEXT NEXUS draft approved by the user.");}
+ if(archive){task.status="Archived";task.archivedAt=new Date().toISOString();log("VEXT NEXUS assignment archived.");}
+ write("nexus_tasks",tasks);renderNexus();
+});
+
 function navigate(page){
  if(page==="analytics"&&typeof renderAnalystHistory==="function"){renderAnalystHistory();renderManagementActions();}
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
- const titles={dashboard:"Business Overview",ai:"AI Workspace",leads:"Client Management",
+ const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",
  invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"AI Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
  $("pageTitle").textContent=titles[page];
 }
@@ -1865,6 +1954,7 @@ function renderDashboardOverview(leads,inv,code){
 }
 function render(){
  const leads=read("leads"),inv=read("invoices"),code=currentCurrency();
+ if($("nexusTaskList"))renderNexus();
  $("statLeads").textContent=leads.length;
  $("statInvoices").textContent=inv.length;
  $("statPaid").textContent=inv.filter(x=>x.status==="Paid").length;
