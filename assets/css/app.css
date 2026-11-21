@@ -486,3 +486,34 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .nexus-agent-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.nexus-agent{display:flex;gap:11px;align-items:flex-start;width:100%;padding:13px;border:1px solid #2a405b;border-radius:12px;background:#0d1b2e;color:#edf5ff;text-align:left}.nexus-agent:hover,.nexus-agent.selected{border-color:#38bdf8;background:#112941}.nexus-agent-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:#173b53;color:#7dddf4}.nexus-agent strong,.nexus-agent small{display:block}.nexus-agent strong{font-size:12px;margin:1px 0 5px}.nexus-agent small{color:#91a7be;font-size:10px;line-height:1.45}.nexus-agent-state{display:inline-block;margin-top:8px;color:#91d9b4;font-size:9px}
 .nexus-form textarea{min-height:130px}.nexus-form select{width:100%}.nexus-form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}.nexus-status{min-height:18px;margin-top:11px;color:#91a7be;font-size:11px;line-height:1.5}.nexus-task-list{display:grid;gap:12px}.nexus-task{padding:16px;border:1px solid rgba(123,157,190,.17);border-radius:12px;background:#0b182a;min-width:0}.nexus-task-top{display:flex;justify-content:space-between;gap:12px}.nexus-task-top strong{font-size:12px}.nexus-task-meta{font-size:10px;color:#8fa5bd;margin-top:5px;line-height:1.5}.nexus-task-status{display:inline-flex;white-space:nowrap;padding:5px 8px;border-radius:20px;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.2);color:#a8e8fb;font-size:9px;font-weight:800}.nexus-task-status.approved{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.22);color:#9ce7b7}.nexus-task-status.failed{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.2);color:#fda4af}.nexus-task-prompt{font-size:11px;color:#b7c8d9;line-height:1.6;margin:12px 0;overflow-wrap:anywhere}.nexus-task-result{padding:13px;border:1px solid #263d58;border-radius:10px;background:#081321;color:#dce8f5;font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;overflow:auto}.nexus-task-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.nexus-task-actions button{font-size:10px;padding:8px 11px;min-height:34px}.nexus-empty{padding:24px 12px;text-align:center;color:#8198b1;font-size:11px;line-height:1.7;border:1px dashed #2b405b;border-radius:11px}.nexus-guardrail{margin-top:15px;padding:12px;border:1px solid rgba(56,189,248,.2);border-radius:10px;background:rgba(14,116,144,.1);color:#b9d9e8;font-size:10px;line-height:1.6}
 @media(max-width:1050px){.nexus-layout{grid-template-columns:1fr}}@media(max-width:760px){.nexus-hero{padding:22px}.nexus-orb{width:60px;height:60px;flex-basis:60px;font-size:29px}.nexus-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.nexus-agent-grid{grid-template-columns:1fr}}@media(max-width:480px){.nexus-hero{padding:18px}.nexus-orb{display:none}.nexus-form-row{grid-template-columns:1fr}.nexus-stat{padding:14px}.nexus-stat strong{font-size:23px}}
+
+
+/* Dashboard NEXUS Mission Control */
+.mission-control{margin:0 0 18px;padding:22px 24px;border:1px solid rgba(99,160,198,.24);border-radius:15px;background:linear-gradient(120deg,rgba(17,39,61,.98),rgba(11,24,41,.98));min-width:0}
+.mission-control-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:19px}
+.mission-control-kicker{font-size:9px;font-weight:800;letter-spacing:1.6px;color:#7dddf4}
+.mission-control-head h2{font-size:20px;margin:6px 0}
+.mission-control-head p{font-size:11px;color:#91a7be;margin:0;line-height:1.5}
+.mission-control-head button{white-space:nowrap}
+.mission-control-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mission-metric{display:flex;align-items:center;gap:13px;padding:15px;border:1px solid rgba(123,157,190,.16);border-radius:11px;background:rgba(5,17,31,.48);min-width:0}
+.mission-metric-icon{width:35px;height:35px;flex:0 0 35px;display:grid;place-items:center;border-radius:10px;font-size:17px;background:rgba(56,189,248,.1);color:#8bdcf5}
+.mission-metric-icon.review{background:rgba(245,184,85,.1);color:#f3c77f}
+.mission-metric-icon.done{background:rgba(74,222,128,.1);color:#9ce7b7}
+.mission-metric strong,.mission-metric div>span{display:block}
+.mission-metric strong{font-size:24px;line-height:1.1;margin-bottom:4px}
+.mission-metric div>span{font-size:10px;color:#9aadc2;line-height:1.35}
+.mission-control-recent{margin-top:18px;padding-top:15px;border-top:1px solid rgba(123,157,190,.15)}
+.mission-recent-heading{display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:1.2px;font-weight:800;color:#8ca6bf;margin-bottom:9px}
+.mission-recent-heading span{font-weight:500;letter-spacing:0;text-transform:none}
+.mission-recent-list{display:grid}
+.mission-recent-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid rgba(123,157,190,.1)}
+.mission-recent-row:last-child{border-bottom:0}
+.mission-recent-row strong,.mission-recent-row div>span{display:block}
+.mission-recent-row strong{font-size:11px;color:#e5edf7;margin-bottom:3px}
+.mission-recent-row div>span{font-size:10px;color:#8fa5bd;line-height:1.45;overflow-wrap:anywhere}
+.mission-recent-status{flex:0 0 auto;font-size:9px;color:#a8e8fb;border:1px solid rgba(56,189,248,.2);background:rgba(56,189,248,.08);padding:5px 8px;border-radius:20px}
+.mission-recent-status.approved{color:#9ce7b7;border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.08)}
+.mission-recent-status.failed{color:#fda4af;border-color:rgba(251,113,133,.2);background:rgba(251,113,133,.08)}
+.mission-empty{padding:12px 2px;color:#8298b0;font-size:10px}
+@media(max-width:620px){.mission-control{padding:18px}.mission-control-head{flex-direction:column}.mission-control-head button{width:100%}.mission-control-metrics{grid-template-columns:1fr}.mission-metric{padding:12px}.mission-recent-row{align-items:flex-start}.mission-recent-heading{flex-direction:column;gap:4px}}
