@@ -103,3 +103,8 @@ assert.ok(management.includes("sourceNexusTaskId"), "Management actions created 
 assert.ok(management.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
 
 console.log("VEXT architecture smoke checks passed.");
+
+assert.match(app, /async function writeAndSync/, "Critical Management Action writes must support immediate cloud persistence");
+assert.match(app, /if\(!Object\.prototype\.hasOwnProperty\.call\(workspace,name\)\)return/, "Older cloud snapshots must not delete newer local workspace fields");
+assert.match(management, /await writeAndSync\("management_actions",actions\)/, "Management Action create and edit must await cloud persistence");
+assert.match(app, /vext-ai-full-workspace-backup\.json/, "Full workspace backup export must be available");

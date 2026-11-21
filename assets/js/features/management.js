@@ -1,6 +1,6 @@
 "use strict";
 window.VEXTManagement = (() => {
- function init({ $, read, write, id, log }) {
+ function init({ $, read, write, writeAndSync, id, log }) {
   function renderManagementActions(){
    const list=$("managementActionList");if(!list)return;
    const actions=read("management_actions",[]);
@@ -19,24 +19,47 @@ window.VEXTManagement = (() => {
     buttons.append(save,del);controls.append(stamp,buttons);card.append(fields,controls);list.append(card);
    });
   }
-  $("managementActionForm").addEventListener("submit",event=>{
+  $("managementActionForm").addEventListener("submit",async event=>{
    event.preventDefault();const title=$("newActionTitle").value.trim();if(!title)return;
+   const submit=event.submitter;if(submit)submit.disabled=true;
    const actions=read("management_actions",[]),bridgeDraft=window.VEXTNexusActionDraft;
    const action={id:id(),title,owner:$("newActionOwner").value.trim(),priority:$("newActionPriority").value,status:"Pending",dueDate:$("newActionDue").value,createdAt:new Date().toISOString()};
-   if(bridgeDraft&&bridgeDraft.taskId){
-    const linked=actions.some(item=>item.sourceNexusTaskId===bridgeDraft.taskId);
-    if(linked){$("managementActionStatus").textContent="This NEXUS recommendation already has a management action.";return;}
-    const tasks=read("nexus_tasks",[]),sourceTask=tasks.find(item=>item.id===bridgeDraft.taskId);
-    if(!sourceTask||sourceTask.status!=="Approved"){$("managementActionStatus").textContent="Approve the NEXUS draft before creating a management action.";return;}
-    action.sourceNexusTaskId=bridgeDraft.taskId;action.sourceNexusAgent=bridgeDraft.agent;action.sourceNexusPrompt=bridgeDraft.prompt;
-    sourceTask.managementActionId=action.id;sourceTask.managementActionCreatedAt=action.createdAt;write("nexus_tasks",tasks);
-   }
-   actions.unshift(action);write("management_actions",actions);window.VEXTNexusActionDraft=null;event.target.reset();$("newActionPriority").value="Medium";renderManagementActions();$("managementActionStatus").textContent=bridgeDraft?"Approved NEXUS recommendation added to the Action Tracker.":"Action added and saved to your VEXT workspace.";log((bridgeDraft?"NEXUS recommendation converted to management action: ":"Management action added: ")+title);
+   try{
+    if(bridgeDraft&&bridgeDraft.taskId){
+     const linked=actions.some(item=>item.sourceNexusTaskId===bridgeDraft.taskId);
+     if(linked){$("managementActionStatus").textContent="This NEXUS recommendation already has a management action.";return;}
+     const tasks=read("nexus_tasks",[]),sourceTask=tasks.find(item=>item.id===bridgeDraft.taskId);
+     if(!sourceTask||sourceTask.status!=="Approved"){$("managementActionStatus").textContent="Approve the NEXUS draft before creating a management action.";return;}
+     action.sourceNexusTaskId=bridgeDraft.taskId;action.sourceNexusAgent=bridgeDraft.agent;action.sourceNexusPrompt=bridgeDraft.prompt;
+     sourceTask.managementActionId=action.id;sourceTask.managementActionCreatedAt=action.createdAt;write("nexus_tasks",tasks);
+    }
+    actions.unshift(action);const cloudSaved=await writeAndSync("management_actions",actions);
+    window.VEXTNexusActionDraft=null;event.target.reset();$("newActionPriority").value="Medium";renderManagementActions();
+    $("managementActionStatus").textContent=cloudSaved?"Action saved to your secure cloud workspace.":"Action saved on this device, but cloud sync needs attention. Keep this tab open and check the sync status.";
+    log((bridgeDraft?"NEXUS recommendation converted to management action: ":"Management action added: ")+title);
+   }finally{if(submit)submit.disabled=false;}
   });
-  $("managementActionList").addEventListener("click",event=>{
+  $("managementActionList").addEventListener("click",async event=>{
    const card=event.target.closest("[data-management-action]");if(!card)return;const actionId=card.dataset.managementAction;
-   if(event.target.closest("[data-save-action]")){const actions=read("management_actions",[]),action=actions.find(x=>x.id===actionId);if(!action)return;const val=name=>card.querySelector('[data-field="'+name+'"]').value.trim();const title=val("title");if(!title){$("managementActionStatus").textContent="An action description is required.";return;}action.title=title;action.owner=val("owner");action.priority=val("priority");action.dueDate=val("dueDate");action.status=val("status");action.updatedAt=new Date().toISOString();write("management_actions",actions);renderManagementActions();$("managementActionStatus").textContent="Action updated and synced with your workspace.";log("Management action updated: "+title);return;}
-   if(event.target.closest("[data-delete-action]")){if(!confirm("Delete this management action?"))return;write("management_actions",read("management_actions",[]).filter(x=>x.id!==actionId));renderManagementActions();$("managementActionStatus").textContent="Action deleted.";log("Management action deleted.");}
+   if(event.target.closest("[data-save-action]")){
+    const button=event.target.closest("[data-save-action]"),actions=read("management_actions",[]),action=actions.find(x=>x.id===actionId);if(!action)return;
+    const val=name=>card.querySelector('[data-field="'+name+'"]').value.trim(),title=val("title");
+    if(!title){$("managementActionStatus").textContent="An action description is required.";return;}
+    button.disabled=true;button.textContent="Saving…";
+    try{
+     action.title=title;action.owner=val("owner");action.priority=val("priority");action.dueDate=val("dueDate");action.status=val("status");action.updatedAt=new Date().toISOString();
+     const cloudSaved=await writeAndSync("management_actions",actions);renderManagementActions();
+     $("managementActionStatus").textContent=cloudSaved?"Action updated and saved to your secure cloud workspace.":"Action updated on this device, but cloud sync needs attention.";
+     log("Management action updated: "+title);
+    }finally{button.disabled=false;}
+    return;
+   }
+   if(event.target.closest("[data-delete-action]")){
+    if(!confirm("Delete this management action?"))return;
+    const cloudSaved=await writeAndSync("management_actions",read("management_actions",[]).filter(x=>x.id!==actionId));
+    renderManagementActions();$("managementActionStatus").textContent=cloudSaved?"Action deleted from your workspace.":"Action deleted locally; cloud sync needs attention.";
+    log("Management action deleted.");
+   }
   });
   return renderManagementActions;
  }
