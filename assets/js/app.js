@@ -73,14 +73,8 @@ function read(k, fallback=[]){
  }catch{return fallback}
 }
 function write(k,v){localStorage.setItem(key+k,JSON.stringify(v));scheduleWorkspaceSync()}
-function id(){return crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()}
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const {id,esc,formatMoney}=window.VEXTUtils;
 function currentCurrency(){return $("currency").value}
-function formatMoney(value,code){
- try{return new Intl.NumberFormat(undefined,{style:"currency",currency:code,
-  maximumFractionDigits:2}).format(Number(value)||0)}
- catch{return code+" "+Number(value||0).toFixed(2)}
-}
 function log(message){
  const logs=read("logs");
  logs.unshift({message,time:new Date().toLocaleString()});
