@@ -111,5 +111,5 @@ assert.match(app, /vext-ai-full-workspace-backup\.json/, "Full workspace backup 
 assert.match(app, /function saveWorkspaceRecovery/, "Workspace recovery checkpoints must be retained locally");
 assert.match(app, /Local data found before cloud refresh/, "Local records must be checkpointed before cloud refresh");
 assert.match(app, /function restoreWorkspaceRecovery/, "Users must be able to restore a recovery checkpoint");
-assert.match(app, /if\(!Object\.prototype\.hasOwnProperty\.call\(mergedRemote,name\)\)/, "Missing cloud fields must be recovered from the local snapshot");
+assert.ok(app.includes("if(!Object.prototype.hasOwnProperty.call(mergedRemote,name)&&"), "Missing cloud fields must be recovered from the local snapshot");
 assert.ok(html.includes('id="workspaceRecoveryStatus"')&&html.includes('id="restoreWorkspaceRecovery"'), "Settings must expose the recovery status and restore control");
