@@ -102,6 +102,9 @@ function renderNexus(){
   if(task.error){const error=document.createElement("p");error.className="nexus-task-meta";error.style.color="#fda4af";error.textContent="Could not complete: "+task.error;card.append(error);}
   const actions=document.createElement("div");actions.className="nexus-task-actions";
   if(task.status==="Awaiting review"){const approve=document.createElement("button");approve.type="button";approve.className="primary";approve.dataset.nexusApprove=task.id;approve.textContent="Approve draft";actions.append(approve);}
+  const linkedAction=read("management_actions",[]).find(action=>action.sourceNexusTaskId===task.id);
+  if(task.status==="Approved"&&linkedAction){const linked=document.createElement("span");linked.className="nexus-task-meta";linked.textContent="Management action created";actions.append(linked);}
+  if(task.status==="Approved"&&!linkedAction){const bridge=document.createElement("button");bridge.type="button";bridge.className="secondary";bridge.dataset.nexusCreateAction=task.id;bridge.textContent="Review & send to Action Tracker";actions.append(bridge);}
   if(task.status!=="Archived"){const archive=document.createElement("button");archive.type="button";archive.className="secondary";archive.dataset.nexusArchive=task.id;archive.textContent="Archive";actions.append(archive);}
   if(actions.children.length)card.append(actions);list.append(card);
  });
@@ -126,9 +129,32 @@ $("nexusTaskForm").addEventListener("submit",async e=>{
  }catch(error){const current=read("nexus_tasks",[]),saved=current.find(x=>x.id===task.id);if(saved){saved.status="Failed";saved.error=error.message||"Please try again.";write("nexus_tasks",current);}status.textContent="NEXUS could not complete this assignment: "+(error.message||"Please try again.");}
  finally{button.disabled=false;button.textContent="✧ Assign task to NEXUS";renderNexus();}
 });
+function extractNexusActionTitle(result,prompt){
+ const lines=String(result||"").split(/\r?\n/);
+ const heading=lines.findIndex(line=>/specific next steps|recommended actions|recommended next steps|action plan|next steps/i.test(line));
+ const candidates=(heading>=0?lines.slice(heading+1):lines).map(line=>line.trim()).filter(Boolean);
+ const bullet=candidates.find(line=>/^(?:[-*•]|\d+[.)])\s+/.test(line));
+ const cleaned=(bullet||prompt||"NEXUS recommended action").replace(/^(?:[-*•]|\d+[.)])\s+/,"").replace(/\*\*/g,"").trim();
+ return cleaned.slice(0,180);
+}
 $("nexusTaskList").addEventListener("click",e=>{
- const approve=e.target.closest("[data-nexus-approve]"),archive=e.target.closest("[data-nexus-archive]");if(!approve&&!archive)return;
- const tasks=read("nexus_tasks",[]),task=tasks.find(x=>x.id===(approve?approve.dataset.nexusApprove:archive.dataset.nexusArchive));if(!task)return;
+ const approve=e.target.closest("[data-nexus-approve]"),archive=e.target.closest("[data-nexus-archive]"),createAction=e.target.closest("[data-nexus-create-action]");
+ if(!approve&&!archive&&!createAction)return;
+ const taskId=approve?approve.dataset.nexusApprove:archive?archive.dataset.nexusArchive:createAction.dataset.nexusCreateAction;
+ const tasks=read("nexus_tasks",[]),task=tasks.find(x=>x.id===taskId);if(!task)return;
+ if(createAction&&task.status==="Approved"){
+  const existing=read("management_actions",[]).find(action=>action.sourceNexusTaskId===task.id);
+  if(existing){$("nexusTaskStatus").textContent="This NEXUS assignment already has a management action.";return;}
+  window.VEXTNexusActionDraft={taskId:task.id,agent:task.agent||"VEXT NEXUS",prompt:task.prompt||"",title:extractNexusActionTitle(task.result,task.prompt),priority:["High","Medium","Low"].includes(task.priority)?task.priority:"Medium"};
+  navigate("analytics");
+  $("newActionTitle").value=window.VEXTNexusActionDraft.title;
+  $("newActionOwner").value="";
+  $("newActionPriority").value=window.VEXTNexusActionDraft.priority;
+  $("newActionDue").value="";
+  $("managementActionStatus").textContent="Review the proposed action, assign an owner and due date, then add it. Nothing has been created yet.";
+  $("newActionTitle").focus();
+  return;
+ }
  if(approve&&task.status==="Awaiting review"){task.status="Approved";task.approvedAt=new Date().toISOString();log("VEXT NEXUS draft approved by the user.");}
  if(archive){task.status="Archived";task.archivedAt=new Date().toISOString();log("VEXT NEXUS assignment archived.");}
  write("nexus_tasks",tasks);renderNexus();
