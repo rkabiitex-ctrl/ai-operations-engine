@@ -8,6 +8,7 @@ const app = readFileSync("assets/js/app.js", "utf8");
 const auth = readFileSync("assets/js/auth.js", "utf8");
 const utilsSource = readFileSync("assets/js/core/utils.js", "utf8");
 const crm = readFileSync("assets/js/features/crm.js", "utf8");
+const management = readFileSync("assets/js/features/management.js", "utf8");
 const intelligenceContext = readFileSync("assets/js/core/intelligence-context.js", "utf8");
 const worker = readFileSync("cloudflare-worker.js", "utf8");
 
@@ -81,7 +82,7 @@ assert.match(worker, /key === "management_actions" \? 1000/, "Management action 
 
 assert.match(app, /data-nexus-create-action/, "Approved NEXUS tasks must expose the action bridge");
 assert.match(app, /function extractNexusActionTitle/, "Action bridge must derive a reviewable action title");
-assert.ok(mg.includes("sourceNexusTaskId"), "Management actions created from NEXUS must retain their source task");
-assert.ok(mg.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
+assert.ok(management.includes("sourceNexusTaskId"), "Management actions created from NEXUS must retain their source task");
+assert.ok(management.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
 
 console.log("VEXT architecture smoke checks passed.");
