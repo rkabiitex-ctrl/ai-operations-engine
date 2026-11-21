@@ -530,44 +530,10 @@ function renderActivity(){
  `<div class="activity">${esc(x.message)}<small>${esc(x.time)}</small></div>`
  ).join(""):'<div class="empty">No activity recorded yet.</div>';
 }
-function invoiceIsOverdue(invoice){
- return invoice.status!=="Paid"&&!!invoice.dueDate&&invoice.dueDate<new Date().toISOString().slice(0,10);
-}
-function renderInvoices(){
- const all=read("invoices"),code=currentCurrency();
- const invoices=all.filter(x=>x.currency===code);
- const paid=invoices.filter(x=>x.status==="Paid");
- const overdue=invoices.filter(invoiceIsOverdue);
- const total=invoices.reduce((sum,x)=>sum+Number(x.amount||0),0);
- const collected=paid.reduce((sum,x)=>sum+Number(x.amount||0),0);
- $("invoiceCurrencyLabel").textContent=code;
- $("invoiceKpiCount").textContent=invoices.length;
- $("invoiceKpiTotal").textContent=formatMoney(total,code);
- $("invoiceKpiPaid").textContent=formatMoney(collected,code);
- $("invoiceKpiOutstanding").textContent=formatMoney(total-collected,code);
- $("invoiceKpiOverdue").textContent=overdue.length+" overdue invoice"+(overdue.length===1?"":"s");
- const clients=read("leads");
- $("invoiceClientOptions").innerHTML=clients.map(x=>x.name?'<option value="'+esc(x.name)+'"></option>':"").join("");
- const query=String($("invoiceSearch")?.value||"").trim().toLowerCase();
- const filter=$("invoiceStatusFilter")?.value||"all";
- const visible=invoices.filter(x=>{
-  const matches=!query||String(x.number||"").toLowerCase().includes(query)||String(x.client||"").toLowerCase().includes(query);
-  const state=invoiceIsOverdue(x)?"Overdue":(x.status||"Unpaid");
-  return matches&&(filter==="all"||filter===state);
- });
- $("invoiceRegisterCount").textContent=visible.length+" of "+invoices.length+" records";
- $("invoiceTable").innerHTML=visible.length?
- `<table><thead><tr><th>Invoice</th><th>Customer</th><th>Issue date</th><th>Due date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead><tbody>
- ${visible.map(x=>{const overdue=invoiceIsOverdue(x),status=overdue?"Overdue":(x.status||"Unpaid");return `<tr>
- <td><span class="invoice-number">${esc(x.number||"Unnumbered")}</span><span class="invoice-description">${esc(x.description||"")}</span></td>
- <td><span class="invoice-customer">${esc(x.client||"Unnamed customer")}</span></td>
- <td class="invoice-date-cell">${x.date?esc(new Date(x.date).toLocaleDateString()):"—"}</td>
- <td class="invoice-date-cell">${x.dueDate?esc(new Date(x.dueDate+"T00:00:00").toLocaleDateString()):'<span class="muted">Not set</span>'}${overdue?'<div class="invoice-overdue-note">Past due</div>':""}</td>
- <td><strong>${formatMoney(x.amount,x.currency)}</strong></td>
- <td><span class="invoice-status ${overdue?"overdue":status==="Paid"?"paid":"unpaid"}">${status}</span></td>
- <td><div class="invoice-actions"><button class="secondary" data-edit-invoice="${esc(x.id)}">Edit</button><button class="secondary" data-print="${esc(x.id)}">Print</button><button class="secondary" data-paid="${esc(x.id)}">${x.status==="Paid"?"Mark unpaid":"Mark paid"}</button><button class="danger" data-delete-invoice="${esc(x.id)}">Delete</button></div></td></tr>`}).join("")}
- </tbody></table>`:'<div class="empty">No invoices match this view. Create an invoice or adjust your search and filters.</div>';
-}
+const renderInvoices = window.VEXTInvoices.init({
+ $, read, write, id, esc, formatMoney, currentCurrency, log,
+ render: () => render()
+});
 function renderAnalytics(){
  const leads=read("leads"),allInvoices=read("invoices"),code=currentCurrency();
  const range=$("analyticsRange")?.value||"30",now=new Date(),cutoff=new Date(now);
@@ -831,83 +797,6 @@ $("leadTable").addEventListener("click",e=>{
  if(!confirm("Delete this client?"))return;
  write("leads",read("leads").filter(x=>x.id!==b.dataset.deleteLead));
  log("Client record deleted.");render();
-});
-$("invDate").value=new Date().toISOString().slice(0,10);
-$("invoiceSearch").addEventListener("input",renderInvoices);
-$("invoiceStatusFilter").addEventListener("change",renderInvoices);
-$("invoiceForm").addEventListener("submit",e=>{
- e.preventDefault();
- const amount=Number($("invAmount").value),issueDate=$("invDate").value,dueDate=$("invDueDate").value;
- if(!Number.isFinite(amount)||amount<=0){alert("Enter a valid amount.");return}
- if(!issueDate||!dueDate){alert("Enter both the issue date and due date.");return}
- if(dueDate<issueDate){alert("The due date cannot be earlier than the issue date.");return}
- const invoices=read("invoices");
- const number="VX-"+new Date().getFullYear()+"-"+String(invoices.length+1).padStart(4,"0");
- invoices.push({id:id(),number,client:$("invClient").value.trim(),
- description:$("invDescription").value.trim(),amount,currency:$("invCurrency").value,
- status:"Unpaid",date:new Date(issueDate+"T12:00:00").toISOString(),dueDate});
- write("invoices",invoices);e.target.reset();
- $("invDate").value=new Date().toISOString().slice(0,10);
- $("invCurrency").value=currentCurrency();
- log("Invoice "+number+" created.");render();
-});
-$("invoiceTable").addEventListener("click",e=>{
- const edit=e.target.closest("[data-edit-invoice]");
- if(edit){
-  const invoice=read("invoices").find(v=>v.id===edit.dataset.editInvoice);if(!invoice)return;
-  $("editInvoiceId").value=invoice.id;$("editInvoiceClient").value=invoice.client||"";$("editInvoiceDescription").value=invoice.description||"";
-  $("editInvoiceIssueDate").value=invoice.date?new Date(invoice.date).toISOString().slice(0,10):"";
-  $("editInvoiceDueDate").value=invoice.dueDate||"";$("editInvoiceAmount").value=Number(invoice.amount||0);$("editInvoiceCurrency").innerHTML=$("invCurrency").innerHTML;$("editInvoiceCurrency").value=invoice.currency||currentCurrency();
-  $("invoiceEditStatus").textContent="";$("invoiceEditModal").hidden=false;$("editInvoiceClient").focus();return;
- }
- const paid=e.target.closest("[data-paid]");
- const del=e.target.closest("[data-delete-invoice]");
- const print=e.target.closest("[data-print]");
- if(paid){
-  const all=read("invoices");const x=all.find(v=>v.id===paid.dataset.paid);
-  if(x)x.status=x.status==="Paid"?"Unpaid":"Paid";
-  write("invoices",all);log("Invoice payment status updated.");render();
- }
- if(del){
-  if(!confirm("Delete this invoice?"))return;
-  write("invoices",read("invoices").filter(x=>x.id!==del.dataset.deleteInvoice));
-  log("Invoice deleted.");render();
- }
- if(print){
-  const x=read("invoices").find(v=>v.id===print.dataset.print);
-  if(!x)return;
-  const w=window.open("","_blank");
-  if(!w){alert("Allow pop-ups to print invoices.");return}
-  w.document.write(`<!doctype html><html><head><title>${esc(x.number)}</title>
-  <style>body{font:16px Arial;padding:45px;color:#172033}
-  h1{color:#087da8}hr{border:0;border-top:1px solid #ccc}
-  .total{font-size:25px;font-weight:bold;margin-top:35px}</style></head><body>
-  <h1>VEXT AI</h1><h2>INVOICE</h2><hr>
-  <p>Invoice: ${esc(x.number)}</p><p>Date: ${esc(new Date(x.date).toLocaleDateString())}</p>
-  <p>Customer: ${esc(x.client)}</p><p>Description: ${esc(x.description)}</p><p>Due date: ${esc(x.dueDate||"Not set")}</p>
-  <p>Status: ${esc(x.status)}</p><hr>
-  <div class="total">Total: ${esc(formatMoney(x.amount,x.currency))}</div>
-  <p>Thank you for your business.</p><script>window.onload=()=>window.print()<\/script>
-  </body></html>`);
-  w.document.close();
- }
-
-});
-function closeInvoiceEditor(){$("invoiceEditModal").hidden=true}
-$("closeInvoiceEdit").addEventListener("click",closeInvoiceEditor);
-$("cancelInvoiceEdit").addEventListener("click",closeInvoiceEditor);
-$("invoiceEditModal").addEventListener("click",e=>{if(e.target===$("invoiceEditModal"))closeInvoiceEditor()});
-$("invoiceEditForm").addEventListener("submit",e=>{
- e.preventDefault();
- const all=read("invoices"),invoice=all.find(x=>x.id===$("editInvoiceId").value);
- if(!invoice){$("invoiceEditStatus").textContent="This invoice could not be found. Refresh and try again.";return}
- const issueDate=$("editInvoiceIssueDate").value,dueDate=$("editInvoiceDueDate").value,amount=Number($("editInvoiceAmount").value);
- if(!issueDate||!dueDate){$("invoiceEditStatus").textContent="Enter both the issue date and due date.";return}
- if(dueDate<issueDate){$("invoiceEditStatus").textContent="The due date cannot be earlier than the issue date.";return}
- if(!Number.isFinite(amount)||amount<=0){$("invoiceEditStatus").textContent="Enter a valid amount greater than zero.";return}
- invoice.client=$("editInvoiceClient").value.trim();invoice.description=$("editInvoiceDescription").value.trim();
- invoice.date=new Date(issueDate+"T12:00:00").toISOString();invoice.dueDate=dueDate;invoice.amount=amount;invoice.currency=$("editInvoiceCurrency").value;
- write("invoices",all);log("Invoice "+(invoice.number||"record")+" details updated.");closeInvoiceEditor();render();
 });
 function getSupportSettings(){
  const defaults={business:localStorage.getItem(key+"business")||"Your Business",website:"",greeting:"Hello! Welcome. How can we help you today?",instructions:""};
