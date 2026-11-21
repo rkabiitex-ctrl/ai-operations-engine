@@ -477,7 +477,7 @@ function renderMissionControl(){
    const row=document.createElement("div");row.className="mission-recent-row";
    const detail=document.createElement("div"),name=document.createElement("strong"),meta=document.createElement("span");
    name.textContent=task.agent||"VEXT NEXUS";
-   meta.textContent=(task.prompt||"NEXUS assignment").replace(/\\s+/g," ").slice(0,105);
+   meta.textContent=(task.prompt||"NEXUS assignment").replace(/\s+/g," ").slice(0,105);
    detail.append(name,meta);
    const status=document.createElement("span");status.className="mission-recent-status"+(task.status==="Approved"?" approved":task.status==="Failed"?" failed":"");
    status.textContent=task.status||"Saved";row.append(detail,status);list.append(row);
