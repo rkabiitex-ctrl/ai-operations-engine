@@ -90,3 +90,13 @@ Feature-specific code remains in `app.js` until its DOM dependencies and initial
 - Added architecture checks for CRM module presence, key renderer ownership, and script load order.
 
 The CRM module continues to use the existing workspace storage helpers and data shape. No database schema or API routes changed.
+
+
+## Phase 3.1 — Unified workspace context for NEXUS
+
+- Added a shared context builder that summarizes CRM, invoice, audit, management-action and NEXUS records into one bounded business snapshot.
+- NEXUS receives the snapshot with each assignment, allowing a specialist to reason across modules rather than relying only on the task prompt.
+- The context includes aggregate counts, selected-currency invoice totals and workflow statuses; it excludes customer contact details, enquiry messages, private notes, invoice descriptions and full report contents.
+- Currency totals remain separate. Marked-paid amounts are explicitly not represented as bank-verified collections, and invoiced amounts are not represented as profit or recognised revenue.
+- The snapshot is generated from the currently loaded workspace data. It is not an independent verification of the business records.
+- This phase does not create autonomous agents or permit NEXUS to execute business actions. Existing human-review controls remain unchanged.
