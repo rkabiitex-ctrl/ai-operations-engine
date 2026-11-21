@@ -8,6 +8,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
+let vextPreserveRecoveryCheckpoint=false;
 const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications"];
 function workspaceSnapshot(){
  return {
@@ -81,7 +82,7 @@ async function syncWorkspaceNow(){
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Cloud sync failed ("+response.status+")"));
   saved=true;
-  saveWorkspaceRecovery(workspaceSnapshot(),"Last successfully synced workspace");
+  if(!vextPreserveRecoveryCheckpoint)saveWorkspaceRecovery(workspaceSnapshot(),"Last successfully synced workspace");
   setWorkspaceSyncStatus("Cloud synced");
  }catch(error){
   setWorkspaceSyncStatus("Saved on this device · cloud sync needs attention",true);
@@ -761,7 +762,9 @@ window.vextActivateUserData=async function(user){
   if(typeof vextNotifications!=="undefined")vextNotifications.resetBaseline();
   if(!hasRemote)await syncWorkspaceNow();
   else if(recoveredMissingFields){
+   vextPreserveRecoveryCheckpoint=true;
    const saved=await syncWorkspaceNow();
+   vextPreserveRecoveryCheckpoint=false;
    if(saved)setWorkspaceSyncStatus("Cloud synced · missing fields recovered");
   }else{
    saveWorkspaceRecovery(workspaceSnapshot(),"Cloud workspace checkpoint");
