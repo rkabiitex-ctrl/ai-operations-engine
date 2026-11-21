@@ -39,7 +39,11 @@ const sampleData = {
   ],
   leads: [{ salesStage: "Qualified", email: "private@example.com", notes: "private note" }],
   audit_reports: [{ issueCount: 2 }],
-  management_actions: [{ status: "Pending" }],
+  management_actions: [
+    { status: "Pending", dueDate: "2020-01-01", owner: "Finance", sourceNexusTaskId: "task-1" },
+    { status: "In Progress", dueDate: new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10), owner: "" },
+    { status: "Completed", dueDate: "2020-01-01", owner: "Operations" }
+  ],
   nexus_tasks: [{ status: "Awaiting review" }]
 };
 const context = contextWindow.window.VEXTContext.build({
@@ -52,6 +56,13 @@ assert.equal(context.financials.invoicedAmount, 150, "Context must aggregate onl
 assert.equal(context.financials.markedPaidAmount, 100, "Context must distinguish marked-paid totals");
 assert.equal(context.customerPipeline.clientRecordCount, 1);
 assert.equal(context.governance.latestAuditIssueCount, 2);
+assert.equal(context.governance.actionExecution.activeCount, 2, "Completed actions must be excluded from active work");
+assert.equal(context.governance.actionExecution.completedCount, 1);
+assert.equal(context.governance.actionExecution.overdueCount, 1, "Overdue actions must be based on saved due dates");
+assert.equal(context.governance.actionExecution.dueWithinSevenDaysCount, 1);
+assert.equal(context.governance.actionExecution.unassignedActiveCount, 1);
+assert.equal(context.governance.actionExecution.linkedToNexusCount, 1);
+assert.equal(context.governance.actionExecution.completionRatePercent, 33);
 assert.equal(context.nexus.taskStatuses["Awaiting review"], 1);
 const serializedContext = JSON.stringify(context);
 assert.ok(!serializedContext.includes("private@example.com"), "Context must not expose customer contact details");
