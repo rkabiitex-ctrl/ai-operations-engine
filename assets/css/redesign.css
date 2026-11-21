@@ -575,3 +575,126 @@ button,.nav,select,input,textarea{transition:background-color .16s,border-color 
   #dashboard .dashboard-insights>.card,#dashboard>.grid>.card{padding:16px}
   .snapshot-metrics{grid-template-columns:1fr}
 }
+
+
+/* VEXT AI — cyan-flow dashboard refinement
+   Organic card geometry, calm cyan accents, and a clearer dashboard rhythm. */
+:root{
+  --vext-cyan:#59c7dc;
+  --vext-cyan-soft:rgba(89,199,220,.12);
+}
+#dashboard .stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+  align-items:stretch;
+}
+#dashboard .stats>.card{
+  position:relative;
+  min-height:148px;
+  padding:23px 24px;
+  border:1px solid rgba(133,174,194,.15);
+  border-radius:24px 24px 24px 9px;
+  background:linear-gradient(145deg,#152638 0%,#101d2b 100%);
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+  transition:transform .2s ease,border-color .2s ease;
+}
+#dashboard .stats>.card:nth-child(2){border-radius:9px 24px 24px 24px}
+#dashboard .stats>.card:nth-child(3){border-radius:24px 9px 24px 24px}
+#dashboard .stats>.card:nth-child(4){border-radius:24px 24px 9px 24px}
+#dashboard .stats>.card:hover{
+  transform:translateY(-3px);
+  border-color:rgba(89,199,220,.38);
+}
+#dashboard .stats>.card:before{
+  content:"";
+  position:absolute;
+  top:18px;left:23px;
+  width:25px;height:3px;
+  border-radius:99px;
+  background:var(--vext-cyan);
+  opacity:.85;
+}
+#dashboard .stats>.card:after{display:none}
+#dashboard .stat-title{padding-top:12px;color:#a7b7c8}
+#dashboard .stat-number{color:#f3f8fb}
+#dashboard .stat-number.blue{color:#78d6e5}
+#dashboard .stat-number.green{color:#8bd8bd}
+#dashboard .dashboard-insights{
+  display:grid;
+  grid-template-columns:minmax(0,1.18fr) minmax(300px,.82fr);
+  gap:18px;
+  align-items:stretch;
+}
+#dashboard .dashboard-insights>.card,
+#dashboard>.grid>.card{
+  border:1px solid rgba(133,174,194,.14);
+  background:#111f2e;
+  box-shadow:0 12px 30px rgba(0,0,0,.10);
+}
+#dashboard .dashboard-insights>.card:first-child{
+  border-radius:28px 28px 9px 28px;
+  background:linear-gradient(145deg,#14283a,#101d2b);
+}
+#dashboard .dashboard-insights>.card:last-child{
+  border-radius:9px 28px 28px 28px;
+}
+#dashboard .dashboard-eyebrow{color:#75cfdf}
+#dashboard .dashboard-live-dot{
+  color:#9bd9c8;
+  background:rgba(80,174,146,.08);
+  border:1px solid rgba(80,174,146,.18);
+  border-radius:99px;
+}
+#dashboard .dashboard-snapshot{
+  border:1px solid rgba(133,174,194,.12);
+  border-radius:20px 20px 7px 20px;
+  background:#0d1926;
+}
+#dashboard .snapshot-metrics>div{
+  border:1px solid rgba(133,174,194,.12);
+  border-radius:16px 16px 5px 16px;
+  background:#152638;
+}
+#dashboard .snapshot-progress>div{background:#263d4d}
+#dashboard .snapshot-progress span{background:var(--vext-cyan)}
+#dashboard .dashboard-client-avatar{
+  border-radius:14px 14px 5px 14px;
+  background:#183748;
+  border-color:rgba(89,199,220,.22);
+  color:#a6e6ee;
+}
+#dashboard>.grid>.card:first-child{border-radius:26px 9px 26px 26px}
+#dashboard>.grid>.card:last-child{border-radius:9px 26px 26px 26px}
+#dashboard button.primary{
+  color:#071923;
+  border:1px solid rgba(116,215,230,.3);
+  border-radius:99px;
+  background:#71d0df;
+  box-shadow:none;
+}
+#dashboard button.primary:hover{background:#8bdce8;transform:translateY(-1px)}
+#dashboard button.secondary{
+  border-radius:99px;
+  border-color:rgba(133,174,194,.22);
+  background:#172a3b;
+}
+#dashboard button.secondary:hover{
+  border-color:rgba(89,199,220,.4);
+  background:#1a3446;
+}
+@media(max-width:1050px){
+  #dashboard .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #dashboard .dashboard-insights{grid-template-columns:minmax(0,1fr) minmax(0,.9fr)}
+}
+@media(max-width:850px){
+  #dashboard .dashboard-insights{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  #dashboard .stats{gap:10px}
+  #dashboard .stats>.card{min-height:124px;padding:16px;border-radius:19px 19px 19px 7px}
+  #dashboard .stats>.card:nth-child(2){border-radius:7px 19px 19px 19px}
+  #dashboard .stats>.card:nth-child(3){border-radius:19px 7px 19px 19px}
+  #dashboard .stats>.card:nth-child(4){border-radius:19px 19px 7px 19px}
+  #dashboard .stats>.card:before{top:13px;left:16px}
+}
