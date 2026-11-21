@@ -8,6 +8,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
+let vextPreserveRecoveryCheckpoint=false;
 const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications"];
 function workspaceSnapshot(){
  return {
@@ -24,6 +25,42 @@ function workspaceSnapshot(){
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
   nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[])
  };
+}
+function getWorkspaceRecoveryHistory(){
+ try{const value=JSON.parse(localStorage.getItem(key+"recovery_history")||"[]");return Array.isArray(value)?value:[]}catch{return []}
+}
+function saveWorkspaceRecovery(workspace,reason){
+ try{
+  const history=getWorkspaceRecoveryHistory(),serialized=JSON.stringify(workspace);
+  if(history[0]&&JSON.stringify(history[0].workspace)===serialized)return;
+  history.unshift({savedAt:new Date().toISOString(),reason,workspace:JSON.parse(serialized)});
+  localStorage.setItem(key+"recovery_history",JSON.stringify(history.slice(0,3)));
+  renderWorkspaceRecoveryStatus();
+ }catch(error){console.warn("VEXT recovery checkpoint could not be stored:",error)}
+}
+function renderWorkspaceRecoveryStatus(){
+ const status=$("workspaceRecoveryStatus"),button=$("restoreWorkspaceRecovery");
+ if(!status||!button)return;
+ const latest=getWorkspaceRecoveryHistory()[0];
+ button.disabled=!latest||!vextWorkspaceUserId||!vextWorkspaceReady;
+ status.textContent=latest?"A local recovery copy is available · "+new Date(latest.savedAt).toLocaleString()+" · "+latest.reason:"No local recovery copy yet. VEXT will create one after a successful cloud save.";
+}
+async function restoreWorkspaceRecovery(){
+ const latest=getWorkspaceRecoveryHistory()[0];
+ if(!latest||!vextWorkspaceUserId||!vextWorkspaceReady)return;
+ if(!confirm("Restore the latest local recovery copy? This will replace the current workspace on this device and in the cloud."))return;
+ const current=workspaceSnapshot();
+ saveWorkspaceRecovery(current,"Before manual recovery");
+ applyWorkspaceSnapshot(latest.workspace);
+ const saved=await syncWorkspaceNow();
+ if(!saved){
+  applyWorkspaceSnapshot(current);
+  setWorkspaceSyncStatus("Recovery not uploaded · previous workspace restored",true);
+  $("workspaceRecoveryStatus").textContent="Recovery was not applied because cloud save failed. Your previous workspace remains in place.";
+  return;
+ }
+ $("workspaceRecoveryStatus").textContent="Recovery restored and synced successfully. Review your records before continuing.";
+ renderChatHistory();renderSupportChat();render();
 }
 function setWorkspaceSyncStatus(value,bad=false){
  const el=$("workspaceSyncStatus");
@@ -45,6 +82,7 @@ async function syncWorkspaceNow(){
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Cloud sync failed ("+response.status+")"));
   saved=true;
+  if(!vextPreserveRecoveryCheckpoint)saveWorkspaceRecovery(workspaceSnapshot(),"Last successfully synced workspace");
   setWorkspaceSyncStatus("Cloud synced");
  }catch(error){
   setWorkspaceSyncStatus("Saved on this device · cloud sync needs attention",true);
@@ -694,7 +732,19 @@ window.vextActivateUserData=async function(user){
   if(!response.ok)throw new Error(data.error||("Workspace load failed ("+response.status+")"));
   const remote=data.workspace&&typeof data.workspace==="object"?data.workspace:{};
   const hasRemote=Object.keys(remote).length>0;
-  if(hasRemote)applyWorkspaceSnapshot(remote);
+  const localBeforeCloud=workspaceSnapshot();
+  const localHasRecords=Object.values(localBeforeCloud).some(value=>Array.isArray(value)&&value.length>0);
+  const mergedRemote={...remote};
+  let recoveredMissingFields=false;
+  if(hasRemote){
+   if(localHasRecords&&JSON.stringify(localBeforeCloud)!==JSON.stringify(remote))saveWorkspaceRecovery(localBeforeCloud,"Local data found before cloud refresh");
+   VEXT_WORKSPACE_KEYS.forEach(name=>{
+    if(!Object.prototype.hasOwnProperty.call(mergedRemote,name)&&Object.prototype.hasOwnProperty.call(localBeforeCloud,name)){
+     mergedRemote[name]=localBeforeCloud[name];recoveredMissingFields=true;
+    }
+   });
+   applyWorkspaceSnapshot(mergedRemote);
+  }
   vextWorkspaceReady=true;
   $("currency").value=read("currency","USD");
   $("invCurrency").value=currentCurrency();
@@ -711,7 +761,16 @@ window.vextActivateUserData=async function(user){
   renderChatHistory();renderSupportChat();render();
   if(typeof vextNotifications!=="undefined")vextNotifications.resetBaseline();
   if(!hasRemote)await syncWorkspaceNow();
-  else setWorkspaceSyncStatus("Cloud synced");
+  else if(recoveredMissingFields){
+   vextPreserveRecoveryCheckpoint=true;
+   const saved=await syncWorkspaceNow();
+   vextPreserveRecoveryCheckpoint=false;
+   if(saved)setWorkspaceSyncStatus("Cloud synced · missing fields recovered");
+  }else{
+   saveWorkspaceRecovery(workspaceSnapshot(),"Cloud workspace checkpoint");
+   setWorkspaceSyncStatus("Cloud synced");
+  }
+  renderWorkspaceRecoveryStatus();
  })();
  try{await vextWorkspaceLoadPromise}
  catch(error){
@@ -728,6 +787,8 @@ window.vextDeactivateUserData=function(){
  setWorkspaceSyncStatus("Signed out");
 };
 $("saveSupport").addEventListener("click",saveSupportSettings);
+$("restoreWorkspaceRecovery").addEventListener("click",restoreWorkspaceRecovery);
+renderWorkspaceRecoveryStatus();
 $("copySupportWidget").addEventListener("click",async()=>{
  const value=$("supportWidgetCode").value;
  if(!value){$("supportSaveStatus").textContent="Save the assistant to cloud first to generate the website code.";return}

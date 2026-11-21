@@ -108,3 +108,8 @@ assert.match(app, /async function writeAndSync/, "Critical Management Action wri
 assert.match(app, /if\(!Object\.prototype\.hasOwnProperty\.call\(workspace,name\)\)return/, "Older cloud snapshots must not delete newer local workspace fields");
 assert.match(management, /await writeAndSync\("management_actions",actions\)/, "Management Action create and edit must await cloud persistence");
 assert.match(app, /vext-ai-full-workspace-backup\.json/, "Full workspace backup export must be available");
+assert.match(app, /function saveWorkspaceRecovery/, "Workspace recovery checkpoints must be retained locally");
+assert.match(app, /Local data found before cloud refresh/, "Local records must be checkpointed before cloud refresh");
+assert.match(app, /function restoreWorkspaceRecovery/, "Users must be able to restore a recovery checkpoint");
+assert.ok(app.includes("if(!Object.prototype.hasOwnProperty.call(mergedRemote,name)&&"), "Missing cloud fields must be recovered from the local snapshot");
+assert.ok(html.includes('id="workspaceRecoveryStatus"')&&html.includes('id="restoreWorkspaceRecovery"'), "Settings must expose the recovery status and restore control");
