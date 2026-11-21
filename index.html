@@ -94,6 +94,8 @@
  <button class="nav" data-page="audit">⌕ &nbsp; Audit Centre</button>
  <button class="nav" data-page="settings">⚙ &nbsp; Settings</button>
  <button class="nav" data-page="pricing">＄ &nbsp; Pricing</button>
+ <div class="nav-label">PERSONAL</div>
+ <button class="nav" data-page="life">✦ &nbsp; VEXT LIFE</button>
  <div class="sidebar-bottom">
   <span class="pill">● SYSTEM ACTIVE</span>
   <p>VEXT AI Global Edition</p>
@@ -747,6 +749,26 @@
  </div>
 </section>
 
+
+<section class="page" id="life">
+ <div class="life-hero">
+  <div><span class="life-kicker">VEXT AI / PERSONAL INTELLIGENCE</span><h2>Your life, with more clarity.</h2><p>A personal AI space for thinking, learning, planning and moving your goals forward.</p><div class="life-hero-note">VEXT LIFE · First experience</div></div>
+  <div class="life-orbit" aria-hidden="true"><span>✦</span></div>
+ </div>
+ <div class="life-workspace-grid">
+  <section class="life-panel life-assistant-panel">
+   <div class="life-panel-head"><div><span class="life-kicker">PERSONAL AI ASSISTANT</span><h3>Talk it through.</h3><p>Ask questions, understand something difficult, plan your next move or work through an idea.</p></div><span class="life-status">● READY</span></div>
+   <div id="lifeMessages" class="life-messages" aria-live="polite"><div class="life-welcome"><span class="life-welcome-icon">✦</span><strong>What would you like help with?</strong><p>I'm here to help you learn, think clearly and make progress. Start with one question.</p><div class="life-prompts"><button type="button" data-life-prompt="Help me create a realistic plan for my most important goal.">Plan a goal <span>→</span></button><button type="button" data-life-prompt="Teach me a difficult topic step by step, with examples and a short practice exercise.">Learn something <span>→</span></button><button type="button" data-life-prompt="Help me organise my week into focused, achievable priorities.">Organise my week <span>→</span></button></div></div></div>
+   <form id="lifeChatForm" class="life-chat-form"><label class="sr-only" for="lifeChatInput">Message VEXT LIFE</label><textarea id="lifeChatInput" rows="2" maxlength="5000" placeholder="Ask VEXT LIFE anything..." required></textarea><button class="primary" id="lifeChatSend" type="submit">Send <span aria-hidden="true">→</span></button></form>
+   <p class="life-privacy-note">Your messages are sent to the VEXT AI service to generate a response. This first version does not save personal chat history or include your VEXT BUSINESS records.</p>
+  </section>
+  <aside class="life-side-column">
+   <section class="life-panel"><span class="life-kicker">YOUR PERSONAL SPACE</span><h3>Built around you.</h3><p>VEXT LIFE is being developed as a separate personal experience, not another business dashboard.</p><ul class="life-capability-list"><li><span>01</span><div><strong>Personal assistant</strong><small>Think, research and plan with AI.</small></div></li><li><span>02</span><div><strong>Learning studio</strong><small>Understand topics and practise skills.</small></div></li><li><span>03</span><div><strong>Career growth</strong><small>Prepare CVs, interviews and skill plans.</small></div></li><li><span>04</span><div><strong>Personal productivity</strong><small>Organise goals and everyday work.</small></div></li></ul></section>
+   <section class="life-panel life-next-panel"><span class="life-kicker">COMING INTO THE BUILD</span><h3>More than a chatbot.</h3><p>Learning paths, document tools, career planning, personal goals and voice experiences will be added as independently testable features.</p><span class="life-build-tag">SEPARATE PRODUCT · SHARED NEXUS</span></section>
+  </aside>
+ </div>
+</section>
+
 <div class="footer">VEXT AI © <span id="year"></span> · Global Business Engine · Prototype Edition</div>
 </main>
 </div>
@@ -762,6 +784,7 @@
 <script src="./assets/js/features/notifications.js" defer></script>
 <script src="./assets/js/features/intelligence.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
+<script src="./assets/js/features/life.js" defer></script>
 <script src="./assets/js/auth.js" defer></script>
 
 </body>
