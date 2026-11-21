@@ -45,6 +45,22 @@
       const status = String(item.status || "Pending");
       return ["Pending", "In Progress", "Completed"].includes(status) ? status : "Other";
     });
+    const localToday = new Date();
+    const dateKey = date => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+    const todayKey = dateKey(localToday);
+    const weekAhead = new Date(localToday);
+    weekAhead.setDate(weekAhead.getDate() + 7);
+    const weekAheadKey = dateKey(weekAhead);
+    const activeActions = actions.filter(item => item.status !== "Completed");
+    const overdueActions = activeActions.filter(item => {
+      const due = String(item.dueDate || "").slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(due) && due < todayKey;
+    });
+    const dueSoonActions = activeActions.filter(item => {
+      const due = String(item.dueDate || "").slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(due) && due >= todayKey && due <= weekAheadKey;
+    });
+    const completedActions = actions.filter(item => item.status === "Completed");
     const taskStatuses = countBy(tasks, item => String(item.status || "Unknown"));
     return {
       business: String(business || "VEXT AI").slice(0, 100),
@@ -69,7 +85,18 @@
         savedAuditReportCount: audits.length,
         latestAuditIssueCount: audits.length && Number.isFinite(Number(audits[0].issueCount)) ? Number(audits[0].issueCount) : null,
         managementActionCount: actions.length,
-        managementActionStatuses: actionStatuses
+        managementActionStatuses: actionStatuses,
+        actionExecution: {
+          activeCount: activeActions.length,
+          completedCount: completedActions.length,
+          overdueCount: overdueActions.length,
+          dueWithinSevenDaysCount: dueSoonActions.length,
+          unassignedActiveCount: activeActions.filter(item => !String(item.owner || "").trim()).length,
+          linkedToNexusCount: actions.filter(item => Boolean(item.sourceNexusTaskId)).length,
+          completionRatePercent: actions.length ? Math.round((completedActions.length / actions.length) * 100) : 0,
+          dateReference: todayKey,
+          rules: "Overdue and due-soon counts use saved due dates and exclude completed actions. Completion rate is based on saved action statuses, not independent verification."
+        }
       },
       nexus: {
         assignmentCount: tasks.length,
