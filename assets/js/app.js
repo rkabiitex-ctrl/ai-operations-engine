@@ -459,6 +459,30 @@ const vextAnalytics = window.VEXTAnalytics.init({
 });
 const renderAnalytics = () => vextAnalytics.renderAnalytics();
 const renderAnalystHistory = () => vextAnalytics.renderAnalystHistory();
+function renderMissionControl(){
+  const all=read("nexus_tasks",[]);
+  const tasks=Array.isArray(all)?all:[];
+  const today=new Date().toDateString();
+  const active=tasks.filter(task=>task.status==="Running");
+  const review=tasks.filter(task=>task.status==="Awaiting review");
+  const completed=tasks.filter(task=>task.completedAt&&new Date(task.completedAt).toDateString()===today&&task.status!=="Failed");
+  $("missionActiveCount").textContent=active.length;
+  $("missionReviewCount").textContent=review.length;
+  $("missionCompletedCount").textContent=completed.length;
+  const recent=tasks.slice().sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).slice(0,3);
+  const list=$("missionRecentList");list.replaceChildren();
+  $("missionRecentLabel").textContent=recent.length?recent.length+" latest":"No assignments yet";
+  if(!recent.length){const empty=document.createElement("div");empty.className="mission-empty";empty.textContent="No assignments yet. Give NEXUS a task to see its progress here.";list.append(empty);return;}
+  recent.forEach(task=>{
+   const row=document.createElement("div");row.className="mission-recent-row";
+   const detail=document.createElement("div"),name=document.createElement("strong"),meta=document.createElement("span");
+   name.textContent=task.agent||"VEXT NEXUS";
+   meta.textContent=(task.prompt||"NEXUS assignment").replace(/\\s+/g," ").slice(0,105);
+   detail.append(name,meta);
+   const status=document.createElement("span");status.className="mission-recent-status"+(task.status==="Approved"?" approved":task.status==="Failed"?" failed":"");
+   status.textContent=task.status||"Saved";row.append(detail,status);list.append(row);
+  });
+}
 function renderDashboardOverview(leads,inv,code){
  const currencyInvoices=inv.filter(x=>x.currency===code);
  const paid=currencyInvoices.filter(x=>x.status==="Paid");
@@ -483,6 +507,7 @@ function renderDashboardOverview(leads,inv,code){
 function render(){
  const leads=read("leads"),inv=read("invoices"),code=currentCurrency();
  if($("nexusTaskList"))renderNexus();
+  renderMissionControl();
  $("statLeads").textContent=leads.length;
  $("statInvoices").textContent=inv.length;
  $("statPaid").textContent=inv.filter(x=>x.status==="Paid").length;
