@@ -243,92 +243,6 @@ $("saveMarketing").addEventListener("click",()=>{if(!marketingCurrentDraft)retur
 
 $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
 $("openBusinessAnalyst").addEventListener("click",()=>{navigate("analytics");$("analystResult").innerHTML="";$("analystStatus").textContent="Choose a reporting period, then generate your business analysis.";});
-function auditRuleChecks(){
- const invoices=read("invoices"),clients=read("leads"),issues=[];
- const seen=new Set();
- invoices.forEach((invoice,index)=>{
-  const number=String(invoice.number||"").trim().toLowerCase();
-  if(!number)issues.push({level:"warning",text:"Invoice record "+(index+1)+" has no invoice number."});
-  else if(seen.has(number))issues.push({level:"warning",text:"Duplicate invoice number recorded: "+invoice.number+"."});
-  else seen.add(number);
-  if(!String(invoice.client||"").trim())issues.push({level:"warning",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has no customer name."});
-  if(!Number.isFinite(Number(invoice.amount))||Number(invoice.amount)<=0)issues.push({level:"warning",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has a missing or invalid amount."});
-  if(!/^[A-Z]{3}$/.test(String(invoice.currency||"")))issues.push({level:"warning",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has a missing or unusual currency code."});
-  if(!["Paid","Unpaid"].includes(invoice.status))issues.push({level:"review",text:"Invoice "+(invoice.number||("#"+(index+1)))+" has an unrecognized payment status."});
-  // Payment dates are not captured consistently yet, so absence alone is not flagged.
- });
- return {invoices,clients,issues};
-}
-function formatAuditReport(value){
- const source=String(value??"").replace(/\\([#*`-])/g,"$1").replace(/\\\s*$/gm,"");
- const lines=source.split(/\r?\n/);let html="",inList=false;
- const inline=line=>esc(line).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/`([^`]+)`/g,"<code>$1</code>");
- for(const raw of lines){
-  const line=raw.trim();
-  if(!line){if(inList){html+="</ul>";inList=false;}continue;}
-  const heading=line.match(/^#{1,3}\s+(.+)$/);
-  if(heading){if(inList){html+="</ul>";inList=false;}html+="<h3>"+inline(heading[1])+"</h3>";continue;}
-  const item=line.match(/^[-*]\s+(.+)$/);
-  if(item){if(!inList){html+="<ul>";inList=true;}html+="<li>"+inline(item[1])+"</li>";continue;}
-  if(inList){html+="</ul>";inList=false;}
-  html+="<p>"+inline(line)+"</p>";
- }
- if(inList)html+="</ul>";
- return html;
-}
-function renderAuditCentre(){
- const data=auditRuleChecks();
- $("auditInvoiceCount").textContent=data.invoices.length;
- $("auditUnpaidCount").textContent=data.invoices.filter(x=>x.status!=="Paid").length;
- $("auditClientCount").textContent=data.clients.length;
- $("auditIssueCount").textContent=data.issues.length;
- $("auditChecks").innerHTML=data.issues.length?'<strong>'+data.issues.length+' item(s) need review</strong><ul>'+data.issues.map(x=>'<li>'+esc(x.text)+'</li>').join("")+'</ul>':'<strong>No basic data-quality issues detected.</strong><p class="small">This only means the available rule checks passed; it does not prove the records are complete or accurate.</p>';
- const reports=read("audit_reports",[]);
- $("auditReportHistory").innerHTML=reports.length?reports.slice(0,10).map((report,index)=>'<div class="audit-report-row"><strong>'+esc(report.title||"Business records review")+'</strong><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"Date not recorded")+'</div><div class="small">'+esc((report.summary||"Report saved").slice(0,220))+'</div><button class="secondary" type="button" data-audit-report="'+index+'" style="margin-top:8px">View report</button></div>').join(""):'<div class="empty">No audit reports yet.</div>';
-}
-$("auditReportHistory").addEventListener("click",event=>{
- const button=event.target.closest("[data-audit-report]");if(!button)return;
- const report=read("audit_reports",[])[Number(button.dataset.auditReport)];if(!report)return;
- $("auditResult").innerHTML='<h3>'+esc(report.title||"Audit report")+'</h3><div class="audit-report-date">'+esc(report.createdAt?new Date(report.createdAt).toLocaleString():"")+'</div><div>'+formatAuditReport(report.content||report.summary||"No report text saved.")+'</div>';
-});
-$("runAudit").addEventListener("click",async()=>{
- const button=$("runAudit"),status=$("auditStatus"),result=$("auditResult");
- const data=auditRuleChecks();
- if(!data.invoices.length&&!data.clients.length){
-  status.textContent="Add some invoices or client records before running an audit.";
-  result.innerHTML="";return;
- }
- button.disabled=true;button.textContent="Reviewing records…";
- status.textContent="VEXT AI is reviewing the available records. Please wait.";
- result.innerHTML="";
- try{
-  const invoiceData=data.invoices.slice(0,500).map(x=>({number:x.number||"",client:x.client||"",description:x.description||"",amount:Number(x.amount)||0,currency:x.currency||"",status:x.status||"",date:x.date||"",dueDate:x.dueDate||""}));
-  const auditInput={
-   invoiceCount:data.invoices.length,clientRecordCount:data.clients.length,
-   automatedChecksRun:true,
-   automatedChecksPerformed:["Invoice number presence","Duplicate invoice numbers","Customer name presence","Positive numeric invoice amount","Three-letter currency code format","Recognized Paid/Unpaid payment status"],
-   ruleBasedExceptions:data.issues,
-   invoices:invoiceData,
-   note:"The automated checks listed above were executed. An empty ruleBasedExceptions array means no exceptions were flagged by those specific checks; it does not mean checks were skipped or that the records are fully accurate. AI review may identify additional inconsistencies in descriptions. Invoice customer names are included when present in the invoice record. Client contact details and independent invoice-to-client verification are not provided; an aggregate client count does not establish a verified linkage."
-  };
-  const prompt="Act as VEXT AI's preliminary internal-controls reviewer. Review only the supplied VEXT AI records. Do not claim to have checked bank accounts, receipts, cash, tax compliance, employee activity or external systems. Do not accuse anyone of fraud. Distinguish observed record issues from possible risks and recommendations. If data is insufficient, say so. Highlight currency separation and do not add different currencies together. Produce a concise professional report with: Executive summary; Confirmed record checks; Items requiring human verification; Practical recommendations; Scope and limitations. Cite invoice numbers for each specific finding. Never invent missing values. Explicitly state that automatedChecksRun confirms the listed checks were executed; if ruleBasedExceptions is empty, say no exceptions were flagged by those checks, not that checks were not run or that the whole audit passed. Distinguish rule-based checks from additional AI observations. Use the supplied invoice client field when discussing customer attribution; do not claim the customer name is missing if a non-empty client value is supplied. A customer name alone does not prove a verified client-record linkage. Data: "+JSON.stringify(auditInput);
-  const token=await getVextAccessToken();
-  const response=await fetch(VEXT_CHAT_ENDPOINT,{
-   method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
-   body:JSON.stringify({message:prompt,history:[]})
-  });
-  const payload=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(payload.error||("Audit request failed ("+response.status+")"));
-  const reportText=typeof payload.reply==="string"?payload.reply:"";
-  if(!reportText)throw new Error("The AI service returned an empty audit report.");
-  const report={id:id(),title:"Business records review",createdAt:new Date().toISOString(),summary:reportText.replace(/\s+/g," ").slice(0,260),content:reportText,invoiceCount:data.invoices.length,issueCount:data.issues.length};
-  const reports=read("audit_reports",[]);reports.unshift(report);write("audit_reports",reports.slice(0,50));
-  result.innerHTML='<h3>Audit report</h3><div class="audit-report-date">'+esc(new Date(report.createdAt).toLocaleString())+'</div><div>'+formatAuditReport(reportText)+'</div>';
-  status.textContent="Report generated and saved to your VEXT workspace.";
-  renderAuditCentre();
- }catch(error){status.textContent="Could not complete the audit: "+(error.message||"Please try again.");}
- finally{button.disabled=false;button.textContent="Run AI audit";}
-});
 
 
 let pricingBilling="monthly";
@@ -534,6 +448,10 @@ const renderInvoices = window.VEXTInvoices.init({
  $, read, write, id, esc, formatMoney, currentCurrency, log,
  render: () => render()
 });
+const vextAudit = window.VEXTAudit.init({ $, read, write, id, esc, getVextAccessToken, VEXT_CHAT_ENDPOINT });
+const renderAuditCentre = () => vextAudit.renderAuditCentre();
+const formatAuditReport = value => vextAudit.formatAuditReport(value);
+const renderManagementActions = window.VEXTManagement.init({ $, read, write, id, log });
 const vextAnalytics = window.VEXTAnalytics.init({
  $, read, write, id, esc, formatMoney, currentCurrency,
  getClientSalesStage, formatAuditReport, getVextAccessToken,
@@ -573,33 +491,7 @@ function render(){
  renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
 }
-function renderManagementActions(){
- const list=$("managementActionList");if(!list)return;
- const actions=read("management_actions",[]);
- const count=status=>actions.filter(x=>(x.status||"Pending")===status).length;
- $("actionTotal").textContent=actions.length;$("actionPending").textContent=count("Pending");$("actionProgress").textContent=count("In Progress");$("actionCompleted").textContent=count("Completed");$("actionRegisterCount").textContent=actions.length+" actions";
- list.replaceChildren();
- if(!actions.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No actions yet. Add the first management priority above.";list.append(empty);return;}
- actions.forEach(action=>{
-  const card=document.createElement("article");card.className="management-action-item"+(action.status==="Completed"?" is-complete":"");card.dataset.managementAction=action.id;
-  const fields=document.createElement("div");fields.className="management-action-fields";
-  const addField=(label,name,value,type,options)=>{const wrap=document.createElement("div"),lab=document.createElement("label"),input=document.createElement(type==="select"?"select":"input");lab.textContent=label;lab.htmlFor="action-"+action.id+"-"+name;input.id=lab.htmlFor;input.dataset.field=name;input.setAttribute("aria-label",label);if(type==="select"){options.forEach(option=>{const o=document.createElement("option");o.value=option;o.textContent=option;input.append(o)});input.value=value||options[0]}else{input.type=type;input.value=value||"";if(name==="title")input.maxLength=180;if(name==="owner")input.maxLength=80;if(name==="owner")input.placeholder="Assign owner"}wrap.append(lab,input);fields.append(wrap)};
-  addField("Action","title",action.title,"text");addField("Owner","owner",action.owner,"text");addField("Priority","priority",action.priority,"select",["High","Medium","Low"]);addField("Due date","dueDate",action.dueDate,"date");addField("Status","status",action.status,"select",["Pending","In Progress","Completed"]);
-  const controls=document.createElement("div");controls.className="management-action-controls";const stamp=document.createElement("small");stamp.textContent="Created "+(action.createdAt?new Date(action.createdAt).toLocaleDateString():"");const buttons=document.createElement("div");buttons.className="action-row";
-  const save=document.createElement("button");save.type="button";save.className="secondary";save.dataset.saveAction="";save.textContent="Save changes";
-  const del=document.createElement("button");del.type="button";del.className="danger";del.dataset.deleteAction="";del.textContent="Delete";
-  buttons.append(save,del);controls.append(stamp,buttons);card.append(fields,controls);list.append(card);
- });
-}
-$("managementActionForm").addEventListener("submit",event=>{
- event.preventDefault();const title=$("newActionTitle").value.trim();if(!title)return;
- const actions=read("management_actions",[]);actions.unshift({id:id(),title,owner:$("newActionOwner").value.trim(),priority:$("newActionPriority").value,status:"Pending",dueDate:$("newActionDue").value,createdAt:new Date().toISOString()});write("management_actions",actions);event.target.reset();$("newActionPriority").value="Medium";renderManagementActions();$("managementActionStatus").textContent="Action added and saved to your VEXT workspace.";log("Management action added: "+title);
-});
-$("managementActionList").addEventListener("click",event=>{
- const card=event.target.closest("[data-management-action]");if(!card)return;const actionId=card.dataset.managementAction;
- if(event.target.closest("[data-save-action]")){const actions=read("management_actions",[]),action=actions.find(x=>x.id===actionId);if(!action)return;const val=name=>card.querySelector('[data-field="'+name+'"]').value.trim();const title=val("title");if(!title){$("managementActionStatus").textContent="An action description is required.";return;}action.title=title;action.owner=val("owner");action.priority=val("priority");action.dueDate=val("dueDate");action.status=val("status");action.updatedAt=new Date().toISOString();write("management_actions",actions);renderManagementActions();$("managementActionStatus").textContent="Action updated and synced with your workspace.";log("Management action updated: "+title);return;}
- if(event.target.closest("[data-delete-action]")){if(!confirm("Delete this management action?"))return;write("management_actions",read("management_actions",[]).filter(x=>x.id!==actionId));renderManagementActions();$("managementActionStatus").textContent="Action deleted.";log("Management action deleted.");}
-});
+
 $("currency").value=read("currency","USD");
 $("currency").addEventListener("change",()=>{
  write("currency",currentCurrency());render();
