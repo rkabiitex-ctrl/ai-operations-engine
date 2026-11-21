@@ -66,7 +66,7 @@
       owner: String(item.owner || "").slice(0, 80),
       priority: ["High", "Medium", "Low"].includes(item.priority) ? item.priority : "Unspecified",
       status: ["Pending", "In Progress", "Completed"].includes(item.status) ? item.status : "Other",
-      dueDate: /^\\d{4}-\\d{2}-\\d{2}$/.test(String(item.dueDate || "").slice(0, 10)) ? String(item.dueDate).slice(0, 10) : null,
+      dueDate: /^\d{4}-\d{2}-\d{2}$/.test(String(item.dueDate || "").slice(0, 10)) ? String(item.dueDate).slice(0, 10) : null,
       linkedToNexus: Boolean(item.sourceNexusTaskId)
     }));
     const taskStatuses = countBy(tasks, item => String(item.status || "Unknown"));
