@@ -175,14 +175,14 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
             const value = body.workspace[key];
-            if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports"].includes(key)) {
+            if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports", "notifications"].includes(key)) {
               if (!Array.isArray(value)) return json({ error: key + " must be an array." }, 400, cors);
-              const maxItems = key === "nexus_tasks" ? 100 : key === "management_actions" ? 1000 : (key === "chat_history" || key === "audit_reports" || key === "business_analysis_reports") ? 50 : 5000;
+              const maxItems = key === "nexus_tasks" ? 100 : key === "management_actions" ? 1000 : (key === "chat_history" || key === "audit_reports" || key === "business_analysis_reports") ? 50 : key === "notifications" ? 150 : 5000;
               if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
               workspace[key] = value;
             } else if (key === "active_chat_id") {

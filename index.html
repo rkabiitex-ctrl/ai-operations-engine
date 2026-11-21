@@ -124,6 +124,7 @@
    <option value="GHS">🇬🇭 GHS — Cedi</option>
    <option value="TZS">🇹🇿 TZS — Shilling</option>
   </select>
+  <button class="notification-bell" id="notificationBell" type="button" aria-label="Open notifications" title="Notifications">♧<span id="notificationCount" hidden>0</span></button>
   <div class="profile">✦ VEXT AI</div>
  </div>
 </div>
@@ -596,6 +597,13 @@
  <div id="analyticsContent"></div>
 </section>
 
+<section class="page" id="notifications">
+ <div class="notifications-hero"><div><span class="notifications-kicker">VEXT AI / WORKSPACE ACTIVITY</span><h2>Notification Centre</h2><p>Stay informed about customer activity and NEXUS work that needs your attention.</p></div><div class="notifications-hero-mark">♧</div></div>
+ <div class="notifications-toolbar"><div><strong id="notificationUnread">0 unread</strong><span id="notificationTotal">0 total</span></div><div><button class="secondary" id="notificationMarkAll" type="button">Mark all as read</button><button class="secondary" id="notificationClearAll" type="button">Clear all</button></div></div>
+ <div id="notificationList" class="notification-list" aria-live="polite"></div>
+ <p class="notification-footnote">Notifications are generated from activity in this VEXT AI workspace. Review important decisions before taking action.</p>
+</section>
+
 <section class="page" id="settings">
  <div class="settings-hero">
   <div><span class="ai-eyebrow">WORKSPACE CONTROL CENTRE</span><h2>Business settings</h2><p>Configure your business identity, regional preferences and workspace data.</p></div>
@@ -725,6 +733,7 @@
 <script src="./assets/js/features/analytics.js" defer></script>
 <script src="./assets/js/features/audit.js" defer></script>
 <script src="./assets/js/features/management.js" defer></script>
+<script src="./assets/js/features/notifications.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 <script src="./assets/js/auth.js" defer></script>
 
