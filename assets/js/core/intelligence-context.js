@@ -54,11 +54,11 @@
     const activeActions = actions.filter(item => item.status !== "Completed");
     const overdueActions = activeActions.filter(item => {
       const due = String(item.dueDate || "").slice(0, 10);
-      return /^\\d{4}-\\d{2}-\\d{2}$/.test(due) && due < todayKey;
+      return /^\d{4}-\d{2}-\d{2}$/.test(due) && due < todayKey;
     });
     const dueSoonActions = activeActions.filter(item => {
       const due = String(item.dueDate || "").slice(0, 10);
-      return /^\\d{4}-\\d{2}-\\d{2}$/.test(due) && due >= todayKey && due <= weekAheadKey;
+      return /^\d{4}-\d{2}-\d{2}$/.test(due) && due >= todayKey && due <= weekAheadKey;
     });
     const completedActions = actions.filter(item => item.status === "Completed");
     const taskStatuses = countBy(tasks, item => String(item.status || "Unknown"));
