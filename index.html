@@ -129,6 +129,21 @@
 </div>
 
 <section class="page active" id="dashboard">
+ <section class="mission-control card" aria-labelledby="missionControlTitle">
+  <div class="mission-control-head">
+   <div><span class="mission-control-kicker">VEXT NEXUS / INTELLIGENCE COMMAND</span><h2 id="missionControlTitle">NEXUS MISSION CONTROL</h2><p>Monitor assignments, review decisions and track completed work.</p></div>
+   <button class="secondary" type="button" onclick="navigate('nexus')">Open NEXUS <span aria-hidden="true">→</span></button>
+  </div>
+  <div class="mission-control-metrics">
+   <article class="mission-metric mission-active"><div class="mission-metric-top"><span class="mission-metric-icon active">↗</span><span class="mission-metric-label">IN PROGRESS</span></div><strong id="missionActiveCount">0</strong><span class="mission-metric-name">Active assignments</span><small>Specialists currently working</small></article>
+   <article class="mission-metric mission-review"><div class="mission-metric-top"><span class="mission-metric-icon review">◷</span><span class="mission-metric-label">YOUR DECISION</span></div><strong id="missionReviewCount">0</strong><span class="mission-metric-name">Awaiting your approval</span><small>Drafts ready for your review</small></article>
+   <article class="mission-metric mission-done"><div class="mission-metric-top"><span class="mission-metric-icon done">✓</span><span class="mission-metric-label">TODAY</span></div><strong id="missionCompletedCount">0</strong><span class="mission-metric-name">Completed today</span><small>Assignments with a result today</small></article>
+  </div>
+  <div class="mission-control-lower">
+   <section class="mission-control-recent"><div class="mission-recent-heading"><div><span class="mission-section-kicker">LIVE WORKSPACE</span><h3>Recent activity</h3></div><span id="missionRecentLabel">No assignments yet</span></div><div id="missionRecentList" class="mission-recent-list"><div class="mission-empty">Your NEXUS assignments will appear here.</div></div></section>
+   <section class="mission-quick-actions"><span class="mission-section-kicker">MOVE WORK FORWARD</span><h3>Quick actions</h3><button type="button" onclick="navigate('nexus')"><span class="mission-action-icon">✧</span><span><strong>Assign a NEXUS task</strong><small>Put a specialist to work</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('leads')"><span class="mission-action-icon">◎</span><span><strong>Add a client</strong><small>Save a customer record</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('invoices')"><span class="mission-action-icon">▤</span><span><strong>Create an invoice</strong><small>Prepare a new invoice</small></span><span class="mission-action-arrow">→</span></button></section>
+  </div>
+ </section>
  <div class="stats">
   <div class="card">
    <div class="stat-title">Total clients</div>
@@ -151,18 +166,6 @@
    <div class="stat-foot">Marked as paid</div>
   </div>
  </div>
- <section class="mission-control card" aria-labelledby="missionControlTitle">
-  <div class="mission-control-head">
-   <div><span class="mission-control-kicker">VEXT NEXUS / LIVE WORKSPACE</span><h2 id="missionControlTitle">Mission Control</h2><p>Your assignments, decisions and completed work in one place.</p></div>
-   <button class="secondary" type="button" onclick="navigate('nexus')">Open NEXUS <span aria-hidden="true">→</span></button>
-  </div>
-  <div class="mission-control-metrics">
-   <div class="mission-metric"><span class="mission-metric-icon active">↗</span><div><strong id="missionActiveCount">0</strong><span>Active assignments</span></div></div>
-   <div class="mission-metric"><span class="mission-metric-icon review">◷</span><div><strong id="missionReviewCount">0</strong><span>Awaiting your approval</span></div></div>
-   <div class="mission-metric"><span class="mission-metric-icon done">✓</span><div><strong id="missionCompletedCount">0</strong><span>Completed today</span></div></div>
-  </div>
-  <div class="mission-control-recent"><div class="mission-recent-heading">RECENT NEXUS ACTIVITY <span id="missionRecentLabel">No assignments yet</span></div><div id="missionRecentList" class="mission-recent-list"><div class="mission-empty">Your NEXUS assignments will appear here.</div></div></div>
- </section>
  <div class="dashboard-insights">
   <div class="card">
    <div class="dashboard-card-heading"><div><span class="dashboard-eyebrow">BUSINESS OVERVIEW</span><h2>Sales snapshot</h2></div><span class="dashboard-live-dot">● Live workspace data</span></div>
