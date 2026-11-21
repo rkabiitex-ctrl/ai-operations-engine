@@ -89,6 +89,7 @@
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
+ <button class="nav" data-page="intelligence">✧ &nbsp; Intelligence Centre</button>
  <button class="nav" data-page="analytics">▥ &nbsp; Analytics</button>
  <button class="nav" data-page="audit">⌕ &nbsp; Audit Centre</button>
  <button class="nav" data-page="settings">⚙ &nbsp; Settings</button>
@@ -597,6 +598,23 @@
  <div id="analyticsContent"></div>
 </section>
 
+<section class="page" id="intelligence">
+ <div class="intel-hero">
+  <div><span class="intel-kicker">VEXT AI / BUSINESS INTELLIGENCE</span><h2>Intelligence Centre</h2><p>See what your saved business records indicate, identify items that need attention and decide what to do next.</p><span id="intelCurrency" class="intel-data-note">Financial figures use your selected currency.</span></div>
+  <div class="intel-hero-mark" aria-hidden="true">✧</div>
+ </div>
+ <div class="intel-metrics" id="intelMetrics"></div>
+ <div class="intel-main-grid">
+  <section class="intel-panel intel-insights"><div class="intel-panel-heading"><div><span class="intel-kicker">EVIDENCE-BASED SIGNALS</span><h3>Business intelligence insights</h3><p>Opportunities and items to review, based only on records currently saved in VEXT AI.</p></div><span class="intel-live-label">● WORKSPACE DATA</span></div><div id="intelSignals" class="intel-signals"></div></section>
+  <section class="intel-panel"><div class="intel-panel-heading"><div><span class="intel-kicker">REVENUE ACTIVITY</span><h3>Business activity trend</h3><p>Six-month invoice history</p></div></div><div id="intelTrend" class="intel-trend"></div><p id="intelTrendNote" class="intel-footnote"></p><p id="intelOutstandingNote" class="intel-outstanding-note"></p></section>
+ </div>
+ <div class="intel-bottom-grid">
+  <section class="intel-panel"><div class="intel-panel-heading"><div><span class="intel-kicker">NEXUS / EXECUTION</span><h3>Recent NEXUS activity</h3><p>Latest assignments saved in this workspace.</p></div><button class="secondary" id="intelOpenNexus" type="button">Open NEXUS →</button></div><div id="intelActivity" class="intel-activity"></div></section>
+  <section class="intel-panel intel-actions"><div class="intel-panel-heading"><div><span class="intel-kicker">MOVE FORWARD</span><h3>Recommended next steps</h3><p>Open the relevant workspace to review records and take action.</p></div></div><button type="button" id="intelOpenAnalytics"><span>▥</span><span><strong>Generate an AI business analysis</strong><small>Use the existing evidence-based analyst.</small></span>→</button><button type="button" id="intelOpenClients"><span>◎</span><span><strong>Review client pipeline</strong><small>Check leads and follow-up stages.</small></span>→</button></section>
+ </div>
+ <p class="intel-disclaimer">Integrity note: VEXT AI does not estimate growth percentages or future profit here. Invoice totals represent amounts issued, not accounting revenue. Payment status is based on records marked Paid and is not independently verified. Currency totals are never combined or converted.</p>
+</section>
+
 <section class="page" id="notifications">
  <div class="notifications-hero"><div><span class="notifications-kicker">VEXT AI / WORKSPACE ACTIVITY</span><h2>Notification Centre</h2><p>Stay informed about customer activity and NEXUS work that needs your attention.</p></div><div class="notifications-hero-mark">♧</div></div>
  <div class="notifications-toolbar"><div><strong id="notificationUnread">0 unread</strong><span id="notificationTotal">0 total</span></div><div><button class="secondary" id="notificationMarkAll" type="button">Mark all as read</button><button class="secondary" id="notificationClearAll" type="button">Clear all</button></div></div>
@@ -734,6 +752,7 @@
 <script src="./assets/js/features/audit.js" defer></script>
 <script src="./assets/js/features/management.js" defer></script>
 <script src="./assets/js/features/notifications.js" defer></script>
+<script src="./assets/js/features/intelligence.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 <script src="./assets/js/auth.js" defer></script>
 
