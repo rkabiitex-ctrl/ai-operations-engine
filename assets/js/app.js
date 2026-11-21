@@ -8,7 +8,7 @@ let vextWorkspaceSyncTimer=null;
 let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -22,7 +22,7 @@ function workspaceSnapshot(){
   active_chat_id:localStorage.getItem(key+"active_chat_id")||"",
   audit_reports:read("audit_reports",[]),
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
-  nexus_tasks:read("nexus_tasks",[])
+  nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[])
  };
 }
 function setWorkspaceSyncStatus(value,bad=false){
@@ -140,7 +140,8 @@ function navigate(page){
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",
  invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"AI Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
- $("pageTitle").textContent=titles[page];
+ $("pageTitle").textContent=titles[page]|| (page==="notifications"?"Notification Centre":"VEXT AI");
+ if(page==="notifications")vextNotifications.render();
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
@@ -459,6 +460,7 @@ const vextAnalytics = window.VEXTAnalytics.init({
 });
 const renderAnalytics = () => vextAnalytics.renderAnalytics();
 const renderAnalystHistory = () => vextAnalytics.renderAnalystHistory();
+const vextNotifications = window.VEXTNotifications.init({ $, read, write, navigate });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
   const tasks=Array.isArray(all)?all:[];
@@ -665,6 +667,7 @@ window.vextActivateUserData=async function(user){
   $("supportBusinessId").textContent=supportBusinessId;
   $("supportWidgetCode").value="";
   renderChatHistory();renderSupportChat();render();
+  if(typeof vextNotifications!=="undefined")vextNotifications.resetBaseline();
   if(!hasRemote)await syncWorkspaceNow();
   else setWorkspaceSyncStatus("Cloud synced");
  })();
