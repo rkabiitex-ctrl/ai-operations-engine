@@ -1,0 +1,276 @@
+/* VEXT AI — premium visual system
+   Additive redesign layer. Existing application behaviour and page IDs remain unchanged. */
+:root{
+  --bg:#080b14;
+  --panel:#101624;
+  --panel-2:#141d2e;
+  --panel-3:#19253a;
+  --line:rgba(148,163,184,.15);
+  --line-strong:rgba(148,163,184,.25);
+  --blue:#70a5ff;
+  --cyan:#69e0ef;
+  --violet:#a78bfa;
+  --white:#f5f7fc;
+  --muted:#98a6bc;
+  --green:#58d6a2;
+  --red:#fb7185;
+  --radius:18px;
+  --shadow:0 18px 55px rgba(0,0,0,.22);
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(900px 520px at 88% -10%,rgba(89,116,220,.13),transparent 65%),
+    radial-gradient(700px 440px at -15% 30%,rgba(54,194,211,.07),transparent 65%),
+    var(--bg);
+  color:var(--white);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:-.012em;
+}
+button,input,textarea,select{font-family:inherit}
+button{transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:3px
+}
+.app{min-height:100vh;align-items:stretch}
+.sidebar{
+  width:274px;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;
+  padding:30px 18px 22px;background:rgba(10,15,27,.94);
+  border-right:1px solid var(--line);backdrop-filter:blur(20px);
+}
+.brand{font-size:29px;font-weight:850;letter-spacing:-1.8px;color:#fff;margin:0 10px 5px}
+.brand span{color:var(--blue)}
+.tagline{margin:0 10px 34px;font-size:9px;font-weight:750;letter-spacing:2.5px;color:#73839d}
+.nav-label{margin:25px 11px 10px;color:#66758e;font-size:9px;font-weight:800;letter-spacing:1.8px}
+.nav{
+  display:flex;align-items:center;gap:10px;width:100%;min-height:43px;
+  padding:11px 13px;margin:3px 0;border:1px solid transparent;border-radius:11px;
+  color:#9aa9bf;font-size:13px;font-weight:580;letter-spacing:0;text-align:left;
+}
+.nav:hover{background:rgba(117,151,214,.08);color:#f4f7ff;border-color:var(--line)}
+.nav.active{
+  color:#fff;background:linear-gradient(100deg,rgba(90,135,228,.2),rgba(111,91,201,.11));
+  border-color:rgba(112,165,255,.2);box-shadow:inset 3px 0 0 var(--blue)
+}
+.sidebar-bottom{margin:35px 4px 0;padding:18px 10px 0;border-top:1px solid var(--line);color:#8291a8;font-size:11px}
+.sidebar-bottom p{margin:8px 0 0}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid rgba(88,214,162,.2);border-radius:99px;background:rgba(88,214,162,.07);color:#8be4bf;font-size:9px;font-weight:800;letter-spacing:.8px}
+main{width:100%;max-width:1800px;margin:0 auto;padding:34px clamp(22px,3.2vw,58px) 54px}
+.topbar{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:20px;
+  margin-bottom:32px;padding:0 0 22px;border-bottom:1px solid var(--line)
+}
+.topbar h1{margin:0 0 6px;font-size:clamp(22px,2vw,29px);font-weight:760;letter-spacing:-1px}
+.topbar .muted{font-size:12px;color:#8796ad}
+.top-actions{gap:10px}
+#workspaceSyncStatus{font-size:11px!important}
+.currency,.profile{
+  min-height:42px;border:1px solid var(--line-strong);border-radius:11px;
+  background:rgba(18,27,44,.9);color:#dbe5f4
+}
+.currency{padding:10px 12px;min-width:150px}
+.profile{display:flex;align-items:center;padding:10px 14px;color:#b8caff;font-weight:750}
+.page{animation:vextPageIn .28s ease both}
+@keyframes vextPageIn{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card,.nexus-panel,.plan-card,.ai-tool-card{
+  background:linear-gradient(145deg,rgba(20,29,46,.96),rgba(13,20,33,.98));
+  border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
+}
+.card{padding:24px;margin-bottom:18px}
+.card h2{font-size:17px;font-weight:720;letter-spacing:-.4px;margin:0 0 14px}
+.card h3{font-size:14px;font-weight:700}
+.stats{gap:15px;margin-bottom:18px}
+.stats .card{position:relative;overflow:hidden;min-height:136px;padding:22px 23px}
+.stats .card:after{
+  content:"";position:absolute;width:115px;height:115px;right:-42px;top:-48px;
+  border-radius:50%;background:rgba(112,165,255,.08);filter:blur(2px)
+}
+.stat-title{font-size:10px;font-weight:800;letter-spacing:1.2px;color:#8998b0}
+.stat-number{font-size:31px;font-weight:780;letter-spacing:-1.2px;margin:16px 0 7px;color:#f7f9ff}
+.stat-number.blue{color:#8bb7ff}.stat-number.green{color:#6ee2b1}
+.stat-foot{font-size:11px;color:#7f8da4}
+.grid{gap:18px}
+.dashboard-insights{gap:18px;margin-bottom:18px}
+.dashboard-card-heading{gap:14px}
+.dashboard-eyebrow,.nexus-kicker,.ai-eyebrow{
+  color:#82aefb;font-size:9px;font-weight:850;letter-spacing:1.8px
+}
+.dashboard-card-heading h2{margin:7px 0 0;font-size:17px}
+.dashboard-live-dot{color:#79ddb4;font-size:10px;font-weight:700}
+button.primary,.primary{
+  border:1px solid rgba(126,171,255,.42);border-radius:11px;
+  background:linear-gradient(115deg,#477fe1,#6b69d7);color:white;
+  padding:12px 17px;font-size:12px;font-weight:760;
+  box-shadow:0 8px 22px rgba(71,127,225,.2)
+}
+button.primary:hover,.primary:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(71,127,225,.3)}
+button.secondary,.secondary{
+  border:1px solid var(--line-strong);border-radius:11px;
+  background:rgba(148,163,184,.07);color:#d5dfef;
+  padding:11px 15px;font-size:12px;font-weight:650
+}
+button.secondary:hover,.secondary:hover{background:rgba(148,163,184,.13);border-color:rgba(148,163,184,.36)}
+button:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+.action-row{gap:10px;flex-wrap:wrap}
+hr{border:0;border-top:1px solid var(--line)}
+.notice{padding:14px 16px;border:1px solid rgba(105,224,239,.16);border-radius:12px;background:rgba(56,189,248,.06);color:#b9dce9;font-size:12px;line-height:1.65}
+select,input,textarea{
+  background:#0b1220;border:1px solid rgba(148,163,184,.2);border-radius:11px;
+  color:#edf3ff;padding:12px 14px;transition:border-color .18s ease,box-shadow .18s ease
+}
+select:focus,input:focus,textarea:focus{border-color:rgba(112,165,255,.8);box-shadow:0 0 0 3px rgba(112,165,255,.1)}
+input::placeholder,textarea::placeholder{color:#65748b}
+label{display:block;margin-bottom:8px;color:#aebbd0;font-size:11px;font-weight:700}
+.field{min-width:0}
+.muted{color:var(--muted)}
+.small{font-size:11px}
+table{border-collapse:collapse}
+th{color:#8d9cb3;font-size:10px;letter-spacing:.8px;text-transform:uppercase}
+td{color:#d7e0ee;font-size:12px}
+tr{border-color:var(--line)}
+/* Public sign-in and product landing */
+#vextAuthGate{
+  min-height:100vh;background:
+    radial-gradient(700px 480px at 80% 12%,rgba(100,116,230,.2),transparent 65%),
+    radial-gradient(650px 440px at 8% 80%,rgba(47,190,204,.1),transparent 65%),
+    #080b14
+}
+.vext-landing-shell{max-width:1260px;padding:28px 34px 30px}
+.vext-landing-nav{padding:0 0 22px;border-bottom:1px solid var(--line)}
+.vext-landing-brand{font-size:25px;font-weight:850;letter-spacing:-1.4px;color:#fff}
+.vext-landing-brand span{color:var(--blue)}
+.vext-landing-nav-actions button,.vext-landing-cta,.vext-landing-secondary{
+  border-radius:11px!important;padding:11px 17px!important;font-size:12px!important;font-weight:750!important
+}
+.vext-landing-nav-actions button{background:rgba(148,163,184,.08);border:1px solid var(--line-strong);color:#e7edf8}
+.vext-landing-nav-actions .vext-landing-primary,.vext-landing-cta{
+  background:linear-gradient(115deg,#477fe1,#7069d8)!important;border:1px solid rgba(126,171,255,.4)!important;color:#fff!important
+}
+.vext-landing-hero{gap:clamp(35px,7vw,100px);padding:80px 0 74px;align-items:center}
+.vext-landing-hero-copy{max-width:670px}
+.vext-landing-eyebrow{display:inline-flex;padding:8px 12px;border:1px solid rgba(112,165,255,.22);border-radius:99px;background:rgba(112,165,255,.08);color:#a9c6ff;font-size:10px;font-weight:800;letter-spacing:1px}
+.vext-landing-hero h1{margin:22px 0 18px;font-size:clamp(42px,6vw,70px);line-height:1.02;letter-spacing:-3.5px;font-weight:820}
+.vext-landing-hero h1 span{background:linear-gradient(100deg,#83b7ff,#a89af8 65%,#73dce9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.vext-landing-lead{max-width:590px;color:#a7b4c9;font-size:15px;line-height:1.8}
+.vext-landing-actions{gap:11px;margin-top:25px}
+.vext-landing-note{max-width:560px;color:#718099;font-size:10px;line-height:1.6}
+#vextAuthCard{
+  width:min(100%,410px);padding:30px;border:1px solid rgba(148,163,184,.2);border-radius:21px;
+  background:linear-gradient(145deg,rgba(23,33,53,.97),rgba(12,19,32,.98));
+  box-shadow:0 28px 90px rgba(0,0,0,.38)
+}
+.vext-landing-card-label{color:#8db6ff;font-size:9px;font-weight:850;letter-spacing:1.7px;text-transform:uppercase}
+#vextAuthCard h2{margin:14px 0 8px;font-size:25px;letter-spacing:-.8px}
+#vextAuthCard p{color:#91a0b6;font-size:12px;line-height:1.6}
+#vextAuthForm{display:grid;gap:9px;margin-top:22px}
+#vextAuthForm label{margin:8px 0 0}
+#vextAuthSubmit{margin-top:10px;padding:13px;border:0;border-radius:11px;background:linear-gradient(110deg,#477fe1,#7069d8);color:white;font-weight:800}
+#vextAuthForgot,#vextAuthSwitch{border:0;background:transparent;color:#9ec1ff;font-size:11px}
+#vextAuthForgot{margin-top:14px}
+#vextAuthMessage{font-size:11px;color:#fda4af}
+.vext-landing-section{padding:34px 0 50px;border-top:1px solid var(--line)}
+.vext-landing-section h2{font-size:25px;letter-spacing:-.8px}
+.vext-landing-section-intro{max-width:690px;color:#91a0b6;font-size:13px;line-height:1.7}
+.vext-landing-features{gap:14px;margin-top:24px}
+.vext-landing-feature{padding:22px;border:1px solid var(--line);border-radius:16px;background:rgba(18,27,44,.72)}
+.vext-landing-feature-icon{color:#8eb8ff;font-size:22px}
+.vext-landing-feature h3{margin:13px 0 7px;font-size:14px}
+.vext-landing-feature p{margin:0;color:#8d9cb2;font-size:11px;line-height:1.7}
+.vext-landing-bottom{border-top:1px solid var(--line);padding-top:18px;color:#6f7d93;font-size:10px}
+/* NEXUS becomes the signature product surface */
+.nexus-hero{
+  position:relative;overflow:hidden;padding:clamp(26px,4vw,46px);
+  border:1px solid rgba(126,155,255,.22);border-radius:23px;
+  background:radial-gradient(450px 250px at 85% 35%,rgba(123,105,229,.2),transparent 70%),
+    linear-gradient(115deg,#14223a,#11182b 62%,#171a35);
+  box-shadow:0 24px 65px rgba(0,0,0,.25)
+}
+.nexus-hero h2{font-size:clamp(27px,3vw,39px);letter-spacing:-1.3px;margin:12px 0}
+.nexus-hero p{max-width:720px;color:#a6b5cc;font-size:13px;line-height:1.8}
+.nexus-orb{
+  width:130px;height:130px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(167,139,250,.4);background:radial-gradient(circle at 35% 30%,rgba(126,174,255,.45),rgba(103,80,193,.15) 52%,rgba(9,14,26,.3));
+  color:#c5c0ff;font-size:60px;box-shadow:0 0 65px rgba(117,105,231,.22),inset 0 0 30px rgba(134,157,255,.15)
+}
+.nexus-stats{gap:13px;margin:17px 0}
+.nexus-stat{padding:18px 20px;border:1px solid var(--line);border-radius:15px;background:rgba(17,25,41,.86)}
+.nexus-stat span{color:#91a0b7;font-size:10px;font-weight:750}
+.nexus-stat strong{display:block;margin:10px 0 5px;font-size:27px;letter-spacing:-1px}
+.nexus-stat small{color:#73839a;font-size:10px}
+.nexus-layout{gap:17px}
+.nexus-panel{padding:22px;min-width:0}
+.nexus-panel-heading{margin-bottom:17px}
+.nexus-panel-heading h3{margin:7px 0;font-size:17px}
+.nexus-panel-heading p{color:#8797af;font-size:11px}
+.nexus-agent-grid{gap:10px}
+.nexus-agent{
+  display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid var(--line);
+  border-radius:13px;background:rgba(8,14,25,.48);color:#e9effb;text-align:left
+}
+.nexus-agent:hover,.nexus-agent.selected{border-color:rgba(112,165,255,.5);background:rgba(74,111,190,.13)}
+.nexus-agent-icon{width:34px;height:34px;display:grid;place-items:center;flex-shrink:0;border-radius:10px;background:rgba(112,165,255,.12);color:#a9c6ff}
+.nexus-agent strong{display:block;font-size:12px}
+.nexus-agent small{display:block;margin:5px 0;color:#8d9cb2;font-size:10px;line-height:1.5}
+.nexus-agent-state{color:#73d9b0;font-size:9px}
+.nexus-form{gap:15px}
+.nexus-form-row{gap:12px}
+.nexus-form textarea{min-height:140px;line-height:1.6}
+.nexus-guardrail{margin-top:15px;padding:13px 15px;border:1px solid rgba(105,224,239,.14);border-radius:12px;background:rgba(56,189,248,.05);color:#a8c6d7;font-size:10px;line-height:1.7}
+.nexus-task{padding:16px 0;border-bottom:1px solid var(--line)}
+.nexus-task:last-child{border-bottom:0}
+.nexus-task-result{margin:12px 0;padding:14px;border:1px solid var(--line);border-radius:11px;background:rgba(6,11,20,.55);color:#c9d5e7;font-size:11px;line-height:1.7;white-space:pre-wrap}
+.nexus-task-status{border-radius:99px;padding:6px 9px;background:rgba(112,165,255,.1);color:#a9c6ff;font-size:9px;font-weight:800}
+.nexus-task-status.approved{background:rgba(88,214,162,.1);color:#7ce2b8}
+.nexus-task-status.failed{background:rgba(251,113,133,.1);color:#ff9aa9}
+.ai-workspace-hero{border:1px solid var(--line);border-radius:20px;padding:30px;background:linear-gradient(110deg,#14223a,#12182b)}
+.ai-workspace-hero h2{font-size:28px;letter-spacing:-1px;margin:10px 0}
+.ai-workspace-hero p{color:#9aabc2;font-size:12px;line-height:1.7}
+.ai-hero-mark{color:#a99bff;font-size:62px}
+.ai-tool-grid{gap:13px}
+.ai-tool-card{padding:21px;text-align:left;color:#edf3ff}
+.ai-tool-card:hover{transform:translateY(-3px);border-color:rgba(112,165,255,.45)}
+.ai-tool-icon{color:#a9c6ff}
+.ai-tool-card strong{display:block;margin:13px 0 6px;font-size:13px}
+.ai-tool-card small{display:block;color:#8999b0;font-size:10px}
+.ai-tool-link{display:block;margin-top:17px;color:#9bbcff;font-size:10px;font-weight:750}
+.footer{border-top:1px solid var(--line);color:#718099}
+@media(max-width:1050px){
+  .sidebar{width:235px}
+  main{padding:28px 24px 45px}
+}
+@media(max-width:760px){
+  .app{display:block}
+  .sidebar{position:relative;top:auto;width:100%;height:auto;overflow:visible;padding:16px}
+  .brand{font-size:24px;margin:0 7px}
+  .tagline{margin:0 7px 12px}
+  .nav{display:inline-flex;width:auto;min-height:37px;padding:9px 11px;margin:2px;font-size:11px}
+  .nav.active{border-left:1px solid rgba(112,165,255,.2);box-shadow:inset 0 -2px 0 var(--blue)}
+  .sidebar-bottom{display:none}
+  main{padding:22px 15px 38px}
+  .topbar{align-items:flex-start;margin-bottom:22px;padding-bottom:16px}
+  .top-actions{justify-content:flex-start}
+  .dashboard-insights,.grid{grid-template-columns:1fr}
+  .nexus-hero{padding:25px}
+  .nexus-orb{width:80px;height:80px;font-size:38px}
+  .vext-landing-shell{padding:20px}
+  .vext-landing-hero{padding:48px 0;gap:30px}
+  .vext-landing-hero h1{letter-spacing:-2px}
+  #vextAuthCard{width:100%;max-width:none}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats .card{padding:15px;min-height:120px}
+  .stat-number{font-size:24px}
+  .topbar{display:block}
+  .top-actions{margin-top:14px}
+  .nexus-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nexus-panel{padding:16px}
+  .nexus-form-row{grid-template-columns:1fr}
+  .vext-landing-nav{align-items:flex-start;gap:14px}
+  .vext-landing-nav-actions{display:flex;gap:7px}
+  .vext-landing-nav-actions button{padding:9px 11px!important}
+  .vext-landing-hero h1{font-size:42px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
