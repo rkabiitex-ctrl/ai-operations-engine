@@ -79,4 +79,9 @@ for (const key of frontendKeys) {
 assert.match(worker, /key === "nexus_tasks" \? 100/, "NEXUS task count must be bounded");
 assert.match(worker, /key === "management_actions" \? 1000/, "Management action count must be bounded");
 
+assert.match(app, /data-nexus-create-action/, "Approved NEXUS tasks must expose the action bridge");
+assert.match(app, /function extractNexusActionTitle/, "Action bridge must derive a reviewable action title");
+assert.ok(mg.includes("sourceNexusTaskId"), "Management actions created from NEXUS must retain their source task");
+assert.ok(mg.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
+
 console.log("VEXT architecture smoke checks passed.");
