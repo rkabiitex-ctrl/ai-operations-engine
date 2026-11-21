@@ -61,6 +61,14 @@
       return /^\d{4}-\d{2}-\d{2}$/.test(due) && due >= todayKey && due <= weekAheadKey;
     });
     const completedActions = actions.filter(item => item.status === "Completed");
+    const actionRecords = actions.map(item => ({
+      title: String(item.title || "Untitled action").slice(0, 180),
+      owner: String(item.owner || "").slice(0, 80),
+      priority: ["High", "Medium", "Low"].includes(item.priority) ? item.priority : "Unspecified",
+      status: ["Pending", "In Progress", "Completed"].includes(item.status) ? item.status : "Other",
+      dueDate: /^\d{4}-\d{2}-\d{2}$/.test(String(item.dueDate || "").slice(0, 10)) ? String(item.dueDate).slice(0, 10) : null,
+      linkedToNexus: Boolean(item.sourceNexusTaskId)
+    }));
     const taskStatuses = countBy(tasks, item => String(item.status || "Unknown"));
     return {
       business: String(business || "VEXT AI").slice(0, 100),
@@ -86,6 +94,7 @@
         latestAuditIssueCount: audits.length && Number.isFinite(Number(audits[0].issueCount)) ? Number(audits[0].issueCount) : null,
         managementActionCount: actions.length,
         managementActionStatuses: actionStatuses,
+        managementActionRecords: actionRecords,
         actionExecution: {
           activeCount: activeActions.length,
           completedCount: completedActions.length,
@@ -103,7 +112,7 @@
         taskStatuses
       },
       privacy: {
-        included: "Aggregated counts, totals and status summaries only.",
+        included: "Business metrics and a minimal Management Action register containing title, owner, priority, status, due date and NEXUS-link flag. No customer or private-note data.",
         excluded: "Customer names, email addresses, phone numbers, enquiry messages, internal notes, invoice descriptions, and full report contents are not included."
       },
       limitations: [

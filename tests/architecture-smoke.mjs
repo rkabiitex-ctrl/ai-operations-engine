@@ -63,6 +63,11 @@ assert.equal(context.governance.actionExecution.dueWithinSevenDaysCount, 1);
 assert.equal(context.governance.actionExecution.unassignedActiveCount, 1);
 assert.equal(context.governance.actionExecution.linkedToNexusCount, 1);
 assert.equal(context.governance.actionExecution.completionRatePercent, 33);
+assert.equal(context.governance.managementActionRecords.length, 3, "NEXUS must receive minimal action-level fields");
+assert.equal(context.governance.managementActionRecords[0].owner, "Finance");
+assert.equal(context.governance.managementActionRecords[0].dueDate, "2020-01-01");
+assert.equal(context.governance.managementActionRecords[0].linkedToNexus, true);
+assert.ok(!JSON.stringify(context.governance.managementActionRecords).includes("private@example.com"), "Action context must not expose customer data");
 assert.equal(context.nexus.taskStatuses["Awaiting review"], 1);
 const serializedContext = JSON.stringify(context);
 assert.ok(!serializedContext.includes("private@example.com"), "Context must not expose customer contact details");
@@ -90,6 +95,7 @@ for (const key of frontendKeys) {
 }
 assert.match(worker, /key === "nexus_tasks" \? 100/, "NEXUS task count must be bounded");
 assert.match(worker, /key === "management_actions" \? 1000/, "Management action count must be bounded");
+assert.match(worker, /"management_actions", "nexus_tasks", "notifications"\]\.includes\(key\)/, "Worker must validate action and NEXUS task data as arrays");
 
 assert.match(app, /data-nexus-create-action/, "Approved NEXUS tasks must expose the action bridge");
 assert.match(app, /function extractNexusActionTitle/, "Action bridge must derive a reviewable action title");
