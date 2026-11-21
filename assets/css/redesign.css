@@ -274,3 +274,187 @@ tr{border-color:var(--line)}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* VEXT AI — product-layout redesign, milestone 2
+   Changes layout hierarchy and component composition, not only the colour palette. */
+:root{
+  --surface:#101a2a;
+  --surface-raised:#142238;
+  --surface-soft:#0c1524;
+  --accent:#6fd6e8;
+  --accent-2:#83aaff;
+  --accent-3:#9b8cff;
+  --text-primary:#f4f7fb;
+  --text-secondary:#a2b1c5;
+}
+body{background:#080e18}
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:258px;padding:25px 15px 20px;
+  background:linear-gradient(180deg,#0c1523 0%,#0a111d 100%);
+  border-right:1px solid rgba(139,164,196,.13);
+  box-shadow:12px 0 40px rgba(0,0,0,.12)
+}
+.brand{display:flex;align-items:center;gap:10px;margin:0 9px 4px;font-size:25px;letter-spacing:-1.4px}
+.brand:before{
+  content:"V";display:grid;place-items:center;width:35px;height:35px;border-radius:11px;
+  background:linear-gradient(145deg,#73d8e8,#6489ee 58%,#8877df);
+  color:#071321;font-size:18px;font-weight:950;box-shadow:0 7px 20px rgba(92,166,225,.2)
+}
+.brand span{color:#85ddec}
+.tagline{margin:0 9px 26px 54px;font-size:8px;letter-spacing:1.8px;color:#70839d}
+.nav-label{margin:23px 10px 8px;padding-top:13px;border-top:1px solid rgba(139,164,196,.1);color:#71849e;font-size:8px;letter-spacing:1.65px}
+.nav{
+  position:relative;min-height:40px;padding:10px 11px;margin:2px 0;border-radius:9px;
+  color:#9bacc1;font-size:12px;font-weight:600
+}
+.nav.active{
+  color:#effaff;border-color:rgba(111,214,232,.16);
+  background:linear-gradient(100deg,rgba(79,175,202,.18),rgba(87,119,185,.08));
+  box-shadow:inset 3px 0 0 #69d3e4,0 7px 18px rgba(0,0,0,.12)
+}
+.nav.active:after{content:"";position:absolute;right:12px;width:5px;height:5px;border-radius:50%;background:#75dce8;box-shadow:0 0 12px #75dce8}
+.sidebar-bottom{margin:24px 4px 0;padding:15px 9px 0}
+.sidebar-bottom p:last-child{font-size:9px;letter-spacing:.8px;color:#60748e}
+main{max-width:none;padding:27px clamp(20px,2.7vw,46px) 48px}
+.topbar{
+  position:sticky;top:0;z-index:20;margin:0 -8px 26px;padding:10px 8px 18px;
+  background:linear-gradient(180deg,rgba(8,14,24,.97),rgba(8,14,24,.88));
+  backdrop-filter:blur(18px);border-bottom:1px solid rgba(139,164,196,.12)
+}
+.topbar h1{font-size:23px;letter-spacing:-.8px}
+.topbar .muted{color:#8296af}
+.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.currency,.profile{min-height:38px;border-radius:9px;font-size:11px}
+.profile{background:linear-gradient(120deg,rgba(42,78,111,.34),rgba(38,52,84,.3));border-color:rgba(111,214,232,.18);color:#c6f3f6}
+.page{max-width:1500px;margin:0 auto}
+.card,.nexus-panel,.plan-card,.ai-tool-card{
+  background:linear-gradient(155deg,rgba(19,31,49,.98),rgba(12,21,35,.98));
+  border-color:rgba(137,165,198,.14);border-radius:15px;box-shadow:0 12px 34px rgba(0,0,0,.14)
+}
+.card{padding:22px}
+.card h2{font-size:16px;letter-spacing:-.35px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:15px}
+.stats .card{
+  min-height:145px;padding:19px 20px;margin:0;border-radius:14px;
+  background:linear-gradient(145deg,#15263b,#101c2e 72%);
+  border:1px solid rgba(128,163,198,.16);transition:transform .2s,border-color .2s
+}
+.stats .card:hover{transform:translateY(-3px);border-color:rgba(111,214,232,.3)}
+.stats .card:before{content:"";position:absolute;left:0;top:0;width:100%;height:2px;background:linear-gradient(90deg,#66d5e5,rgba(111,170,255,.2),transparent)}
+.stats .card:nth-child(2):before{background:linear-gradient(90deg,#8c9fff,transparent)}
+.stats .card:nth-child(3):before{background:linear-gradient(90deg,#6dc8dc,transparent)}
+.stats .card:nth-child(4):before{background:linear-gradient(90deg,#65d6a8,transparent)}
+.stats .card:after{width:90px;height:90px;right:-35px;top:auto;bottom:-46px;background:rgba(94,180,210,.08)}
+.stat-title{font-size:9px;letter-spacing:1.25px;color:#91a5bd}
+.stat-number{font-size:29px;margin:14px 0 6px}
+.stat-foot{font-size:10px;color:#71869f}
+.dashboard-insights{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.85fr);gap:14px;margin:0 0 14px}
+.dashboard-insights>.card{min-height:270px;margin:0;padding:21px}
+.dashboard-card-heading{display:flex;align-items:center;justify-content:space-between}
+.dashboard-card-heading h2{font-size:16px}
+.dashboard-eyebrow{font-size:8px;letter-spacing:1.6px;color:#70d2e2}
+.dashboard-live-dot{padding:6px 9px;border:1px solid rgba(91,211,169,.17);border-radius:30px;background:rgba(91,211,169,.06);font-size:9px}
+#dashboardSalesSnapshot{
+  min-height:170px;margin-top:18px;padding:16px;border:1px solid rgba(133,163,196,.1);
+  border-radius:12px;background:linear-gradient(180deg,rgba(7,16,29,.55),rgba(11,22,37,.32));
+}
+#dashboardSalesSnapshot:empty:after{
+  content:"Your sales and invoice activity will appear here as records are added.";
+  display:block;padding:45px 12px;text-align:center;color:#7489a3;font-size:11px;line-height:1.6
+}
+#dashboardRecentClients{margin-top:16px}
+.dashboard-recent-list{display:grid;gap:8px}
+.dashboard-recent-list>*{padding:10px 0;border-bottom:1px solid rgba(139,164,196,.1)}
+#dashboard .grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:14px}
+#dashboard .grid>.card{margin:0;min-height:220px}
+#dashboard .grid>.card:first-child{background:linear-gradient(145deg,#142a40,#101c2d)}
+#dashboard .grid>.card:first-child h2{font-size:18px}
+#dashboard .grid>.card:first-child h3{margin-top:22px}
+#dashboard .grid>.card:first-child .notice{margin-top:17px}
+#dashboard .grid>.card:last-child{background:linear-gradient(145deg,#111e31,#0d1727)}
+#dashboard .grid>.card:last-child h2{padding-bottom:13px;border-bottom:1px solid rgba(139,164,196,.12)}
+.action-row{gap:9px}
+button.primary,.primary{background:linear-gradient(110deg,#2f9db5,#477cce);border:1px solid rgba(111,214,232,.25);box-shadow:0 8px 20px rgba(43,135,169,.16)}
+button.primary:hover,.primary:hover{box-shadow:0 12px 25px rgba(43,135,169,.25)}
+button.secondary,.secondary{background:rgba(134,159,190,.07);border-color:rgba(139,164,196,.18)}
+/* Shared page headers and working surfaces */
+.nexus-hero,.ai-workspace-hero,.employee-hero,.audit-hero,.settings-hero{
+  border-radius:19px;padding:clamp(24px,3.4vw,38px);
+  background:radial-gradient(550px 240px at 90% 10%,rgba(75,178,203,.15),transparent 65%),linear-gradient(115deg,#142b40,#111b2d 68%,#121b2c);
+  border:1px solid rgba(111,214,232,.18);box-shadow:0 18px 42px rgba(0,0,0,.16)
+}
+.nexus-hero h2,.ai-workspace-hero h2,.employee-hero h2,.audit-hero h2,.settings-hero h2{letter-spacing:-1.1px}
+.nexus-kicker,.ai-eyebrow,.settings-kicker{color:#77d9e6}
+.nexus-orb,.ai-hero-mark,.employee-hero-mark,.audit-hero-mark,.settings-hero-mark{
+  border-color:rgba(111,214,232,.24);background:linear-gradient(145deg,rgba(69,174,197,.18),rgba(78,111,177,.12));color:#91e5ed;
+  box-shadow:0 0 38px rgba(74,175,200,.12)
+}
+.nexus-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.nexus-stat{border-radius:13px;background:linear-gradient(145deg,#14263b,#0e1a2a);border-color:rgba(137,165,198,.14)}
+.nexus-panel{padding:22px}
+.nexus-agent-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.nexus-agent{min-height:106px;border-radius:12px;background:#0d1929;border-color:rgba(137,165,198,.15)}
+.nexus-agent:hover,.nexus-agent.selected{border-color:rgba(111,214,232,.42);background:rgba(48,133,157,.12)}
+.nexus-agent-icon{background:rgba(91,190,207,.12);color:#8fe2eb}
+.nexus-task{padding:15px;border:1px solid rgba(137,165,198,.13);border-radius:12px;background:rgba(7,15,27,.45)}
+.nexus-task-result{background:#081321;border-color:rgba(137,165,198,.14)}
+.ai-tool-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ai-tool-card{min-height:155px;border-radius:14px}
+.ai-tool-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:rgba(91,190,207,.1);color:#8fe2eb}
+.ai-tool-link{color:#7edce8}
+.chat-workspace{border-radius:16px;overflow:hidden}
+.chat-history-panel,.chat-main-panel{background:#101c2e;border-color:rgba(137,165,198,.14)}
+/* Consistent enterprise tables and form rhythm */
+.page table{width:100%;border-collapse:separate;border-spacing:0}
+.page th{padding:12px 13px;background:#101d2f;color:#849bb5;text-align:left}
+.page td{padding:13px;border-bottom:1px solid rgba(139,164,196,.1)}
+.page tr:hover td{background:rgba(102,177,198,.035)}
+.page input,.page select,.page textarea{border-radius:10px;background:#0a1422;border-color:rgba(139,164,196,.2)}
+.page label{color:#aabbd0}
+.page .field{margin-bottom:14px}
+.page .notice{background:rgba(65,166,188,.07);border-color:rgba(111,214,232,.16)}
+/* Public entry experience: clearer product-led split and stronger visual hierarchy */
+.vext-landing-hero{grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr);padding:70px 0 66px;gap:clamp(30px,5vw,75px)}
+.vext-landing-hero h1{max-width:700px;font-size:clamp(44px,5.6vw,68px)}
+.vext-landing-hero h1 span{background:linear-gradient(100deg,#7ce0e8,#82aaff 60%,#a2a4ff);-webkit-background-clip:text;background-clip:text}
+.vext-landing-feature{min-height:165px;transition:transform .2s,border-color .2s}
+.vext-landing-feature:hover{transform:translateY(-3px);border-color:rgba(111,214,232,.28)}
+.vext-landing-feature-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:rgba(91,190,207,.1);color:#8fe2eb}
+@media(max-width:1100px){
+  .sidebar{width:230px}
+  .dashboard-insights{grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr)}
+  .ai-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:850px){
+  .app{display:block}
+  .sidebar{position:relative;top:auto;width:100%;height:auto;max-height:none;overflow:visible;padding:14px}
+  .brand{font-size:23px}
+  .tagline{margin:0 8px 10px 53px}
+  .nav-label{margin-top:12px;padding-top:10px}
+  .nav{display:inline-flex;width:auto;min-height:36px;padding:8px 10px;margin:2px;font-size:11px}
+  .nav.active{box-shadow:inset 0 -2px 0 #69d3e4}
+  .sidebar-bottom{display:none}
+  main{padding:20px 16px 36px}
+  .topbar{position:relative;top:auto;margin-bottom:20px}
+  .dashboard-insights,#dashboard .grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nexus-layout{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  main{padding:16px 12px 30px}
+  .topbar{display:block}
+  .top-actions{margin-top:12px}
+  .top-actions>*{max-width:100%}
+  .stats{gap:8px}
+  .stats .card{min-height:120px;padding:14px}
+  .stat-number{font-size:24px}
+  .dashboard-insights>.card{padding:16px}
+  .dashboard-card-heading{align-items:flex-start;flex-wrap:wrap}
+  .nexus-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nexus-agent-grid,.ai-tool-grid{grid-template-columns:1fr}
+  .nexus-panel{padding:16px}
+  .vext-landing-hero{grid-template-columns:1fr;padding:42px 0}
+  .vext-landing-hero h1{font-size:42px}
+}
