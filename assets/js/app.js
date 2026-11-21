@@ -30,10 +30,11 @@ function setWorkspaceSyncStatus(value,bad=false){
  if(el){el.textContent=value;el.style.color=bad?"#fb7185":""}
 }
 async function syncWorkspaceNow(){
- if(!vextWorkspaceUserId||!vextWorkspaceReady)return;
- if(vextWorkspaceSyncBusy){vextWorkspaceSyncQueued=true;return}
+ if(!vextWorkspaceUserId||!vextWorkspaceReady)return false;
+ if(vextWorkspaceSyncBusy){vextWorkspaceSyncQueued=true;return false}
  vextWorkspaceSyncBusy=true;
  setWorkspaceSyncStatus("Syncing securely…");
+ let saved=false;
  try{
   const accessToken=await getVextAccessToken();
   const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/workspace",{
@@ -43,6 +44,7 @@ async function syncWorkspaceNow(){
   });
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Cloud sync failed ("+response.status+")"));
+  saved=true;
   setWorkspaceSyncStatus("Cloud synced");
  }catch(error){
   setWorkspaceSyncStatus("Saved on this device · cloud sync needs attention",true);
@@ -51,6 +53,7 @@ async function syncWorkspaceNow(){
   vextWorkspaceSyncBusy=false;
   if(vextWorkspaceSyncQueued){vextWorkspaceSyncQueued=false;scheduleWorkspaceSync(150)}
  }
+ return saved;
 }
 function scheduleWorkspaceSync(delay=900){
  if(!vextWorkspaceUserId||!vextWorkspaceReady)return;
@@ -61,7 +64,9 @@ function scheduleWorkspaceSync(delay=900){
 function applyWorkspaceSnapshot(workspace){
  const rawKeys=["currency","business","country","support_business_id","active_chat_id"];
  VEXT_WORKSPACE_KEYS.forEach(name=>{
-  if(!Object.prototype.hasOwnProperty.call(workspace,name)){localStorage.removeItem(key+name);return}
+  // Older cloud snapshots may not contain fields added by newer app versions.
+  // Preserve the browser's existing value instead of deleting it on sign-in.
+  if(!Object.prototype.hasOwnProperty.call(workspace,name))return;
   const value=workspace[name];
   localStorage.setItem(key+name,rawKeys.includes(name)?String(value??""):JSON.stringify(value));
  });
@@ -73,6 +78,14 @@ function read(k, fallback=[]){
  }catch{return fallback}
 }
 function write(k,v){localStorage.setItem(key+k,JSON.stringify(v));scheduleWorkspaceSync()}
+async function writeAndSync(k,v){
+ localStorage.setItem(key+k,JSON.stringify(v));
+ clearTimeout(vextWorkspaceSyncTimer);
+ // Wait for an in-flight save to finish, then flush this critical change immediately.
+ while(vextWorkspaceSyncBusy)await new Promise(resolve=>setTimeout(resolve,25));
+ clearTimeout(vextWorkspaceSyncTimer);
+ return await syncWorkspaceNow();
+}
 const {id,esc,formatMoney}=window.VEXTUtils;
 function currentCurrency(){return $("currency").value}
 function log(message){
@@ -480,7 +493,7 @@ const renderInvoices = window.VEXTInvoices.init({
 const vextAudit = window.VEXTAudit.init({ $, read, write, id, esc, getVextAccessToken, VEXT_CHAT_ENDPOINT });
 const renderAuditCentre = () => vextAudit.renderAuditCentre();
 const formatAuditReport = value => vextAudit.formatAuditReport(value);
-const renderManagementActions = window.VEXTManagement.init({ $, read, write, id, log });
+const renderManagementActions = window.VEXTManagement.init({ $, read, write, writeAndSync, id, log });
 const vextAnalytics = window.VEXTAnalytics.init({
  $, read, write, id, esc, formatMoney, currentCurrency,
  getClientSalesStage, formatAuditReport, getVextAccessToken,
@@ -952,9 +965,19 @@ $("saveRegionalSettings").addEventListener("click",()=>{
  log("Regional preferences updated.");
 });
 $("exportData").addEventListener("click",()=>{
- download(JSON.stringify({leads:read("leads"),invoices:read("invoices"),
- logs:read("logs"),business:localStorage.getItem(key+"business"),
- currency:currentCurrency()},null,2),"vext-ai-backup.json","application/json");
+ const backup={
+  format:"vext-ai-workspace-backup",
+  version:1,
+  exportedAt:new Date().toISOString(),
+  workspace:workspaceSnapshot(),
+  businessProfile:{
+   industry:localStorage.getItem(key+"industry")||"",
+   website:localStorage.getItem(key+"business_website")||"",
+   timezone:localStorage.getItem(key+"timezone")||"Africa/Kampala",
+   language:localStorage.getItem(key+"language")||"en"
+  }
+ };
+ download(JSON.stringify(backup,null,2),"vext-ai-full-workspace-backup.json","application/json");
 });
 $("exportCSV").addEventListener("click",()=>{
  const rows=[["Name","Email","Phone","Country","Interest"],...read("leads").map(x=>[x.name,x.email,x.phone,x.country,x.interest])];
