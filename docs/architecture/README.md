@@ -69,3 +69,14 @@ Existing account ownership checks remain in place. This change does not migrate 
 ## Release safety
 
 All changes are proposed on a feature branch and should be reviewed and tested before merging to `main`. Keep the existing production deployment as the rollback point until login, workspace sync, AI chat, CRM, invoices, and NEXUS have been verified after deployment.
+
+
+## Phase 2.1 — Shared core utilities
+
+- Added `assets/js/core/utils.js` as a dependency-free browser utility layer.
+- Moved the ID generator, HTML escaping helper, and currency formatter out of the application entry file.
+- Exposed the helpers through frozen `window.VEXTUtils` to preserve classic-script compatibility and existing initialization.
+- Loaded utilities before `app.js`; authentication remains after the app script.
+- Added automated checks for escaping, currency formatting, script order, and utility usage.
+
+Feature-specific code remains in `app.js` until its DOM dependencies and initialization boundaries are mapped and tested.
