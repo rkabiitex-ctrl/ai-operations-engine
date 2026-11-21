@@ -80,3 +80,13 @@ All changes are proposed on a feature branch and should be reviewed and tested b
 - Added automated checks for escaping, currency formatting, script order, and utility usage.
 
 Feature-specific code remains in `app.js` until its DOM dependencies and initialization boundaries are mapped and tested.
+
+
+## Phase 2.2 — CRM feature module
+
+- Extracted the customer relationship management helpers, follow-up reminders, directory rendering, customer profile rendering, and profile closing behavior into `assets/js/features/crm.js`.
+- Loaded the CRM feature script after shared core utilities and before the application entry script.
+- Kept the existing classic-script global function names so existing navigation, event handlers, and feature calls continue to resolve without changing stored data formats.
+- Added architecture checks for CRM module presence, key renderer ownership, and script load order.
+
+The CRM module continues to use the existing workspace storage helpers and data shape. No database schema or API routes changed.
