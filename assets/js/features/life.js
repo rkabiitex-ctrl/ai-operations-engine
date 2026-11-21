@@ -16,12 +16,12 @@
    if(typeof window.vextGetAccessToken!=="function")throw new Error("Please sign in to use VEXT LIFE.");
    const token=await window.vextGetAccessToken();
    const system="You are VEXT LIFE, a thoughtful personal AI assistant for individuals, students and professionals. Help with learning, research, planning, writing, career preparation and personal productivity. Be clear, practical and encouraging without making guarantees. Do not assume access to the user's personal files, accounts or private information. Ask before treating assumptions as facts. Keep business workspace information out of this conversation. The user wants a useful, direct answer.";
-   const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message:system+"\n\nUser request: "+prompt,maxOutputTokens:1800,history:[]})});
+   const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message:system+"\n\nUser request: "+prompt,maxOutputTokens:1800,history:history.slice(0,-1).slice(-11)})});
    const data=await response.json().catch(()=>({}));
    if(!response.ok)throw new Error(data.error||("AI request failed ("+response.status+")"));
    const reply=typeof data.reply==="string"?data.reply.trim():(typeof data.output_text==="string"?data.output_text.trim():"");
    if(!reply)throw new Error("The AI service returned an empty response.");
-   addMessage("assistant",reply);
+   addMessage("assistant",reply);history.push({role:"assistant",content:reply});if(history.length>12)history=history.slice(-12);
   }catch(error){addMessage("assistant","I couldn't complete that request. "+(error.message||"Please try again."));}
   finally{send.disabled=false;send.textContent="Send →";input.focus();}
  }
