@@ -8,6 +8,7 @@ const app = readFileSync("assets/js/app.js", "utf8");
 const auth = readFileSync("assets/js/auth.js", "utf8");
 const utilsSource = readFileSync("assets/js/core/utils.js", "utf8");
 const crm = readFileSync("assets/js/features/crm.js", "utf8");
+const intelligenceContext = readFileSync("assets/js/core/intelligence-context.js", "utf8");
 const worker = readFileSync("cloudflare-worker.js", "utf8");
 
 assert.match(html, /\.\/assets\/css\/app\.css/, "HTML must load the extracted stylesheet");
@@ -25,6 +26,36 @@ assert.ok(html.indexOf("./assets/js/app.js") < html.indexOf("./assets/js/auth.js
 assert.doesNotMatch(html, /<style>/i, "Styles must not be embedded in index.html");
 assert.doesNotMatch(html, /<script>\s*["']use strict["'];/i, "Application script must not be embedded in index.html");
 assert.ok(css.length > 10000, "Extracted stylesheet should contain the existing application styles");
+assert.ok(html.indexOf("./assets/js/core/intelligence-context.js") < html.indexOf("./assets/js/app.js"), "Unified context engine must load before app.js");
+assert.match(app, /window\.VEXTContext\.build/, "NEXUS must receive the unified workspace context");
+const contextWindow = { Date, window: {} };
+runInNewContext(intelligenceContext, contextWindow);
+const sampleData = {
+  invoices: [
+    { amount: 100, currency: "USD", status: "Paid" },
+    { amount: 50, currency: "USD", status: "Unpaid" },
+    { amount: 900, currency: "EUR", status: "Paid" }
+  ],
+  leads: [{ salesStage: "Qualified", email: "private@example.com", notes: "private note" }],
+  audit_reports: [{ issueCount: 2 }],
+  management_actions: [{ status: "Pending" }],
+  nexus_tasks: [{ status: "Awaiting review" }]
+};
+const context = contextWindow.window.VEXTContext.build({
+  read: key => sampleData[key] || [],
+  currentCurrency: () => "USD",
+  business: "Example Co",
+  country: "UG"
+});
+assert.equal(context.financials.invoicedAmount, 150, "Context must aggregate only the selected currency");
+assert.equal(context.financials.markedPaidAmount, 100, "Context must distinguish marked-paid totals");
+assert.equal(context.customerPipeline.clientRecordCount, 1);
+assert.equal(context.governance.latestAuditIssueCount, 2);
+assert.equal(context.nexus.taskStatuses["Awaiting review"], 1);
+const serializedContext = JSON.stringify(context);
+assert.ok(!serializedContext.includes("private@example.com"), "Context must not expose customer contact details");
+assert.ok(!serializedContext.includes("private note"), "Context must not expose private CRM notes");
+
 assert.ok(app.includes("function renderNexus"), "NEXUS interface logic must remain present");
 assert.match(app, /window\.VEXTUtils/, "Application must consume shared core utilities");
 assert.doesNotMatch(app, /function (id|esc|formatMoney)\s*\(/, "Extracted helpers must not be duplicated in app.js");
