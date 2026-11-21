@@ -139,9 +139,10 @@ function navigate(page){
  document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  $(page).classList.add("active");
  const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"AI Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing"};
+ invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"AI Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre"};
  $("pageTitle").textContent=titles[page]|| (page==="notifications"?"Notification Centre":"VEXT AI");
  if(page==="notifications")vextNotifications.render();
+ if(page==="intelligence")vextIntelligence.render();
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
@@ -461,6 +462,7 @@ const vextAnalytics = window.VEXTAnalytics.init({
 const renderAnalytics = () => vextAnalytics.renderAnalytics();
 const renderAnalystHistory = () => vextAnalytics.renderAnalystHistory();
 const vextNotifications = window.VEXTNotifications.init({ $, read, write, navigate });
+const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
   const tasks=Array.isArray(all)?all:[];
