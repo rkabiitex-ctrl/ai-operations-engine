@@ -512,7 +512,7 @@ const vextNotifications = window.VEXTNotifications.init({ $, read, write, naviga
 const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });
 const vextSalesIntelligence = window.VEXTSalesIntelligence.init({ $, read, navigate });
 const vextAutomation = window.VEXTAutomation.init({ $, read, write, writeAndSync, id, log });
-const vextBilling = window.VEXTBilling.init({ $, read, write, writeAndSync, navigate });
+const vextBilling = window.VEXTBilling.init({ $, read, write, writeAndSync, navigate, getAccessToken: getVextAccessToken });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
   const tasks=Array.isArray(all)?all:[];
