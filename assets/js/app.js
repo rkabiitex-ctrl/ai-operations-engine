@@ -583,8 +583,10 @@ function render(){
  $("statRevenue").textContent=formatMoney(sameCurrency,code);
  renderDashboardOverview(leads,inv,code);
  renderActivity();renderLeads();renderInvoices();renderAnalytics();
+ if(window.VEXTCRMAdvanced)window.VEXTCRMAdvanced.render();
 }
 
+if(window.VEXTCRMAdvanced)window.VEXTCRMAdvanced.init({$:id=>$(id),read,write,esc});
 $("currency").value=read("currency","USD");
 $("currency").addEventListener("change",()=>{
  write("currency",currentCurrency());render();
