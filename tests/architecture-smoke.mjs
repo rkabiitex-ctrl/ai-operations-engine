@@ -182,6 +182,7 @@ assert.match(html, /Request 1-day trial/, "Starter must offer a one-day trial re
 assert.match(html, /data-checkout="Starter"/, "Starter must expose Sandbox checkout");
 assert.match(html, /data-checkout="Professional"/, "Professional must expose Sandbox checkout");
 assert.ok(html.includes("cdn.paddle.com/paddle/v2/paddle.js"), "Paddle.js must load in the dashboard");
+assert.ok(html.includes("SANDBOX · SETUP REQUIRED"), "Billing must not claim Sandbox is connected before Worker setup");
 assert.doesNotMatch(html, /7-day free trial/, "Pricing must not advertise a seven-day trial");
 assert.ok(html.includes("features/billing.js"), "Billing module must load before app initialization");
 assert.ok(app.includes("billing_subscription") && app.includes("billing_events"), "Billing data must be included in workspace snapshots");
