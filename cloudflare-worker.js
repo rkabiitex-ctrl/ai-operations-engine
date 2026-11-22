@@ -127,7 +127,8 @@ async function handlePaddleWebhook(request,env) {
   return json({ok:true},200);
  }catch(error){await env.VEXT_DB.prepare("DELETE FROM billing_webhook_events WHERE event_id=?").bind(eventId).run().catch(()=>{});throw error}
 }
-\nfunction checkWebsiteOrigin(request, website) {
+
+function checkWebsiteOrigin(request, website) {
   const origin = request.headers.get("Origin");
   if (!website || !origin) return null;
   try {
@@ -181,7 +182,8 @@ export default {
         const row=await env.VEXT_DB.prepare("SELECT plan,billing_period,status,next_billed_at,updated_at FROM billing_subscriptions WHERE owner_user_id=?").bind(billingUser.id).first();
         return json({subscription:row?{plan:row.plan,billingPeriod:row.billing_period,status:row.status,nextBilledAt:row.next_billed_at,updatedAt:row.updated_at}:{plan:"none",billingPeriod:"monthly",status:"inactive",nextBilledAt:null}},200,cors);
       }
-\n      const needsUser = ((path === "/" || path === "/api/chat") && request.method === "POST")
+
+      const needsUser = ((path === "/" || path === "/api/chat") && request.method === "POST")
         || path.startsWith("/api/admin/");
       let user = null;
       if (needsUser) {
