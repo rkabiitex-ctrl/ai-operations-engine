@@ -749,19 +749,18 @@
 
 
 <section class="page" id="automation">
- <div class="automation-hero"><div><span class="automation-kicker">VEXT AI / WORKFLOW AUTOMATION</span><h2>Make routine work happen automatically.</h2><p>Create simple rules that turn new client activity into trackable follow-up work. You stay in control and can switch every rule off.</p></div><div class="automation-mark">⌘</div></div>
- <div class="automation-summary">
-  <article class="automation-stat"><span>ACTIVE RULES</span><strong id="automationActiveCount">0</strong></article>
-  <article class="automation-stat"><span>AUTOMATED FOLLOW-UPS</span><strong id="automationRunCount">0</strong></article>
-  <article class="automation-stat"><span>TRIGGER</span><strong>New client</strong></article>
- </div>
- <section class="automation-panel"><div class="automation-panel-head"><div><span class="automation-kicker">RULE BUILDER · 01</span><h3>New client follow-up</h3><p>When you add a client, VEXT creates a follow-up task in your Action Tracker.</p></div><span class="automation-rule-status" id="automationRuleStatus">OFF</span></div>
-  <div class="automation-rule-flow"><div><small>WHEN THIS HAPPENS</small><strong>New client is added</strong></div><span>→</span><div><small>VEXT AI DOES THIS</small><strong>Create a follow-up task</strong></div></div>
-  <label class="automation-toggle-row" for="automationNewLeadEnabled"><span><strong>Enable this automation</strong><small>Only runs for new clients added after you enable it. Existing clients are not changed.</small></span><input id="automationNewLeadEnabled" type="checkbox"></label>
-  <div class="automation-actions"><button class="primary" id="automationSaveRule" type="button">Save automation</button><span id="automationSaveStatus" role="status">This rule is currently off.</span></div>
+ <div class="automation-hero"><div><span class="automation-kicker">VEXT AI / ADVANCED WORKFLOW NETWORK</span><h2>Coordinate repeatable work with control.</h2><p>Build a multi-step client workflow, set conditions, review every run and decide whether it can execute.</p></div><div class="automation-mark">⌘</div></div>
+ <div class="automation-summary"><article class="automation-stat"><span>ACTIVE WORKFLOWS</span><strong id="automationActiveCount">0</strong></article><article class="automation-stat"><span>COMPLETED RUNS</span><strong id="automationRunCount">0</strong></article><article class="automation-stat"><span>TRIGGER</span><strong>New client</strong></article></div>
+ <section class="automation-panel"><div class="automation-panel-head"><div><span class="automation-kicker">WORKFLOW BUILDER · 01</span><h3>New client onboarding</h3><p>Configure the trigger, condition, steps and approval policy for this workflow.</p></div><span class="automation-rule-status" id="automationRuleStatus">OFF</span></div>
+  <div class="automation-rule-flow"><div><small>TRIGGER</small><strong>New client is added</strong></div><span>→</span><div><small>WORKFLOW</small><strong>Evaluate → Review → Run steps</strong></div></div>
+  <label class="automation-toggle-row" for="automationNewLeadEnabled"><span><strong>Enable workflow</strong><small>Only new client records are evaluated. Existing records are not replayed.</small></span><input id="automationNewLeadEnabled" type="checkbox"></label>
+  <div class="automation-builder-grid"><div><label for="automationCondition">Run when</label><select id="automationCondition"><option value="any">Every new client</option><option value="has_interest">Client has an interest / request</option><option value="high_value">Client is marked high value, partner or qualified</option></select></div><div><label for="automationRetryCount">Retry failed steps</label><select id="automationRetryCount"><option value="0">No retries</option><option value="1">1 retry</option><option value="2" selected>2 retries maximum</option></select></div></div>
+  <div class="automation-step-list"><strong>WORKFLOW STEPS</strong><label><input id="automationStepTask" type="checkbox" checked> Create a follow-up task in Management Actions</label><label><input id="automationStepLog" type="checkbox" checked> Record an internal activity log entry</label></div>
+  <label class="automation-toggle-row" for="automationRequireApproval"><span><strong>Require human approval before execution</strong><small>Recommended. Runs wait in the queue until you approve them.</small></span><input id="automationRequireApproval" type="checkbox" checked></label>
+  <div class="automation-actions"><button class="primary" id="automationSaveRule" type="button">Save workflow</button><span id="automationSaveStatus" role="status">Workflow is currently off.</span></div>
  </section>
- <section class="automation-panel"><div class="automation-panel-head"><div><span class="automation-kicker">EXECUTION HISTORY</span><h3>Recent automation runs</h3><p>Review the follow-up tasks created by this rule.</p></div></div><div id="automationRunList" class="automation-run-list"><div class="automation-empty">No automation runs yet.</div></div></section>
- <p class="automation-disclaimer">VEXT Automation Engine v1 runs this rule inside your signed-in workspace when a new client is saved. It creates a task for human follow-up; it does not send messages or contact customers automatically.</p>
+ <section class="automation-panel"><div class="automation-panel-head"><div><span class="automation-kicker">EXECUTION CONTROL</span><h3>Workflow run history</h3><p>Inspect queued approvals, completed runs, retry attempts and failures.</p></div></div><div id="automationRunList" class="automation-run-list"><div class="automation-empty">No automation runs yet.</div></div></section>
+ <p class="automation-disclaimer">Safety: workflows are off by default. Approval is on by default. Steps are limited to internal task creation and activity logging. No customer messages, payments or irreversible external actions are performed.</p>
 </section>
 
 <section class="page life-suite-ready" id="life">
