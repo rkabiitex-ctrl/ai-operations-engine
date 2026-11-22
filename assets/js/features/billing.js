@@ -1,7 +1,7 @@
 (()=>{"use strict";
 const PLANS=[
- {name:"Starter",monthly:19,yearly:190,features:["Business dashboard","AI workspace","Client and invoice management","Business activity overview","Core NEXUS tools"]},
- {name:"Professional",monthly:49,yearly:490,features:["Everything in Starter","AI customer support tools","Cloud enquiry collection","Sales Intelligence and Smart CRM","Marketing Studio and Automation Network","Business analytics"]},
+ {name:"Starter",monthly:29,yearly:290,features:["Business dashboard","AI workspace","Client and invoice management","Business activity overview","Core NEXUS tools"]},
+ {name:"Professional",monthly:79,yearly:790,features:["Everything in Starter","AI customer support tools","Cloud enquiry collection","Sales Intelligence and Smart CRM","Marketing Studio and Automation Network","Business analytics"]},
  {name:"Enterprise",monthly:null,yearly:null,features:["Everything in Professional","Custom onboarding","Team and access controls","Custom usage and support options"]}
 ];
 function init({$,read,write,writeAndSync}){
