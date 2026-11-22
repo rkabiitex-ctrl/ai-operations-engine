@@ -145,7 +145,17 @@ assert.ok(automation.includes("async function handleNewLead"), "Automation must 
 assert.ok(automation.includes('persist("management_actions",actions)'), "Automation-created follow-ups must be persisted");
 assert.ok(management.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
 
-console.log("VEXT architecture smoke checks passed.");
+
+const paddleMigration = readFileSync("paddle-billing-migration.sql", "utf8");
+assert.ok(worker.includes("/api/billing/checkout"), "Worker must expose authenticated Paddle checkout creation");
+assert.ok(worker.includes("/api/billing/status"), "Worker must expose account-owned billing status");
+assert.ok(worker.includes("/api/billing/webhook"), "Worker must expose Paddle webhook handling");
+assert.ok(worker.includes("verifyPaddleSignature") && worker.includes("Paddle-Signature"), "Webhook handler must verify Paddle signatures");
+assert.ok(worker.includes("INSERT OR IGNORE INTO billing_webhook_events"), "Webhook processing must be idempotent");
+assert.ok(worker.includes("sandbox-api.paddle.com"), "Checkout must use the Paddle Sandbox API");
+assert.ok(paddleMigration.includes("CREATE TABLE IF NOT EXISTS billing_subscriptions"), "D1 migration must create subscription storage");
+assert.ok(paddleMigration.includes("CREATE TABLE IF NOT EXISTS billing_webhook_events"), "D1 migration must create webhook idempotency storage");
+\nconsole.log("VEXT architecture smoke checks passed.");
 
 assert.match(app, /async function writeAndSync/, "Critical Management Action writes must support immediate cloud persistence");
 assert.match(app, /if\(!Object\.prototype\.hasOwnProperty\.call\(workspace,name\)\)return/, "Older cloud snapshots must not delete newer local workspace fields");
