@@ -519,10 +519,11 @@ ensureChatConversations();
 renderChatHistory();
 
 function renderActivity(){
- const logs=read("logs");
- $("activityFeed").innerHTML=logs.length?logs.map(x=>
- `<div class="activity">${esc(x.message)}<small>${esc(x.time)}</small></div>`
- ).join(""):'<div class="empty">No activity recorded yet.</div>';
+ const logs=read("logs"),feed=$("activityFeed");
+ if(!feed)return;
+ feed.innerHTML=logs.length?logs.slice(0,8).map(x=>
+  `<div class="command-activity-row" role="row"><span class="command-activity-message" role="cell">${esc(x.message)}</span><time class="command-activity-time" role="cell">${esc(x.time)}</time></div>`
+ ).join(""):'<div class="command-activity-empty">No activity recorded yet. Workspace events will appear here.</div>';
 }
 const renderInvoices = window.VEXTInvoices.init({
  $, read, write, id, esc, formatMoney, currentCurrency, log,
