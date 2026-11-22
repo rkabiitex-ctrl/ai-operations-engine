@@ -11,12 +11,12 @@ function init({$,read,write,writeAndSync}){
  const money=value=>value===null?"Custom":new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value);
  function render(){
   const current=profile(),events=safeEvents(),plan=PLANS.find(p=>p.name===current.plan);
-  const statusLabels={inactive:"Not subscribed",request_pending:"Request submitted · awaiting setup",provider_pending:"Awaiting provider confirmation",active:"Active",trialing:"Trial active",past_due:"Payment issue",cancelled:"Cancelled"};
+  const statusLabels={inactive:"Not subscribed",request_pending:"Request submitted · awaiting setup"};
   $("billingCurrentPlan").textContent=plan?plan.name:"No active plan";
-  $("billingCurrentState").textContent=statusLabels[current.status]||"Not subscribed";
-  $("billingNextDate").textContent=current.status==="active"||current.status==="trialing"?"Provider confirmation required":"—";
+  $("billingCurrentState").textContent=current.status==="request_pending"?statusLabels.request_pending:statusLabels.inactive;
+  $("billingNextDate").textContent="—";
   $("billingProviderState").textContent="Not connected";
-  $("billingStatus").textContent=current.status==="active"||current.status==="trialing"?"PROVIDER CONFIRMED":current.status==="request_pending"?"REQUEST PENDING":"NO ACTIVE PLAN";
+  $("billingStatus").textContent=current.status==="request_pending"?"REQUEST PENDING":"NO ACTIVE PLAN";
   $("billingAccountNote").textContent=current.status==="request_pending"?"Your plan request is saved to your account. It does not activate access or charge your account.": "No subscription is active. Choose a plan to submit a request; trial access and checkout remain disabled until a payment provider is connected.";
   document.querySelectorAll("[data-billing]").forEach(button=>{const active=button.dataset.billing===billingPeriod;button.classList.toggle("active",active);button.setAttribute("aria-pressed",String(active));});
   document.querySelectorAll(".plan-price").forEach(el=>{const planData=PLANS.find(p=>p.name===el.closest(".plan-card").querySelector(".plan-name").textContent.trim());el.textContent=planData?money(planData[billingPeriod]):"—";});
@@ -34,7 +34,7 @@ function init({$,read,write,writeAndSync}){
   const entitlements=$("billingEntitlements");entitlements.replaceChildren();
   const visiblePlan=plan||PLANS[0];
   visiblePlan.features.forEach(feature=>{const row=document.createElement("div");row.className="billing-entitlement-row";const label=document.createElement("span");label.textContent=feature;const value=document.createElement("small");value.textContent="Preview only";row.append(label,value);entitlements.append(row);});
-  if(current.status!=="active"&&current.status!=="trialing"){const note=document.createElement("p");note.className="billing-note";note.textContent="No paid features are being granted by this preview.";entitlements.append(note);}
+  const note=document.createElement("p");note.className="billing-note";note.textContent="No paid features are being granted by this preview. Only a future verified provider event can activate access.";entitlements.append(note);
  }
  async function requestPlan(name){
   const plan=PLANS.find(item=>item.name===name);if(!plan)return;
