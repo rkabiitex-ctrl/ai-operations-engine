@@ -26,6 +26,7 @@ jobs:
           node --check assets/js/features/sales-intelligence.js
           node --check assets/js/features/crm-advanced.js
           node --check assets/js/features/life-suite.js
+          node --check assets/js/features/billing.js
       - name: Check Cloudflare Worker module syntax
         run: node --input-type=module --check < cloudflare-worker.js
       - name: Run architecture smoke checks
