@@ -658,3 +658,24 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .marketing-history-row:last-child{border-bottom:0}.marketing-history-row strong{font-size:12px}
 @media(max-width:1050px){.marketing-layout{grid-template-columns:1fr}.marketing-result{min-height:360px}}
 @media(max-width:600px){.workspace-switch{font-size:9px;padding:10px 3px}.marketing-hero{padding:21px}.marketing-hero-mark{width:48px;height:48px}.marketing-stats{grid-template-columns:1fr}.marketing-brief-card,.marketing-output-card{padding:16px}.marketing-field-grid{grid-template-columns:1fr}.marketing-history-row{align-items:flex-start;flex-direction:column}}
+
+/* VEXT Marketing Studio — real AI video generation */
+.marketing-video-studio-card{margin-top:18px;padding:22px}
+.marketing-video-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,.65fr);gap:18px;align-items:start}
+.marketing-video-layout label{display:block;margin:12px 0 7px;color:#a9bdd0;font-size:11px;font-weight:700}
+.marketing-video-layout textarea{width:100%;min-height:125px}
+.marketing-video-audio{display:flex!important;align-items:center;gap:9px}
+.marketing-video-audio input{width:16px;height:16px;accent-color:#28b9e8}
+.marketing-video-info{padding:16px;border:1px solid rgba(88,156,194,.18);border-radius:10px;background:rgba(8,22,38,.55);color:#91a8bf;font-size:11px;line-height:1.7}
+.marketing-video-info strong{color:#9de7ff}
+.marketing-video-info p{margin:8px 0}
+.marketing-video-library-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:22px 0 8px}
+.marketing-video-library{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.marketing-video-job{min-width:0;padding:13px;border:1px solid rgba(91,148,188,.2);border-radius:10px;background:rgba(4,13,25,.45)}
+.marketing-video-job-top{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.marketing-video-job-top strong{font-size:12px;overflow-wrap:anywhere}
+.marketing-video-status{flex-shrink:0;color:#8de4ff;font-size:9px;font-weight:800}
+.marketing-video-player{display:block;width:100%;max-height:330px;margin:10px 0;border-radius:8px;background:#020711}
+.marketing-video-link{display:inline-block;margin:3px 0 10px;color:#8de4ff;font-size:11px}
+.marketing-video-error{color:#fb7185;font-size:11px}
+@media(max-width:700px){.marketing-video-layout{grid-template-columns:1fr}.marketing-video-studio-card{padding:16px}.marketing-video-library-heading{align-items:flex-start;flex-direction:column}}
