@@ -586,7 +586,7 @@ function render(){
  if(window.VEXTCRMAdvanced)window.VEXTCRMAdvanced.render();
 }
 
-if(window.VEXTCRMAdvanced)window.VEXTCRMAdvanced.init({$:id=>$(id),read,write,esc});
+if(window.VEXTCRMAdvanced)window.VEXTCRMAdvanced.init({$:id=>$(id),read,write,esc,renderClientProfile});
 $("currency").value=read("currency","USD");
 $("currency").addEventListener("change",()=>{
  write("currency",currentCurrency());render();
