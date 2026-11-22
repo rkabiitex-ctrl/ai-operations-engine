@@ -179,10 +179,17 @@ assert.match(worker, /workflowEnabled: value\.workflowEnabled === true/, "Worker
 assert.match(html, /id="billingHistory"/, "Billing history must be visible");
 assert.match(html, /id="billingEntitlements"/, "Plan feature access overview must be visible");
 assert.match(html, /Request 1-day trial/, "Starter must offer a one-day trial request");
+assert.match(html, /data-checkout="Starter"/, "Starter must expose Sandbox checkout");
+assert.match(html, /data-checkout="Professional"/, "Professional must expose Sandbox checkout");
+assert.ok(html.includes("cdn.paddle.com/paddle/v2/paddle.js"), "Paddle.js must load in the dashboard");
 assert.doesNotMatch(html, /7-day free trial/, "Pricing must not advertise a seven-day trial");
 assert.ok(html.includes("features/billing.js"), "Billing module must load before app initialization");
 assert.ok(app.includes("billing_subscription") && app.includes("billing_events"), "Billing data must be included in workspace snapshots");
 assert.ok(worker.includes('"billing_subscription", "billing_events"'), "Worker must allow only the billing workspace fields");
 assert.match(worker, /value\.status === "request_pending" \? "request_pending" : "inactive"/, "Client data must never activate paid subscriptions");
-assert.ok(billing.includes("request_pending") && billing.includes("No paid features are being granted"), "Billing must not treat requests as successful payments");
+
+assert.ok(billing.includes("request_pending") && billing.includes("Feature access is not enabled"), "Billing must not treat requests or checkout callbacks as paid entitlements");
+assert.ok(billing.includes('Paddle.Environment.set("sandbox")') && billing.includes("Paddle.Checkout.open({transactionId"), "Billing must initialize Paddle Sandbox and open server-created transactions");
+assert.ok(billing.includes("/api/billing/checkout") && billing.includes("/api/billing/status"), "Billing UI must use authenticated Worker checkout and status endpoints");
+assert.ok(billing.includes("verified subscription update"), "Checkout completion must wait for verified subscription status");
 assert.ok(billingCss.length > 500, "Billing UI must have dedicated responsive styling");
