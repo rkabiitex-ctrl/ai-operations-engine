@@ -96,7 +96,7 @@ async function verifyPaddleSignature(raw, header, secret) {
  if (!header || !secret) return false;
  const parts = {};
  for (const part of header.split(";")) { const at=part.indexOf("="); if(at>0) parts[part.slice(0,at).trim()]=part.slice(at+1).trim(); }
- if (!parts.ts || !parts.h1 || !/^\\d+$/.test(parts.ts)) return false;
+ if (!parts.ts || !parts.h1 || !/^\d+$/.test(parts.ts)) return false;
  if (Math.abs(Date.now()/1000-Number(parts.ts))>300) return false;
  const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
  const bytes=new Uint8Array(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(parts.ts+":"+raw)));
