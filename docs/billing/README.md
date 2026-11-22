@@ -1,7 +1,7 @@
 # VEXT AI Payments & Subscriptions — implementation boundary
 
 ## Current release
-- USD catalogue: Starter $19/month or $190/year; Professional $49/month or $490/year; Enterprise by quotation.
+- USD catalogue: Starter $29/month or $290/year; Professional $79/month or $790/year; Enterprise by quotation.
 - Starter has a one-day trial request, not an automatically activated trial.
 - Authenticated workspace stores plan requests under the signed-in account's existing Cloudflare D1 workspace snapshot.
 - Billing history currently lists plan/trial requests only. It does not create invoices or claim a payment.
