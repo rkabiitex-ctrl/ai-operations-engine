@@ -9,7 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -23,7 +23,8 @@ function workspaceSnapshot(){
   active_chat_id:localStorage.getItem(key+"active_chat_id")||"",
   audit_reports:read("audit_reports",[]),
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
-  nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[])
+  nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[]),
+  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[])
  };
 }
 function getWorkspaceRecoveryHistory(){
@@ -221,6 +222,7 @@ function navigate(page){
  $("pageTitle").textContent=titles[page]|| (page==="notifications"?"Notification Centre":"VEXT AI");
  if(page==="notifications")vextNotifications.render();
  if(page==="intelligence")vextIntelligence.render();
+ if(page==="automation")vextAutomation.render();
 }
 document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
@@ -542,6 +544,7 @@ const renderAnalytics = () => vextAnalytics.renderAnalytics();
 const renderAnalystHistory = () => vextAnalytics.renderAnalystHistory();
 const vextNotifications = window.VEXTNotifications.init({ $, read, write, navigate });
 const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });
+const vextAutomation = window.VEXTAutomation.init({ $, read, write, writeAndSync, id, log });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
   const tasks=Array.isArray(all)?all:[];
@@ -614,7 +617,8 @@ $("leadForm").addEventListener("submit",e=>{
  email:$("leadEmail").value.trim(),phone:$("leadPhone").value.trim(),
  country:$("leadCountry").value.trim(),interest:$("leadInterest").value.trim(),
  created:new Date().toISOString()});
- write("leads",leads);e.target.reset();log("New client registered.");render();
+ write("leads",leads);e.target.reset();log("New client registered.");
+ vextAutomation.handleNewLead(leads[leads.length-1]).catch(error=>console.error("VEXT automation:",error));render();
 });
 $("leadSearch").addEventListener("input",renderLeads);
 $("crmFollowupFilter").addEventListener("change",renderLeads);
