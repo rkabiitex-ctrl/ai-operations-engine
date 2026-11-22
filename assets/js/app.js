@@ -9,7 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -24,7 +24,7 @@ function workspaceSnapshot(){
   audit_reports:read("audit_reports",[]),
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
   nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[]),
-  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[])
+  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[])
  };
 }
 function getWorkspaceRecoveryHistory(){
@@ -212,19 +212,27 @@ $("nexusTaskList").addEventListener("click",e=>{
  write("nexus_tasks",tasks);renderNexus();
 });
 
+let activeVextWorkspace="business";
+function applyVextWorkspace(mode){
+ activeVextWorkspace=mode==="life"?"life":"business";
+ document.querySelectorAll("[data-workspace-nav]").forEach(item=>{const scope=item.dataset.workspaceNav;item.hidden=scope!=="shared"&&scope!==activeVextWorkspace;});
+ document.querySelectorAll("[data-workspace-switch]").forEach(button=>{const selected=button.dataset.workspaceSwitch===activeVextWorkspace;button.classList.toggle("active",selected);button.setAttribute("aria-pressed",selected?"true":"false");});
+ const subtitle=$("workspaceSubtitle");if(subtitle)subtitle.textContent=activeVextWorkspace==="life"?"Your personal AI space. One place to think, learn and grow.":"Your business. One intelligent workspace.";
+}
+function switchVextWorkspace(mode){applyVextWorkspace(mode);navigate(mode==="life"?"life":"dashboard");}
+document.querySelectorAll("[data-workspace-switch]").forEach(button=>button.addEventListener("click",()=>switchVextWorkspace(button.dataset.workspaceSwitch)));
 function navigate(page){
+ if(page==="life")applyVextWorkspace("life");else if(page!=="nexus"&&page!=="notifications")applyVextWorkspace("business");
  if(page==="analytics"&&typeof renderAnalystHistory==="function"){renderAnalystHistory();renderManagementActions();}
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
- $(page).classList.add("active");
- const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",
- invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"AI Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre",life:"VEXT LIFE · Personal Intelligence"};
- $("pageTitle").textContent=titles[page]|| (page==="notifications"?"Notification Centre":"VEXT AI");
- if(page==="notifications")vextNotifications.render();
- if(page==="intelligence")vextIntelligence.render();
- if(page==="automation")vextAutomation.render();
+ document.querySelectorAll(".nav[data-page]").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
+ const target=$(page);if(!target)return;target.classList.add("active");
+ const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"VEXT Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre",life:"VEXT LIFE · Personal Intelligence"};
+ $("pageTitle").textContent=titles[page]||(page==="notifications"?"Notification Centre":"VEXT AI");
+ if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
 }
-document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
+applyVextWorkspace("business");
+document.querySelectorAll(".nav[data-page]").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
 $( "openSalesEmployee" ).addEventListener("click",()=>navigate("support"));
 
 $( "openCustomerSupport" ).addEventListener("click",()=>{navigate("customer-support");renderCustomerSupportChat();});
@@ -261,67 +269,38 @@ $("customerSupportClear").addEventListener("click",()=>{write("customer_support_
 
 function marketingDrafts(){const items=read("marketing_drafts",[]);return Array.isArray(items)?items:[];}
 function renderMarketingHistory(){
- const drafts=marketingDrafts(),area=$("marketingHistory");$("marketingDraftCount").textContent=String(drafts.length);
- area.replaceChildren();
+ const drafts=marketingDrafts(),area=$("marketingHistory");$("marketingDraftCount").textContent=String(drafts.length);area.replaceChildren();
  if(!drafts.length){area.textContent="No saved campaigns yet.";return;}
- drafts.slice(0,8).forEach((draft,index)=>{const row=document.createElement("div");row.className="action-row";row.style.borderBottom="1px solid var(--border)";row.style.padding="10px 0";
- const info=document.createElement("div");const title=document.createElement("strong");title.textContent=draft.title||"Campaign draft";const date=document.createElement("div");date.className="muted small";date.textContent=new Date(draft.createdAt).toLocaleString();info.append(title,date);
- const actions=document.createElement("div");const open=document.createElement("button");open.className="secondary";open.type="button";open.textContent="Open";open.addEventListener("click",()=>{marketingCurrentDraft=draft.content;$("marketingResult").textContent=draft.content;$("copyMarketing").disabled=false;$("saveMarketing").disabled=true;});
- const del=document.createElement("button");del.className="secondary";del.type="button";del.textContent="Delete";del.style.marginLeft="6px";del.addEventListener("click",()=>{write("marketing_drafts",marketingDrafts().filter((_,i)=>i!==index));renderMarketingHistory();});
- actions.append(open,del);row.append(info,actions);area.append(row);
- });
+ drafts.slice(0,10).forEach((draft,index)=>{const row=document.createElement("div");row.className="marketing-history-row";const info=document.createElement("div");const title=document.createElement("strong");title.textContent=draft.title||"Campaign draft";const date=document.createElement("div");date.className="muted small";date.textContent=draft.createdAt?new Date(draft.createdAt).toLocaleString():"Saved campaign";info.append(title,date);const actions=document.createElement("div");actions.className="action-row";const open=document.createElement("button");open.className="secondary";open.type="button";open.textContent="Open";open.addEventListener("click",()=>{marketingCurrentDraft=draft.content||"";$("marketingResult").textContent=marketingCurrentDraft;$("copyMarketing").disabled=!marketingCurrentDraft;$("saveMarketing").disabled=true;$("marketingStatus").textContent="Saved campaign opened for review.";});const del=document.createElement("button");del.className="secondary";del.type="button";del.textContent="Delete";del.addEventListener("click",async()=>{const saved=await writeAndSync("marketing_drafts",marketingDrafts().filter((_,i)=>i!==index));renderMarketingHistory();$("marketingStatus").textContent=saved?"Campaign removed from your synced library.":"Campaign removed locally; cloud sync is pending.";});actions.append(open,del);row.append(info,actions);area.append(row);});
 }
 let marketingCurrentDraft="";
-function openMarketingManager(){
- const settings=getSupportSettings();$("marketingBusinessName").textContent=settings.business||"Your business";$("marketingResult").textContent="Your campaign strategy and content will appear here.";$("marketingStatus").textContent="Complete the brief, then generate your campaign draft.";marketingCurrentDraft="";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;renderMarketingHistory();
-}
+function openMarketingManager(){const settings=getSupportSettings();$("marketingBusinessName").textContent=settings.business||"Your business";$("marketingResult").textContent="Your campaign strategy, content and execution plan will appear here.";$("marketingStatus").textContent="Complete the brief, then build your campaign pack.";marketingCurrentDraft="";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;renderMarketingHistory();}
 $("openMarketingManager").addEventListener("click",()=>{navigate("marketing");openMarketingManager();});
 async function generateMarketingCampaign(){
- const offer=$("marketingOffer").value.trim(),objective=$("marketingObjective").value,audience=$("marketingAudience").value.trim(),channel=$("marketingChannel").value,tone=$("marketingTone").value,notes=$("marketingNotes").value.trim(),button=$("generateMarketing");
- if(!offer){$("marketingStatus").textContent="Please describe the product, service or offer first.";return;}
- if(!audience){$("marketingStatus").textContent="Please specify the target audience first.";return;}
- button.disabled=true;button.textContent="Creating campaign…";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;
- $("marketingStatus").textContent="Preparing your campaign in 8 focused sections…";$("marketingResult").textContent="Starting campaign generation…";
- const settings=getSupportSettings();
- const context="Act as a senior, ethical marketing strategist for "+(settings.business||"the user's business")+". Create a practical, specific campaign draft using only supplied facts.\nBUSINESS KNOWLEDGE:\n"+(settings.instructions||"No additional business information supplied.")+"\nCAMPAIGN BRIEF:\nOffer: "+offer+"\nObjective: "+objective+"\nAudience: "+audience+"\nChannel: "+channel+"\nTone: "+tone+"\nExtra details: "+(notes||"None supplied")+"\nGLOBAL RULES: Do not invent prices, discounts, product features, customer testimonials, statistics, certifications, guarantees, results, research or performance data. Clearly label assumptions. Use platform-appropriate language. This is a draft for human review; do not claim to publish or launch anything.";
+ const offer=$("marketingOffer").value.trim(),objective=$("marketingObjective").value,audience=$("marketingAudience").value.trim(),channel=$("marketingChannel").value,tone=$("marketingTone").value,notes=$("marketingNotes").value.trim(),deliverable=$("marketingDeliverable").value,region=$("marketingRegion").value.trim(),budget=$("marketingBudget").value.trim(),duration=$("marketingDuration").value,cta=$("marketingCTA").value.trim(),button=$("generateMarketing");
+ if(!offer){$("marketingStatus").textContent="Describe the product, service or offer first.";return;}if(!audience){$("marketingStatus").textContent="Specify the target audience first.";return;}
+ button.disabled=true;button.textContent="Building campaign…";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;$("marketingStatus").textContent="Preparing your campaign in 8 focused sections…";$("marketingResult").textContent="Starting campaign generation…";
+ const settings=getSupportSettings(),business=settings.business||"Your business";
+ const context="Act as a senior global marketing strategist for "+business+". Build a specific, practical campaign using only supplied facts.\nBUSINESS KNOWLEDGE:\n"+(settings.instructions||"No additional business information supplied.")+"\nCAMPAIGN BRIEF:\nOffer: "+offer+"\nObjective: "+objective+"\nAudience: "+audience+"\nPrimary channel: "+channel+"\nDeliverable: "+deliverable+"\nBrand tone: "+tone+"\nTarget market/location: "+(region||"Not specified")+"\nBudget guidance: "+(budget||"Not supplied; do not assume a paid budget")+"\nDuration: "+duration+"\nPreferred CTA: "+(cta||"Recommend a suitable CTA without inventing contact details")+"\nExtra details: "+(notes||"None supplied")+"\nGLOBAL RULES: Do not invent prices, discounts, product features, testimonials, statistics, certifications, guarantees, results, research or performance data. Label assumptions. Respect the target market and channel. Never assume a budget or promise results. This is a draft for human review; do not claim to publish, launch, spend money or contact anyone.";
+ const assetTask="Create exactly ONE distinct ready-to-review content asset for channel "+channel+" and deliverable "+deliverable+". Match the format: Instagram/Facebook/TikTok use native post, reel/video storyboard or ad; LinkedIn uses professional post/ad; Email uses subject, preview text and complete email; Google Ads uses search headlines/descriptions and keyword themes; Website uses landing-page headline, body and CTA. For Multi-channel, choose three clearly labelled formats for suitable channels. Include hook, visual/creative direction, complete copy and CTA. Do not invent links or contact details.";
  const parts=[
-  {title:"PART 1 — CAMPAIGN STRATEGY",task:"Write only the campaign strategy: concept and core message; creative direction; defined audience; clearly labelled audience assumptions; recommended positioning; customer journey; primary and secondary CTA. Keep it concise but complete. Do not write DM scripts, content variations, schedule or metrics."},
-  {title:"PART 2 — DM HANDLING AND VERIFICATION",task:"Write a complete practical DM handling flow for this campaign. Include a short welcome, one-question-at-a-time discovery sequence, responsible product recommendation using verified facts only, purchase handoff, optional consent-based contact collection, privacy safeguards, and a short list of facts the business must verify. Finish every step and sentence. Do not write content variations, schedule or metrics."},
-  {title:"PART 3 — CONTENT VARIATION 1",task:"Create exactly ONE complete Instagram content/ad variation. Include format, objective, opening hook, visual/scene direction, on-screen text where useful, a fully written ready-to-review caption/ad copy, and CTA. Finish every sentence. Do not create other variations or campaign sections."},
-  {title:"PART 4 — CONTENT VARIATION 2",task:"Create exactly ONE complete, distinct Instagram content/ad variation. Include format, objective, opening hook, visual/scene direction, on-screen text where useful, a fully written ready-to-review caption/ad copy, and CTA. Finish every sentence. Do not create other variations or campaign sections."},
-  {title:"PART 5 — CONTENT VARIATION 3",task:"Create exactly ONE complete, distinct Instagram content/ad variation. Include format, objective, opening hook, visual/scene direction, on-screen text where useful, a fully written ready-to-review caption/ad copy, and CTA. Finish every sentence. Do not create other variations or campaign sections."},
-  {title:"PART 6 — SEVEN-DAY EXECUTION SCHEDULE",task:"Create a complete practical 7-day execution schedule in a table with Day, Activity and Purpose columns. Include preparation and approvals before publishing, content activity, responsible DM handling and a final review. Clearly state that actions are conditional on owner approval and available capacity. Do not write metrics."},
-  {title:"PART 7 — SUCCESS METRICS",task:"Provide a concise complete metrics table with metric, how to track and what to compare. Include reach/views, engagement, saves/shares, profile actions, qualified DMs, response time, verified sales/conversions and paid-vs-organic distinction where relevant. Define qualified DM clearly. Do not invent targets. Include measurement windows, attribution limitations and a rule to label unavailable data rather than estimate. Do not write a checklist."},
-  {title:"PART 8 — PRE-PUBLISH VERIFICATION CHECKLIST",task:"Provide a complete practical pre-publish checklist covering product facts and imagery, pricing and stock, US service and shipping coverage, purchase/payment/return/refund/warranty terms, asset rights and approvals, account access, budget approval, DM staffing, privacy, consent and data handling. Finish with a clear human-approval reminder. Do not write metrics."}
+  {title:"PART 1 — CAMPAIGN STRATEGY",task:"Define campaign concept, core message, positioning, audience needs and clearly labelled assumptions, offer framing, customer journey, channel role and primary CTA."},
+  {title:"PART 2 — CONTENT AND CREATIVE DIRECTION",task:"Give a concise creative platform: visual identity guidance, message pillars, content themes, suggested asset list and production notes. Do not invent brand assets or rights."},
+  {title:"PART 3 — CONTENT ASSET 1",task:assetTask+" Make this the primary asset."},
+  {title:"PART 4 — CONTENT ASSET 2",task:assetTask+" Make this distinct from asset 1 and suited to a different angle or format."},
+  {title:"PART 5 — CONTENT ASSET 3",task:assetTask+" Make this distinct from assets 1 and 2. Avoid repeating the same hook."},
+  {title:"PART 6 — EXECUTION CALENDAR",task:"Create a "+duration+" execution schedule in a table with Day, Activity, Channel, Owner and Purpose columns. Use relative days, not invented dates. Include preparation and approvals, publishing cadence, community/DM response and review. Paid activity requires explicit budget approval."},
+  {title:"PART 7 — MEASUREMENT PLAN",task:"Provide a metrics table with metric, how to track, review frequency and comparison. Include reach/views, engagement, saves/shares, profile or website actions, qualified enquiries, response time and verified sales/conversions. Define qualified enquiry. Do not invent targets; label missing data unavailable and explain attribution limits."},
+  {title:"PART 8 — PRE-LAUNCH APPROVAL CHECKLIST",task:"Create a concise checklist covering product facts, price/stock, offer dates, market eligibility, delivery/returns/warranty terms, claims and evidence, creative rights, account access, budget and payment approval, staff coverage, privacy/consent, tracking and platform policies. End with owner approval requirement."}
  ];
- try{
-  const token=await getVextAccessToken();
-  if(!token)throw new Error("Please sign in again before generating a campaign.");
-  const completed=[];
-  for(let i=0;i<parts.length;i++){
-   $("marketingStatus").textContent="Generating section "+(i+1)+" of 8: "+parts[i].title+"…";
-   const message=context+"\n\n"+parts[i].title+"\n"+parts[i].task+"\nKeep this section focused and complete. Use clear headings. Do not refer to missing sections. Do not end mid-sentence or mid-table.";
-   const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:1100})});
-   const data=await response.json().catch(()=>({}));
-   if(!response.ok)throw new Error(data.error||("AI request failed in section "+(i+1)+" ("+response.status+")."));
-   const part=typeof data.reply==="string"?data.reply.trim():"";
-   if(!part)throw new Error("The AI service returned an empty response for section "+(i+1)+".");
-   completed.push("## "+parts[i].title+"\n\n"+part);
-   $("marketingResult").textContent="VEXT GLOBAL ELECTRONICS — CAMPAIGN DRAFT\nFor human review and approval. Nothing has been published or launched.\n\n"+completed.join("\n\n---\n\n");
-  }
-  const result="VEXT GLOBAL ELECTRONICS — CAMPAIGN DRAFT\nFor human review and approval. Nothing has been published or launched.\n\n"+completed.join("\n\n---\n\n");
-  marketingCurrentDraft=result;$("marketingResult").textContent=result;$("copyMarketing").disabled=false;$("saveMarketing").disabled=false;$("marketingStatus").textContent="All 8 campaign sections generated. Review all claims before publishing.";
- }catch(error){
-  const partial=$("marketingResult").textContent;
-  $("marketingStatus").textContent="Campaign generation stopped before all 8 sections finished.";
-  $("marketingResult").textContent=(partial&&partial!=="Starting campaign generation…"?partial+"\n\n":"")+"Generation error: "+(error.message||"Please try again.")+"\n\nThe incomplete draft cannot be saved. Please retry.";
- }finally{button.disabled=false;button.textContent="Generate campaign plan ✧";}
+ try{const token=await getVextAccessToken();if(!token)throw new Error("Please sign in again before generating a campaign.");const completed=[];for(let i=0;i<parts.length;i++){$("marketingStatus").textContent="Generating section "+(i+1)+" of 8: "+parts[i].title+"…";const message=context+"\n\n"+parts[i].title+"\n"+parts[i].task+"\nKeep this section focused and complete. Use clear headings. Do not refer to missing sections. Do not end mid-sentence or mid-table.";const response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:1300})});const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||("AI request failed in section "+(i+1)+" ("+response.status+")."));const part=typeof data.reply==="string"?data.reply.trim():"";if(!part)throw new Error("The AI service returned an empty response for section "+(i+1)+".");completed.push("## "+parts[i].title+"\n\n"+part);$("marketingResult").textContent=business.toUpperCase()+" — CAMPAIGN DRAFT\nFor human review and approval. Nothing has been published or launched.\n\n"+completed.join("\n\n---\n\n");}
+  marketingCurrentDraft=business.toUpperCase()+" — CAMPAIGN DRAFT\nFor human review and approval. Nothing has been published or launched.\n\n"+completed.join("\n\n---\n\n");$("marketingResult").textContent=marketingCurrentDraft;$("copyMarketing").disabled=false;$("saveMarketing").disabled=false;$("marketingStatus").textContent="Campaign pack generated. Review every claim and approve each asset before use.";
+ }catch(error){const partial=$("marketingResult").textContent;$("marketingStatus").textContent="Campaign generation stopped before all 8 sections finished.";$("marketingResult").textContent=(partial&&partial!=="Starting campaign generation…"?partial+"\n\n":"")+"Generation error: "+(error.message||"Please try again.")+"\n\nThe incomplete draft cannot be saved.";}
+ finally{button.disabled=false;button.textContent="Build campaign pack ✧";}
 }
 $("generateMarketing").addEventListener("click",generateMarketingCampaign);
 $("copyMarketing").addEventListener("click",()=>{if(marketingCurrentDraft)navigator.clipboard.writeText(marketingCurrentDraft).then(()=>$("marketingStatus").textContent="Campaign copied to clipboard.").catch(()=>$("marketingStatus").textContent="Copy was blocked by the browser.");});
-$("saveMarketing").addEventListener("click",()=>{if(!marketingCurrentDraft)return;const drafts=marketingDrafts();drafts.unshift({title:$("marketingOffer").value.trim().slice(0,65)||"Campaign draft",content:marketingCurrentDraft,createdAt:new Date().toISOString()});write("marketing_drafts",drafts.slice(0,30));$("saveMarketing").disabled=true;$("marketingStatus").textContent="Campaign draft saved in this browser.";renderMarketingHistory();});
-
-
+$("saveMarketing").addEventListener("click",async()=>{if(!marketingCurrentDraft)return;const drafts=marketingDrafts();drafts.unshift({title:$("marketingOffer").value.trim().slice(0,65)||"Campaign draft",content:marketingCurrentDraft,createdAt:new Date().toISOString()});const saved=await writeAndSync("marketing_drafts",drafts.slice(0,30));$("saveMarketing").disabled=true;$("marketingStatus").textContent=saved?"Campaign saved to your VEXT workspace.":"Campaign saved on this device; cloud sync is pending.";renderMarketingHistory();});
 
 $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
 $("openBusinessAnalyst").addEventListener("click",()=>{navigate("analytics");$("analystResult").innerHTML="";$("analystStatus").textContent="Choose a reporting period, then generate your business analysis.";});
