@@ -23,6 +23,7 @@ jobs:
           node --check assets/js/app.js
           node --check assets/js/auth.js
           node --check assets/js/features/automation.js
+          node --check assets/js/features/sales-intelligence.js
           node --check assets/js/features/life-suite.js
       - name: Check Cloudflare Worker module syntax
         run: node --input-type=module --check < cloudflare-worker.js
