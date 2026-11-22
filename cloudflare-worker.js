@@ -197,7 +197,7 @@ export default {
               workspace[key] = Object.fromEntries(Object.entries(value).slice(-60).map(([day, note]) => [clean(day, 10), clean(note, 1000)]).filter(([day, note]) => day && note));
             } else if (key === "billing_subscription") {
               if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "billing_subscription must be an object." }, 400, cors);
-              const status = ["inactive", "request_pending", "provider_pending", "active", "trialing", "past_due", "cancelled"].includes(value.status) ? value.status : "inactive";
+              const status = value.status === "request_pending" ? "request_pending" : "inactive";
               const plan = ["none", "Starter", "Professional", "Enterprise"].includes(value.plan) ? value.plan : "none";
               const period = ["monthly", "yearly"].includes(value.billingPeriod) ? value.billingPeriod : "monthly";
               workspace[key] = { plan, status, billingPeriod: period, requestedAt: clean(value.requestedAt, 40), provider: "not_connected", updatedAt: clean(value.updatedAt, 40) };
