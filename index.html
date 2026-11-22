@@ -473,6 +473,23 @@
   <div class="crm-card-heading"><div><span class="dashboard-eyebrow">SALES TASKS</span><h2>Reminder centre</h2><p class="muted small">Customers with follow-ups due today or overdue.</p></div><button class="secondary" id="enableCrmNotifications" type="button">Enable browser alerts</button></div>
   <div id="crmReminderFeed" class="crm-reminder-feed"><div class="empty">Loading follow-up reminders…</div></div>
  </div>
+ <section class="card crm-relationship-hub" aria-labelledby="crmRelationshipTitle">
+  <div class="crm-card-heading"><div><span class="dashboard-eyebrow">RELATIONSHIP INTELLIGENCE</span><h2 id="crmRelationshipTitle">Customer relationship hub</h2><p class="muted small">Segment customers, enrich profiles, record conversations and spot relationships that need attention.</p></div><span class="pill">CRM INSIGHTS</span></div>
+  <div class="crm-relationship-metrics" id="crmRelationshipMetrics"></div>
+  <div class="crm-relationship-grid">
+   <div class="crm-relationship-insights" id="crmRelationshipInsights"></div>
+   <form id="crmRelationshipForm" class="crm-relationship-editor">
+    <div class="field"><label for="crmRelationshipClient">Customer</label><select id="crmRelationshipClient" required><option value="">Choose a customer</option></select></div>
+    <div class="field"><label for="crmRelationshipSegment">Customer segment</label><select id="crmRelationshipSegment"><option value="New">New</option><option value="Active">Active</option><option value="High value">High value</option><option value="At risk">At risk</option><option value="Partner">Partner</option></select></div>
+    <div class="field"><label for="crmRelationshipCompany">Company / organisation</label><input id="crmRelationshipCompany" maxlength="120" placeholder="Company name"></div>
+    <div class="field"><label for="crmRelationshipRole">Contact role</label><input id="crmRelationshipRole" maxlength="100" placeholder="e.g. Operations Director"></div>
+    <div class="field"><label for="crmRelationshipChannel">Preferred contact channel</label><select id="crmRelationshipChannel"><option value="">Not specified</option><option value="Email">Email</option><option value="Phone">Phone</option><option value="WhatsApp">WhatsApp</option><option value="Website">Website</option></select></div>
+    <div class="field"><label for="crmRelationshipInteraction">Log an interaction</label><textarea id="crmRelationshipInteraction" rows="3" maxlength="1000" placeholder="Record a call, meeting, email or important customer update..."></textarea></div>
+    <div class="field"><label for="crmRelationshipType">Interaction type</label><select id="crmRelationshipType"><option value="Call">Call</option><option value="Meeting">Meeting</option><option value="Email">Email</option><option value="WhatsApp">WhatsApp</option><option value="Other">Other</option></select></div>
+    <div class="action-row"><button class="primary" type="submit">Save relationship update</button><span id="crmRelationshipStatus" class="chat-status" role="status"></span></div>
+   </form>
+  </div>
+ </section>
  <div class="crm-stats crm-stats-pro">
   <div class="crm-stat"><span>Total clients</span><strong id="crmTotal">0</strong><small>Saved customer records</small></div>
   <div class="crm-stat"><span>Website enquiries</span><strong id="crmEnquiries">0</strong><small>Customers with conversations</small></div>
@@ -829,7 +846,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./assets/js/core/utils.js" defer></script>
 <script src="./assets/js/core/intelligence-context.js" defer></script>
-<script src="./assets/js/features/crm.js" defer></script>\n<script src="./assets/js/features/sales-intelligence.js" defer></script>
+<script src="./assets/js/features/crm.js" defer></script>
+<script src="./assets/js/features/crm-advanced.js" defer></script>\n<script src="./assets/js/features/sales-intelligence.js" defer></script>
 <script src="./assets/js/features/invoices.js" defer></script>
 <script src="./assets/js/features/analytics.js" defer></script>
 <script src="./assets/js/features/audit.js" defer></script>
