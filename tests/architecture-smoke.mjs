@@ -15,6 +15,8 @@ const crmAdvanced = readFileSync("assets/js/features/crm-advanced.js", "utf8");
 const salesIntelligenceCss = readFileSync("assets/css/sales-intelligence.css", "utf8");
 const lifeSuite = readFileSync("assets/js/features/life-suite.js", "utf8");
 const lifeCss = readFileSync("assets/css/life-suite.css", "utf8");
+const billing = readFileSync("assets/js/features/billing.js", "utf8");
+const billingCss = readFileSync("assets/css/billing.css", "utf8");
 const intelligenceContext = readFileSync("assets/js/core/intelligence-context.js", "utf8");
 const worker = readFileSync("cloudflare-worker.js", "utf8");
 
@@ -163,3 +165,13 @@ assert.match(automation, /status==="awaiting_approval"/, "Automation runs must w
 assert.match(automation, /maxRetries=Math\.min\(2/, "Automation retries must be bounded to two retries");
 assert.match(automation, /sourceAutomationRunId/, "Workflow steps must be idempotent across retries");
 assert.match(worker, /workflowEnabled: value\.workflowEnabled === true/, "Worker must validate advanced automation settings");
+
+assert.match(html, /id="billingHistory"/, "Billing history must be visible");
+assert.match(html, /id="billingEntitlements"/, "Plan feature access overview must be visible");
+assert.match(html, /Request 1-day trial/, "Starter must offer a one-day trial request");
+assert.doesNotMatch(html, /7-day free trial/, "Pricing must not advertise a seven-day trial");
+assert.ok(html.includes("features/billing.js"), "Billing module must load before app initialization");
+assert.ok(app.includes("billing_subscription") && app.includes("billing_events"), "Billing data must be included in workspace snapshots");
+assert.ok(worker.includes('"billing_subscription", "billing_events"'), "Worker must allow only the billing workspace fields");
+assert.ok(billing.includes("request_pending") && billing.includes("provider-confirmed"), "Billing must not treat requests as successful payments");
+assert.ok(billingCss.length > 500, "Billing UI must have dedicated responsive styling");
