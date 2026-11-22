@@ -37,6 +37,7 @@ function init({$,read,write,writeAndSync,getAccessToken}){
   });
   const entitlements=$("billingEntitlements");entitlements.replaceChildren();(plan||PLANS[0]).features.forEach(feature=>{const row=document.createElement("div");row.className="billing-entitlement-row";const label=document.createElement("span"),value=document.createElement("small");label.textContent=feature;value.textContent="Preview only";row.append(label,value);entitlements.append(row);});
   const note=document.createElement("p");note.className="billing-note";note.textContent="Feature access is not enabled by a browser checkout result. Verified subscription events and server-side entitlement controls are required.";entitlements.append(note);
+  if(!serverSubscription)void refreshStatus();
  }
  async function refreshStatus(force=false){
   if(statusLoading||(!force&&Date.now()-lastStatusCheck<30000))return;statusLoading=true;lastStatusCheck=Date.now();
