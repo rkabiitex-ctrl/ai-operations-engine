@@ -86,6 +86,7 @@
  <button class="nav" data-page="customer-support">♡ &nbsp; Customer Support</button>
  <button class="nav" data-page="marketing">✧ &nbsp; Marketing Manager</button>
  <button class="nav" data-page="employees">♙ &nbsp; AI Employees</button>
+ <button class="nav" data-page="automation">⌘ &nbsp; Automation Engine</button>
  <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
  <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
  <div class="nav-label">MANAGEMENT</div>
@@ -710,6 +711,23 @@
 </section>
 
 
+
+<section class="page" id="automation">
+ <div class="automation-hero"><div><span class="automation-kicker">VEXT AI / WORKFLOW AUTOMATION</span><h2>Make routine work happen automatically.</h2><p>Create simple rules that turn new client activity into trackable follow-up work. You stay in control and can switch every rule off.</p></div><div class="automation-mark">⌘</div></div>
+ <div class="automation-summary">
+  <article class="automation-stat"><span>ACTIVE RULES</span><strong id="automationActiveCount">0</strong></article>
+  <article class="automation-stat"><span>AUTOMATED FOLLOW-UPS</span><strong id="automationRunCount">0</strong></article>
+  <article class="automation-stat"><span>TRIGGER</span><strong>New client</strong></article>
+ </div>
+ <section class="automation-panel"><div class="automation-panel-head"><div><span class="automation-kicker">RULE BUILDER · 01</span><h3>New client follow-up</h3><p>When you add a client, VEXT creates a follow-up task in your Action Tracker.</p></div><span class="automation-rule-status" id="automationRuleStatus">OFF</span></div>
+  <div class="automation-rule-flow"><div><small>WHEN THIS HAPPENS</small><strong>New client is added</strong></div><span>→</span><div><small>VEXT AI DOES THIS</small><strong>Create a follow-up task</strong></div></div>
+  <label class="automation-toggle-row" for="automationNewLeadEnabled"><span><strong>Enable this automation</strong><small>Only runs for new clients added after you enable it. Existing clients are not changed.</small></span><input id="automationNewLeadEnabled" type="checkbox"></label>
+  <div class="automation-actions"><button class="primary" id="automationSaveRule" type="button">Save automation</button><span id="automationSaveStatus" role="status">This rule is currently off.</span></div>
+ </section>
+ <section class="automation-panel"><div class="automation-panel-head"><div><span class="automation-kicker">EXECUTION HISTORY</span><h3>Recent automation runs</h3><p>Review the follow-up tasks created by this rule.</p></div></div><div id="automationRunList" class="automation-run-list"><div class="automation-empty">No automation runs yet.</div></div></section>
+ <p class="automation-disclaimer">VEXT Automation Engine v1 runs this rule inside your signed-in workspace when a new client is saved. It creates a task for human follow-up; it does not send messages or contact customers automatically.</p>
+</section>
+
 <section class="page" id="life">
  <div class="life-hero">
   <div><span class="life-kicker">VEXT AI / PERSONAL INTELLIGENCE</span><h2>Your life, with more clarity.</h2><p>A personal AI space for thinking, learning, planning and moving your goals forward.</p><div class="life-hero-note">VEXT LIFE · First experience</div></div>
@@ -745,6 +763,7 @@
 <script src="./assets/js/features/intelligence.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 <script src="./assets/js/features/life.js" defer></script>
+<script src="./assets/js/features/automation.js" defer></script>
 <script src="./assets/js/auth.js" defer></script>
 
 </body>
