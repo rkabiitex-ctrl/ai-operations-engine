@@ -51,7 +51,7 @@ assert.ok(html.indexOf("./assets/js/core/utils.js") < html.indexOf("./assets/js/
 assert.ok(html.indexOf("./assets/js/features/crm.js") < html.indexOf("./assets/js/app.js"), "CRM module must load before the application");
 assert.ok(crm.includes("function renderLeads"), "CRM module must contain the customer directory renderer");
 assert.ok(crm.includes("function renderClientProfile"), "CRM module must contain the customer profile renderer");
-assert.match(html, /features\\/crm-advanced\\.js" defer/, "Smart CRM relationship module must load");
+assert.match(html, /features\/crm-advanced\.js" defer/, "Smart CRM relationship module must load");
 assert.ok(html.includes('id="crmRelationshipTitle"') && html.includes('id="crmRelationshipForm"'), "Smart CRM must expose its relationship hub");
 assert.ok(app.includes("window.VEXTCRMAdvanced.init"), "Smart CRM relationship intelligence must initialize");
 assert.ok(app.includes("window.VEXTCRMAdvanced.render()"), "Smart CRM relationship metrics must refresh with workspace renders");
