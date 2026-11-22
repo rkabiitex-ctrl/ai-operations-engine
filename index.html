@@ -133,74 +133,34 @@
 </div>
 
 <section class="page active" id="dashboard">
- <section class="mission-control card" aria-labelledby="missionControlTitle">
-  <div class="mission-control-head">
-   <div><span class="mission-control-kicker">VEXT NEXUS / INTELLIGENCE COMMAND</span><h2 id="missionControlTitle">NEXUS MISSION CONTROL</h2><p>Monitor assignments, review decisions and track completed work.</p></div>
-   <button class="secondary" type="button" onclick="navigate('nexus')">Open NEXUS <span aria-hidden="true">→</span></button>
-  </div>
+ <section class="command-hero" aria-label="VEXT AI global command centre">
+  <div class="command-hero-copy"><span class="command-eyebrow">VEXT AI · GLOBAL INTELLIGENCE NETWORK</span><h2>Intelligence Without Limits.</h2><p>Your business command centre. Monitor performance, coordinate intelligent work and move forward with clarity.</p><div class="command-hero-status"><span class="command-status-dot"></span> WORKSPACE ONLINE <span class="command-status-divider">/</span> GLOBAL EDITION</div></div>
+  <div class="command-globe" aria-hidden="true"><div class="command-globe-ring ring-one"></div><div class="command-globe-ring ring-two"></div><div class="command-globe-core">V</div><span class="globe-node node-one"></span><span class="globe-node node-two"></span><span class="globe-node node-three"></span></div>
+ </section>
+ <section class="mission-control command-mission card" aria-labelledby="missionControlTitle">
+  <div class="mission-control-head"><div><span class="mission-control-kicker">VEXT NEXUS / INTELLIGENCE COMMAND</span><h2 id="missionControlTitle">NEXUS MISSION CONTROL</h2><p>Coordinate specialist assignments. Review decisions. Track completed work.</p></div><button class="secondary" type="button" onclick="navigate('nexus')">OPEN NEXUS <span aria-hidden="true">→</span></button></div>
   <div class="mission-control-metrics">
    <article class="mission-metric mission-active"><div class="mission-metric-top"><span class="mission-metric-icon active">↗</span><span class="mission-metric-label">IN PROGRESS</span></div><strong id="missionActiveCount">0</strong><span class="mission-metric-name">Active assignments</span><small>Specialists currently working</small></article>
-   <article class="mission-metric mission-review"><div class="mission-metric-top"><span class="mission-metric-icon review">◷</span><span class="mission-metric-label">YOUR DECISION</span></div><strong id="missionReviewCount">0</strong><span class="mission-metric-name">Awaiting your approval</span><small>Drafts ready for your review</small></article>
-   <article class="mission-metric mission-done"><div class="mission-metric-top"><span class="mission-metric-icon done">✓</span><span class="mission-metric-label">TODAY</span></div><strong id="missionCompletedCount">0</strong><span class="mission-metric-name">Completed today</span><small>Assignments with a result today</small></article>
+   <article class="mission-metric mission-review"><div class="mission-metric-top"><span class="mission-metric-icon review">◷</span><span class="mission-metric-label">AWAITING REVIEW</span></div><strong id="missionReviewCount">0</strong><span class="mission-metric-name">Your decision</span><small>Drafts ready for your approval</small></article>
+   <article class="mission-metric mission-done"><div class="mission-metric-top"><span class="mission-metric-icon done">✓</span><span class="mission-metric-label">COMPLETED TODAY</span></div><strong id="missionCompletedCount">0</strong><span class="mission-metric-name">Completed assignments</span><small>Results recorded today</small></article>
   </div>
   <div class="mission-control-lower">
-   <section class="mission-control-recent"><div class="mission-recent-heading"><div><span class="mission-section-kicker">LIVE WORKSPACE</span><h3>Recent activity</h3></div><span id="missionRecentLabel">No assignments yet</span></div><div id="missionRecentList" class="mission-recent-list"><div class="mission-empty">Your NEXUS assignments will appear here.</div></div></section>
-   <section class="mission-quick-actions"><span class="mission-section-kicker">MOVE WORK FORWARD</span><h3>Quick actions</h3><button type="button" onclick="navigate('nexus')"><span class="mission-action-icon">✧</span><span><strong>Assign a NEXUS task</strong><small>Put a specialist to work</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('leads')"><span class="mission-action-icon">◎</span><span><strong>Add a client</strong><small>Save a customer record</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('invoices')"><span class="mission-action-icon">▤</span><span><strong>Create an invoice</strong><small>Prepare a new invoice</small></span><span class="mission-action-arrow">→</span></button></section>
+   <section class="mission-control-recent"><div class="mission-recent-heading"><div><span class="mission-section-kicker">NEXUS ACTIVITY</span><h3>Latest assignments</h3></div><span id="missionRecentLabel">No assignments yet</span></div><div id="missionRecentList" class="mission-recent-list"><div class="mission-empty">Your NEXUS assignments will appear here.</div></div></section>
+   <section class="mission-quick-actions"><span class="mission-section-kicker">TAKE ACTION</span><h3>Quick actions</h3><button type="button" onclick="navigate('nexus')"><span class="mission-action-icon">✧</span><span><strong>Assign a NEXUS task</strong><small>Activate an AI specialist</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('leads')"><span class="mission-action-icon">◎</span><span><strong>Add a client</strong><small>Build your client pipeline</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('invoices')"><span class="mission-action-icon">▤</span><span><strong>Create an invoice</strong><small>Prepare a client invoice</small></span><span class="mission-action-arrow">→</span></button><button type="button" onclick="navigate('ai')"><span class="mission-action-icon">◈</span><span><strong>Open AI workspace</strong><small>Work with VEXT AI</small></span><span class="mission-action-arrow">→</span></button></section>
   </div>
  </section>
- <div class="stats">
-  <div class="card">
-   <div class="stat-title">Total clients</div>
-   <div class="stat-number" id="statLeads">0</div>
-   <div class="stat-foot">Registered leads</div>
-  </div>
-  <div class="card">
-   <div class="stat-title">Invoices</div>
-   <div class="stat-number" id="statInvoices">0</div>
-   <div class="stat-foot">Documents created</div>
-  </div>
-  <div class="card">
-   <div class="stat-title">Total invoiced</div>
-   <div class="stat-number blue" id="statRevenue">$0.00</div>
-   <div class="stat-foot">Based on selected currency display</div>
-  </div>
-  <div class="card">
-   <div class="stat-title">Paid invoices</div>
-   <div class="stat-number green" id="statPaid">0</div>
-   <div class="stat-foot">Marked as paid</div>
-  </div>
+ <div class="command-section-heading"><div><span class="dashboard-eyebrow">BUSINESS PERFORMANCE</span><h2>Workspace overview</h2></div><span class="dashboard-live-dot">● LIVE WORKSPACE DATA</span></div>
+ <div class="stats command-stats">
+  <article class="card command-stat-card"><div class="command-stat-icon">◎</div><div class="stat-title">TOTAL CLIENTS</div><div class="stat-number" id="statLeads">0</div><div class="stat-foot">Registered client records</div></article>
+  <article class="card command-stat-card"><div class="command-stat-icon">▤</div><div class="stat-title">INVOICES CREATED</div><div class="stat-number" id="statInvoices">0</div><div class="stat-foot">Documents in this workspace</div></article>
+  <article class="card command-stat-card"><div class="command-stat-icon">↗</div><div class="stat-title">TOTAL INVOICED</div><div class="stat-number blue" id="statRevenue">$0.00</div><div class="stat-foot">Selected currency only</div></article>
+  <article class="card command-stat-card"><div class="command-stat-icon paid">✓</div><div class="stat-title">PAID INVOICES</div><div class="stat-number green" id="statPaid">0</div><div class="stat-foot">Marked as paid</div></article>
  </div>
- <div class="dashboard-insights">
-  <div class="card">
-   <div class="dashboard-card-heading"><div><span class="dashboard-eyebrow">BUSINESS OVERVIEW</span><h2>Sales snapshot</h2></div><span class="dashboard-live-dot">● Live workspace data</span></div>
-   <div id="dashboardSalesSnapshot" class="dashboard-snapshot"></div>
-  </div>
-  <div class="card">
-   <div class="dashboard-card-heading"><div><span class="dashboard-eyebrow">CUSTOMER RELATIONSHIPS</span><h2>Recently added clients</h2></div><button class="secondary" onclick="navigate('leads')">View clients</button></div>
-   <div id="dashboardRecentClients" class="dashboard-recent-list"></div>
-  </div>
- </div>
- <div class="grid">
-  <div class="card">
-   <h2>Welcome to VEXT AI</h2>
-   <p class="muted">Manage your business operations from one place.</p>
-   <div class="action-row">
-    <button class="primary" onclick="navigate('leads')">+ Add a client</button>
-    <button class="secondary" onclick="navigate('invoices')">Create invoice</button>
-    <button class="secondary" onclick="navigate('ai')">Open AI workspace</button>
-   </div>
-   <hr style="border-color:var(--line);margin:25px 0">
-   <h3>Platform capabilities</h3>
-   <p class="muted small">Customer records, invoices, business documents and analytics.</p>
-   <div class="notice">Your signed-in workspace syncs supported business records to your account. Some prototype features may still store information locally.</div>
-  </div>
-  <div class="card">
-   <h2>Recent activity</h2>
-   <div id="activityFeed"></div>
-  </div>
+ <div class="command-lower-grid">
+  <section class="card command-activity-card"><div class="dashboard-card-heading"><div><span class="dashboard-eyebrow">WORKSPACE LOG</span><h2>Recent activity</h2></div><span class="dashboard-live-dot">● LATEST EVENTS</span></div><div id="activityFeed" class="command-activity-table" role="table" aria-label="Recent workspace activity"><div class="command-activity-empty">No activity recorded yet.</div></div></section>
+  <section class="card command-quick-card"><span class="dashboard-eyebrow">YOUR WORKSPACE</span><h2>Business snapshot</h2><div id="dashboardSalesSnapshot" class="dashboard-snapshot"></div><div class="command-client-heading"><h3>Recently added clients</h3><button class="secondary" onclick="navigate('leads')">View all →</button></div><div id="dashboardRecentClients" class="dashboard-recent-list"></div></section>
  </div>
 </section>
-
 
 <section class="page" id="nexus">
  <div class="nexus-hero"><div><span class="nexus-kicker">VEXT AI / CENTRAL INTELLIGENCE</span><h2>Meet VEXT NEXUS.</h2><p>One command centre for specialised AI employees. Assign a task, choose the right specialist and review the work before using it. NEXUS uses your existing VEXT AI intelligence service.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:17px"><span class="pill">✦ AI coordination</span><span class="pill">Human review</span><span class="pill">Private workspace</span></div></div><div class="nexus-orb" aria-hidden="true">✧</div></div>
