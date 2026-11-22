@@ -11,6 +11,7 @@ const crm = readFileSync("assets/js/features/crm.js", "utf8");
 const management = readFileSync("assets/js/features/management.js", "utf8");
 const automation = readFileSync("assets/js/features/automation.js", "utf8");
 const salesIntelligence = readFileSync("assets/js/features/sales-intelligence.js", "utf8");
+const crmAdvanced = readFileSync("assets/js/features/crm-advanced.js", "utf8");
 const salesIntelligenceCss = readFileSync("assets/css/sales-intelligence.css", "utf8");
 const lifeSuite = readFileSync("assets/js/features/life-suite.js", "utf8");
 const lifeCss = readFileSync("assets/css/life-suite.css", "utf8");
@@ -50,6 +51,15 @@ assert.ok(html.indexOf("./assets/js/core/utils.js") < html.indexOf("./assets/js/
 assert.ok(html.indexOf("./assets/js/features/crm.js") < html.indexOf("./assets/js/app.js"), "CRM module must load before the application");
 assert.ok(crm.includes("function renderLeads"), "CRM module must contain the customer directory renderer");
 assert.ok(crm.includes("function renderClientProfile"), "CRM module must contain the customer profile renderer");
+assert.match(html, /features\/crm-advanced\.js" defer/, "Smart CRM relationship module must load");
+assert.ok(html.includes('id="crmRelationshipTitle"') && html.includes('id="crmRelationshipForm"'), "Smart CRM must expose its relationship hub");
+assert.ok(app.includes("window.VEXTCRMAdvanced.init"), "Smart CRM relationship intelligence must initialize");
+assert.ok(app.includes("window.VEXTCRMAdvanced.render()"), "Smart CRM relationship metrics must refresh with workspace renders");
+assert.ok(crmAdvanced.includes("client.segment="), "Smart CRM must support customer segmentation");
+assert.ok(crmAdvanced.includes("client.preferredChannel="), "Smart CRM must store preferred contact channels");
+assert.ok(crmAdvanced.includes("client.activityLog.push"), "Smart CRM must record relationship interactions in the activity timeline");
+assert.ok(crmAdvanced.includes("lastInteractionAt"), "Smart CRM must track last interaction for relationship insights");
+
 assert.ok(!app.includes("function renderLeads"), "CRM renderer must not remain duplicated in app.js");
 assert.ok(html.indexOf("./assets/js/app.js") < html.indexOf("./assets/js/auth.js"), "Application script must load before auth initialization");
 assert.doesNotMatch(html, /<style>/i, "Styles must not be embedded in index.html");
