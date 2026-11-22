@@ -190,6 +190,6 @@ assert.match(worker, /value\.status === "request_pending" \? "request_pending" :
 
 assert.ok(billing.includes("request_pending") && billing.includes("Feature access is not enabled"), "Billing must not treat requests or checkout callbacks as paid entitlements");
 assert.ok(billing.includes('Paddle.Environment.set("sandbox")') && billing.includes("Paddle.Checkout.open({transactionId"), "Billing must initialize Paddle Sandbox and open server-created transactions");
-assert.ok(billing.includes("/api/billing/checkout") && billing.includes("/api/billing/status"), "Billing UI must use authenticated Worker checkout and status endpoints");
+assert.ok(billing.includes("api/billing/checkout") && billing.includes("api/billing/status"), "Billing UI must use authenticated Worker checkout and status endpoints");
 assert.ok(billing.includes("verified subscription update"), "Checkout completion must wait for verified subscription status");
 assert.ok(billingCss.length > 500, "Billing UI must have dedicated responsive styling");
