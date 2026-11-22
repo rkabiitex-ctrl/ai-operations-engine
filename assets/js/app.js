@@ -229,9 +229,9 @@ function navigate(page){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".nav[data-page]").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  const target=$(page);if(!target)return;target.classList.add("active");
- const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","customer-support":"AI Customer Support Desk",marketing:"VEXT Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre",life:"VEXT LIFE · Personal Intelligence"};
+ const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","sales-intelligence":"Sales Intelligence","customer-support":"AI Customer Support Desk",marketing:"VEXT Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre",life:"VEXT LIFE · Personal Intelligence"};
  $("pageTitle").textContent=titles[page]||(page==="notifications"?"Notification Centre":"VEXT AI");
- if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
+ if(page==="sales-intelligence")vextSalesIntelligence.render();if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
 }
 applyVextWorkspace("business");
 document.querySelectorAll(".nav[data-page]").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
@@ -524,7 +524,7 @@ const vextAnalytics = window.VEXTAnalytics.init({
 const renderAnalytics = () => vextAnalytics.renderAnalytics();
 const renderAnalystHistory = () => vextAnalytics.renderAnalystHistory();
 const vextNotifications = window.VEXTNotifications.init({ $, read, write, navigate });
-const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });
+const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });\nconst vextSalesIntelligence = window.VEXTSalesIntelligence.init({ $, read, navigate });
 const vextAutomation = window.VEXTAutomation.init({ $, read, write, writeAndSync, id, log });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
