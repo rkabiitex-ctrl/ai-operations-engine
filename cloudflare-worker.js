@@ -4,7 +4,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jOxJl50SORuiYbTZ2Gq7yw_KiySZ56e
 const DEFAULT_MODEL = "gpt-6-astra";
 
 function isDashboardPath(path) {
-  return path === "/" || path === "/api/chat" || path.startsWith("/api/admin/");
+  return path === "/" || path === "/api/chat" || path === "/api/billing/checkout" || path === "/api/billing/status" || path.startsWith("/api/admin/");
 }
 
 function headersFor(path) {
@@ -85,7 +85,49 @@ async function callAI(env, instructions, input, maxOutputTokens = 700) {
   return reply.trim();
 }
 
-function checkWebsiteOrigin(request, website) {
+
+const PADDLE_PRICE_MAP = {
+ "pri_01m81ctxbshk75rmh3etwkb5yd": {plan:"Starter",period:"monthly"},
+ "pri_01m81d5thh8va7r1w2k8dh9npm": {plan:"Starter",period:"yearly"},
+ "pri_01m81dhxp5adphpthn3dtqrcpc": {plan:"Professional",period:"monthly"},
+ "pri_01m81dpr7xav513e0z80796p48": {plan:"Professional",period:"yearly"}
+};
+async function verifyPaddleSignature(raw, header, secret) {
+ if (!header || !secret) return false;
+ const parts = {};
+ for (const part of header.split(";")) { const at=part.indexOf("="); if(at>0) parts[part.slice(0,at).trim()]=part.slice(at+1).trim(); }
+ if (!parts.ts || !parts.h1 || !/^\\d+$/.test(parts.ts)) return false;
+ if (Math.abs(Date.now()/1000-Number(parts.ts))>300) return false;
+ const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+ const bytes=new Uint8Array(await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(parts.ts+":"+raw)));
+ const expected=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+ if(expected.length!==parts.h1.length)return false;
+ let diff=0;for(let i=0;i<expected.length;i++)diff|=expected.charCodeAt(i)^parts.h1.charCodeAt(i);
+ return diff===0;
+}
+async function handlePaddleWebhook(request,env) {
+ if(!env.VEXT_DB||!env.PADDLE_WEBHOOK_SECRET)return json({error:"Billing webhook is not configured."},503);
+ const raw=await request.text();if(raw.length>200000)return json({error:"Webhook payload too large."},413);
+ if(!await verifyPaddleSignature(raw,request.headers.get("Paddle-Signature"),env.PADDLE_WEBHOOK_SECRET))return json({error:"Invalid webhook signature."},401);
+ let event;try{event=JSON.parse(raw)}catch{return json({error:"Invalid webhook JSON."},400)}
+ const eventId=clean(event&&event.event_id,80),type=clean(event&&event.event_type,80),data=event&&event.data;
+ if(!eventId||!type||!data)return json({error:"Incomplete webhook event."},400);
+ const types=["subscription.created","subscription.updated","subscription.activated","subscription.trialing","subscription.past_due","subscription.paused","subscription.resumed","subscription.canceled"];
+ if(!types.includes(type))return json({ok:true,ignored:true},200);
+ const userId=clean(data.custom_data&&data.custom_data.vext_user_id,80),subId=clean(data.id,80);
+ if(!userId||!subId.startsWith("sub_"))return json({error:"Missing VEXT account reference."},400);
+ const first=Array.isArray(data.items)?data.items[0]:null,priceId=clean(first&&first.price&&first.price.id,80),plan=PADDLE_PRICE_MAP[priceId];
+ if(!plan)return json({error:"Unrecognised VEXT price."},400);
+ const now=new Date().toISOString();
+ try{
+  const inserted=await env.VEXT_DB.prepare("INSERT OR IGNORE INTO billing_webhook_events (event_id,event_type,received_at) VALUES (?,?,?)").bind(eventId,type,now).run();
+  if(inserted.meta&&inserted.meta.changes===0)return json({ok:true,duplicate:true},200);
+  const status=["active","trialing","past_due","paused","canceled"].includes(data.status)?data.status:"inactive";
+  await env.VEXT_DB.prepare("INSERT INTO billing_subscriptions (owner_user_id,paddle_customer_id,paddle_subscription_id,plan,billing_period,price_id,status,next_billed_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(owner_user_id) DO UPDATE SET paddle_customer_id=excluded.paddle_customer_id,paddle_subscription_id=excluded.paddle_subscription_id,plan=excluded.plan,billing_period=excluded.billing_period,price_id=excluded.price_id,status=excluded.status,next_billed_at=excluded.next_billed_at,updated_at=excluded.updated_at").bind(userId,clean(data.customer_id,80),subId,plan.plan,plan.period,priceId,status,clean(data.next_billed_at,40),now).run();
+  return json({ok:true},200);
+ }catch(error){await env.VEXT_DB.prepare("DELETE FROM billing_webhook_events WHERE event_id=?").bind(eventId).run().catch(()=>{});throw error}
+}
+\nfunction checkWebsiteOrigin(request, website) {
   const origin = request.headers.get("Origin");
   if (!website || !origin) return null;
   try {
@@ -117,7 +159,29 @@ export default {
         return json({ ok: true, service: "VEXT AI Support API" }, 200, cors);
       }
 
-      const needsUser = ((path === "/" || path === "/api/chat") && request.method === "POST")
+
+      if (path === "/api/billing/webhook" && request.method === "POST") return await handlePaddleWebhook(request,env);
+      if (path === "/api/billing/checkout" && request.method === "POST") {
+        if(request.headers.get("Origin")!==DASHBOARD_ORIGIN)return json({error:"Dashboard origin not allowed."},403,cors);
+        const billingUser=await authenticateUser(request);
+        if(!billingUser)return json({error:"Your VEXT AI session is missing or expired. Please sign in again."},401,cors);
+        if(!env.PADDLE_API_KEY)return json({error:"Paddle Sandbox API key is not configured."},503,cors);
+        const body=await readJson(request),priceId=clean(body&&body.priceId,80),selected=PADDLE_PRICE_MAP[priceId];
+        if(!selected)return json({error:"Choose a valid VEXT AI plan and billing period."},400,cors);
+        const response=await fetch("https://sandbox-api.paddle.com/transactions",{method:"POST",headers:{"Authorization":"Bearer "+env.PADDLE_API_KEY,"Content-Type":"application/json","Paddle-Version":"1"},body:JSON.stringify({items:[{price_id:priceId,quantity:1}],collection_mode:"automatic",custom_data:{vext_user_id:billingUser.id,plan:selected.plan,billing_period:selected.period}})});
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok||!result.data||!result.data.id)return json({error:"Paddle could not create checkout. "+clean(result.error&&result.error.detail,300)},502,cors);
+        return json({transactionId:result.data.id,plan:selected.plan,billingPeriod:selected.period},200,cors);
+      }
+      if (path === "/api/billing/status" && request.method === "GET") {
+        if(request.headers.get("Origin")!==DASHBOARD_ORIGIN)return json({error:"Dashboard origin not allowed."},403,cors);
+        const billingUser=await authenticateUser(request);
+        if(!billingUser)return json({error:"Your VEXT AI session is missing or expired. Please sign in again."},401,cors);
+        if(!env.VEXT_DB)return json({error:"Billing database is not configured."},503,cors);
+        const row=await env.VEXT_DB.prepare("SELECT plan,billing_period,status,next_billed_at,updated_at FROM billing_subscriptions WHERE owner_user_id=?").bind(billingUser.id).first();
+        return json({subscription:row?{plan:row.plan,billingPeriod:row.billing_period,status:row.status,nextBilledAt:row.next_billed_at,updatedAt:row.updated_at}:{plan:"none",billingPeriod:"monthly",status:"inactive",nextBilledAt:null}},200,cors);
+      }
+\n      const needsUser = ((path === "/" || path === "/api/chat") && request.method === "POST")
         || path.startsWith("/api/admin/");
       let user = null;
       if (needsUser) {
