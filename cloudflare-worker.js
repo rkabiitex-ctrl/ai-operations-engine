@@ -210,7 +210,15 @@ export default {
               workspace[key] = value;
             } else if (key === "automation_settings") {
               if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "automation_settings must be an object." }, 400, cors);
-              workspace[key] = { newLeadFollowup: value.newLeadFollowup === true, updatedAt: clean(value.updatedAt, 40) };
+              workspace[key] = {
+                newLeadFollowup: value.newLeadFollowup === true,
+                workflowEnabled: value.workflowEnabled === true || value.newLeadFollowup === true,
+                condition: ["any", "has_interest", "high_value"].includes(value.condition) ? value.condition : "any",
+                steps: Array.isArray(value.steps) ? value.steps.filter(step => ["create_task", "log_activity"].includes(step)).slice(0, 2) : (value.newLeadFollowup ? ["create_task"] : []),
+                requireApproval: value.requireApproval !== false,
+                maxRetries: Number.isInteger(value.maxRetries) ? Math.min(2, Math.max(0, value.maxRetries)) : 2,
+                updatedAt: clean(value.updatedAt, 40)
+              };
             } else if (key === "active_chat_id") {
               workspace[key] = clean(value, 100);
             } else if (key === "support_settings") {

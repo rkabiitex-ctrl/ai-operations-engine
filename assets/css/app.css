@@ -674,3 +674,12 @@ button:focus-visible,.nav:focus-visible{outline:2px solid #67d5f0;outline-offset
 .crm-relationship-editor .field{margin-bottom:12px}
 .crm-relationship-editor textarea{width:100%;resize:vertical}
 @media(max-width:760px){.crm-relationship-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.crm-relationship-grid{grid-template-columns:1fr}}
+
+/* Advanced Automation Network */
+.automation-builder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:15px 0}
+.automation-builder-grid>div{min-width:0}.automation-builder-grid label,.automation-step-list>strong{display:block;margin-bottom:7px;color:#a9bdd0;font-size:11px;font-weight:800}
+.automation-builder-grid select{width:100%;min-height:42px;padding:9px 11px;border:1px solid rgba(91,148,188,.28);border-radius:8px;background:#09182a;color:#e3f3ff}
+.automation-step-list{display:grid;gap:11px;padding:15px;border:1px solid rgba(91,148,188,.18);border-radius:10px;background:rgba(5,15,28,.35)}
+.automation-step-list label{display:flex;align-items:center;gap:10px;color:#c4d5e6;font-size:12px}.automation-step-list input,.automation-toggle-row input{accent-color:#28b9e8}
+.automation-run-row>div{display:grid;gap:5px;min-width:0}.automation-run-row small{line-height:1.5;overflow-wrap:anywhere}.automation-run-row button{align-self:center;white-space:nowrap}
+@media(max-width:600px){.automation-builder-grid{grid-template-columns:1fr}.automation-run-row{align-items:flex-start}.automation-run-row button{align-self:flex-start}}
