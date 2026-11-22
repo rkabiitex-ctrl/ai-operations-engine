@@ -175,12 +175,15 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
             const value = body.workspace[key];
-            if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"].includes(key)) {
+            if (key === "marketing_drafts") {
+               if (!Array.isArray(value) || value.length > 30) return json({ error: "marketing_drafts must be an array of up to 30 drafts." }, 400, cors);
+               workspace[key] = value.map(draft => ({ title: clean(draft && draft.title, 100), content: clean(draft && draft.content, 30000), createdAt: clean(draft && draft.createdAt, 40) })).filter(draft => draft.content);
+             } else if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"].includes(key)) {
               if (!Array.isArray(value)) return json({ error: key + " must be an array." }, 400, cors);
               const maxItems = key === "nexus_tasks" ? 100 : key === "management_actions" ? 1000 : (key === "chat_history" || key === "audit_reports" || key === "business_analysis_reports") ? 50 : key === "notifications" ? 150 : 5000;
               if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
