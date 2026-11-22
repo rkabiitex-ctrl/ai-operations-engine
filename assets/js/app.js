@@ -745,6 +745,7 @@ window.vextActivateUserData=async function(user){
   $("supportBusinessId").textContent=supportBusinessId;
   $("supportWidgetCode").value="";
   renderChatHistory();renderSupportChat();render();
+  if(typeof window.VEXTLifeRefresh==="function")window.VEXTLifeRefresh();
   if(typeof vextNotifications!=="undefined")vextNotifications.resetBaseline();
   if(!hasRemote)await syncWorkspaceNow();
   else if(recoveredMissingFields){
