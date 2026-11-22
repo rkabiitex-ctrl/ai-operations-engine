@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="./assets/css/app.css">
 <link rel="stylesheet" href="./assets/css/life-suite.css">
 <link rel="stylesheet" href="./assets/css/sales-intelligence.css">
+<link rel="stylesheet" href="./assets/css/billing.css">
 
 </head>
 <body>
@@ -673,79 +674,26 @@
 </section>
 
 <section class="page" id="pricing">
- <div class="card">
-  <div class="pricing-intro">
-   <div>
-    <span class="plan-tag">Simple, transparent plans</span>
-    <h2 style="font-size:25px;margin:10px 0">Choose the right engine for your business.</h2>
-    <p class="muted small">Start small, grow with confidence, and upgrade when your operations need more power.</p>
-   </div>
-   <div>
-    <div class="billing-switch" role="group" aria-label="Billing period">
-     <button type="button" class="active" data-billing="monthly">Monthly</button>
-     <button type="button" data-billing="yearly">Yearly · 2 months free</button>
-    </div>
-   </div>
-  </div>
-  <div class="pricing-grid">
-   <article class="plan-card">
-    <span class="plan-tag">Try VEXT AI</span>
-    <div class="plan-name">Starter</div>
-    <div class="plan-description">A simple starting point for small businesses ready to organise everyday operations.</div>
-    <div class="plan-price" data-monthly="$19" data-yearly="$190">$19</div>
-    <div class="plan-period">per month after 7-day free trial</div>
-    <div class="plan-save">7-day free trial included</div>
-    <ul class="plan-features">
-     <li>Business dashboard</li>
-     <li>AI workspace access</li>
-     <li>Client and invoice management</li>
-     <li>Business activity overview</li>
-    </ul>
-    <button class="secondary" type="button" data-plan="Starter">Start 7-day free trial</button>
-   </article>
-   <article class="plan-card featured">
-    <span class="plan-tag">Advanced business tools</span>
-    <div class="plan-name">Professional</div>
-    <div class="plan-description">For growing businesses that need advanced AI assistance and customer workflows.</div>
-    <div class="plan-price" data-monthly="$49" data-yearly="$490">$49</div>
-    <div class="plan-period">per month</div>
-    <div class="plan-save" data-saving="Annual billing: $490 per year — save $98"> </div>
-    <ul class="plan-features">
-     <li>Everything in Starter</li>
-     <li>AI customer support tools</li>
-     <li>Cloud enquiry collection</li>
-     <li>Business analytics</li>
-     <li>Priority support (planned)</li>
-    </ul>
-    <button class="primary" type="button" data-plan="Professional">Choose Professional</button>
-   </article>
-   <article class="plan-card">
-    <span class="plan-tag">For larger organisations</span>
-    <div class="plan-name">Enterprise</div>
-    <div class="plan-description">For larger organisations that need tailored deployment, integrations and support.</div>
-    <div class="plan-price" data-monthly="Custom" data-yearly="Custom">Custom</div>
-    <div class="plan-period">Talk to our team</div>
-    <div class="plan-save">Tailored to your organisation</div>
-    <ul class="plan-features">
-     <li>Everything in Professional</li>
-     <li>Custom onboarding (planned)</li>
-     <li>Team and access controls (planned)</li>
-     <li>Custom usage and support options</li>
-    </ul>
-    <button class="secondary" type="button" data-plan="Enterprise">Contact sales</button>
-   </article>
-  </div>
-  <div class="pricing-footnote"><strong>Proposed launch pricing:</strong> Starter is $19/month after a 7-day free trial, or $190/year. Professional is $49/month, or $490/year. Annual plans are priced at 10 months, giving 2 months free. Enterprise pricing is customised. Secure checkout, plan limits, trial rules and subscription management must be connected before customers can sign up or be charged.</div>
-  <p class="muted small" id="pricingActionStatus" role="status" style="margin-top:14px">Select a plan to see the next step. Secure checkout will be added after payment integration.</p>
+ <div class="billing-hero"><div><span class="billing-kicker">VEXT AI / PLANS & BILLING</span><h2>Choose the right engine for your business.</h2><p>Transparent USD pricing, clear plan limits and one place to manage your subscription.</p></div><div class="billing-hero-mark">＄</div></div>
+ <section class="billing-current card" aria-labelledby="billingCurrentTitle">
+  <div class="billing-section-heading"><div><span class="billing-kicker">YOUR ACCOUNT</span><h3 id="billingCurrentTitle">Subscription overview</h3></div><span class="billing-status" id="billingStatus">NO ACTIVE PLAN</span></div>
+  <div class="billing-current-grid"><div><small>CURRENT PLAN</small><strong id="billingCurrentPlan">No active plan</strong></div><div><small>SUBSCRIPTION STATUS</small><strong id="billingCurrentState">Not subscribed</strong></div><div><small>NEXT BILLING DATE</small><strong id="billingNextDate">—</strong></div><div><small>PAYMENT PROVIDER</small><strong id="billingProviderState">Not connected</strong></div></div>
+  <p class="billing-note" id="billingAccountNote">Your account is not subscribed. Choose a plan below to submit a request. A request does not activate a trial or charge your account.</p>
+ </section>
+ <div class="pricing-intro"><div><span class="billing-kicker">SIMPLE, TRANSPARENT PLANS</span><h3>Plans built to scale with you</h3><p class="muted small">All public prices are shown in US dollars. The Starter plan includes a one-day trial request.</p></div><div class="billing-switch" role="group" aria-label="Billing period"><button type="button" class="active" data-billing="monthly" aria-pressed="true">Monthly</button><button type="button" data-billing="yearly" aria-pressed="false">Yearly · 2 months free</button></div></div>
+ <div class="pricing-grid">
+  <article class="plan-card"><span class="plan-tag">For getting started</span><div class="plan-name">Starter</div><div class="plan-description">The essential workspace for small businesses organising daily operations.</div><div class="plan-price" data-monthly="$19" data-yearly="$190">$19</div><div class="plan-period">per month</div><div class="plan-save" data-saving="Annual billing · $190/year · save $38"></div><ul class="plan-features"><li>Business dashboard</li><li>AI workspace</li><li>Client and invoice management</li><li>Business activity overview</li><li>Core NEXUS tools</li></ul><button class="secondary" type="button" data-plan="Starter">Request 1-day trial</button></article>
+  <article class="plan-card featured"><span class="plan-tag">Most popular</span><div class="plan-name">Professional</div><div class="plan-description">Advanced AI assistance, sales workflows and deeper business insight.</div><div class="plan-price" data-monthly="$49" data-yearly="$490">$49</div><div class="plan-period">per month</div><div class="plan-save" data-saving="Annual billing · $490/year · save $98"></div><ul class="plan-features"><li>Everything in Starter</li><li>AI customer support tools</li><li>Cloud enquiry collection</li><li>Sales Intelligence and Smart CRM</li><li>Marketing Studio and Automation Network</li><li>Business analytics</li></ul><button class="primary" type="button" data-plan="Professional">Request Professional</button></article>
+  <article class="plan-card"><span class="plan-tag">For larger organisations</span><div class="plan-name">Enterprise</div><div class="plan-description">Tailored requirements for organisations with advanced deployment needs.</div><div class="plan-price" data-monthly="Custom" data-yearly="Custom">Custom</div><div class="plan-period">custom quotation</div><div class="plan-save">Tailored to your organisation</div><ul class="plan-features"><li>Everything in Professional</li><li>Custom onboarding</li><li>Team and access controls</li><li>Custom usage and support options</li></ul><button class="secondary" type="button" data-plan="Enterprise">Request sales contact</button></article>
  </div>
- <div class="pricing-faq">
-  <div class="card"><h3>Can I change plans later?</h3><p class="muted small">The intended plan structure will allow businesses to upgrade as their needs grow. Plan changes will become available when subscriptions are implemented.</p></div>
-  <div class="card"><h3>Which currency are prices in?</h3><p class="muted small">The proposed public prices are in US dollars (USD), with international billing options to be confirmed before launch.</p></div>
-  <div class="card"><h3>Can my organisation get a custom plan?</h3><p class="muted small">Yes. The Enterprise tier is designed for tailored requirements. A sales contact workflow still needs to be connected.</p></div>
-  <div class="card"><h3>Are payments enabled now?</h3><p class="muted small">Not yet. Payment processing, recurring billing, receipts and subscription management are future implementation steps.</p></div>
+ <p class="billing-footnote">Proposed launch pricing: Starter $19/month or $190/year; Professional $49/month or $490/year. Annual pricing equals 10 monthly payments. Prices and plan limits must be confirmed before public launch. The one-day Starter trial is a request only until a payment provider and secure trial workflow are connected.</p>
+ <p id="pricingActionStatus" class="billing-action-status" role="status" aria-live="polite">Select a plan to submit a request. Checkout is not connected.</p>
+ <div class="billing-management-grid">
+  <section class="card"><div class="billing-section-heading"><div><span class="billing-kicker">BILLING RECORDS</span><h3>Billing history</h3></div></div><div id="billingHistory" class="billing-history"><p class="muted small">No billing records yet.</p></div><p class="billing-note">Only provider-confirmed payments will appear as paid invoices. Plan requests are not invoices or proof of payment.</p></section>
+  <section class="card"><div class="billing-section-heading"><div><span class="billing-kicker">PLAN ACCESS</span><h3>Feature access overview</h3></div></div><div id="billingEntitlements" class="billing-entitlements"></div><p class="billing-note">This is an informational preview only. Secure server-side feature enforcement will be enabled after subscription verification is connected.</p></section>
  </div>
+ <section class="card billing-provider-card"><div class="billing-section-heading"><div><span class="billing-kicker">SECURE CHECKOUT</span><h3>Payment provider connection</h3><p class="muted small">No card details are stored by VEXT AI. Checkout and recurring billing will be handled by a payment provider.</p></div><span class="billing-provider-state">NOT CONNECTED</span></div><div class="billing-provider-grid"><div><strong>Checkout</strong><span>Disabled until provider setup</span></div><div><strong>Webhooks</strong><span>Signature verification required</span></div><div><strong>Card data</strong><span>Never stored by VEXT AI</span></div><div><strong>Subscription status</strong><span>Provider-confirmed only</span></div></div></section>
 </section>
-
 
 
 <section class="page" id="automation">
@@ -854,6 +802,7 @@
 <script src="./assets/js/features/notifications.js" defer></script>
 <script src="./assets/js/features/intelligence.js" defer></script>
 <script src="./assets/js/features/automation.js" defer></script>
+<script src="./assets/js/features/billing.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 <script src="./assets/js/features/life.js" defer></script>
 <script src="./assets/js/features/life-suite.js" defer></script>

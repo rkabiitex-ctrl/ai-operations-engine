@@ -175,7 +175,7 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts", "life_tasks", "life_goals", "life_study", "life_career", "life_finance", "life_habits", "life_chat", "life_reflection", "life_budget"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts", "life_tasks", "life_goals", "life_study", "life_career", "life_finance", "life_habits", "life_chat", "life_reflection", "life_budget", "billing_subscription", "billing_events"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
@@ -195,6 +195,22 @@ export default {
             } else if (key === "life_reflection") {
               if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "life_reflection must be an object." }, 400, cors);
               workspace[key] = Object.fromEntries(Object.entries(value).slice(-60).map(([day, note]) => [clean(day, 10), clean(note, 1000)]).filter(([day, note]) => day && note));
+            } else if (key === "billing_subscription") {
+              if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "billing_subscription must be an object." }, 400, cors);
+              const status = value.status === "request_pending" ? "request_pending" : "inactive";
+              const plan = ["none", "Starter", "Professional", "Enterprise"].includes(value.plan) ? value.plan : "none";
+              const period = ["monthly", "yearly"].includes(value.billingPeriod) ? value.billingPeriod : "monthly";
+              workspace[key] = { plan, status, billingPeriod: period, requestedAt: clean(value.requestedAt, 40), provider: "not_connected", updatedAt: clean(value.updatedAt, 40) };
+            } else if (key === "billing_events") {
+              if (!Array.isArray(value) || value.length > 100) return json({ error: "billing_events must be an array of up to 100 records." }, 400, cors);
+              workspace[key] = value.map(event => ({
+                id: clean(event && event.id, 100),
+                type: ["trial_request", "plan_request", "enterprise_contact"].includes(event && event.type) ? event.type : "plan_request",
+                plan: ["Starter", "Professional", "Enterprise"].includes(event && event.plan) ? event.plan : "Starter",
+                billingPeriod: ["monthly", "yearly"].includes(event && event.billingPeriod) ? event.billingPeriod : "monthly",
+                status: "request_pending",
+                requestedAt: clean(event && event.requestedAt, 40)
+              })).filter(event => event.id && event.requestedAt);
             } else if (key === "life_budget") {
               if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "life_budget must be an object." }, 400, cors);
               const amount = Number(value.amount);
