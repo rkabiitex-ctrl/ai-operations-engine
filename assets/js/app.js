@@ -9,7 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","life_tasks","life_goals","life_study","life_career","life_finance","life_habits","life_chat","life_reflection","life_budget"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","life_tasks","life_goals","life_study","life_career","life_finance","life_habits","life_chat","life_reflection","life_budget","billing_subscription","billing_events"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -25,7 +25,7 @@ function workspaceSnapshot(){
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
   nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[]),
   automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[]),
-  life_tasks:read("life_tasks",[]), life_goals:read("life_goals",[]), life_study:read("life_study",[]), life_career:read("life_career",[]), life_finance:read("life_finance",[]), life_habits:read("life_habits",[]), life_chat:read("life_chat",[]), life_reflection:read("life_reflection",{}), life_budget:read("life_budget",{})
+  life_tasks:read("life_tasks",[]), life_goals:read("life_goals",[]), life_study:read("life_study",[]), life_career:read("life_career",[]), life_finance:read("life_finance",[]), life_habits:read("life_habits",[]), life_chat:read("life_chat",[]), life_reflection:read("life_reflection",{}), life_budget:read("life_budget",{}), billing_subscription:read("billing_subscription",{}), billing_events:read("billing_events",[])
  };
 }
 function getWorkspaceRecoveryHistory(){
@@ -231,7 +231,7 @@ function navigate(page){
  const target=$(page);if(!target)return;target.classList.add("active");
  const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","sales-intelligence":"Sales Intelligence","customer-support":"AI Customer Support Desk",marketing:"VEXT Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre",life:"VEXT LIFE · Personal Intelligence"};
  $("pageTitle").textContent=titles[page]||(page==="notifications"?"Notification Centre":"VEXT AI");
- if(page==="sales-intelligence")vextSalesIntelligence.render();if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
+ if(page==="pricing")vextBilling.render();if(page==="sales-intelligence")vextSalesIntelligence.render();if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
 }
 applyVextWorkspace("business");
 document.querySelectorAll(".nav[data-page]").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
@@ -308,22 +308,7 @@ $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCent
 $("openBusinessAnalyst").addEventListener("click",()=>{navigate("analytics");$("analystResult").innerHTML="";$("analystStatus").textContent="Choose a reporting period, then generate your business analysis.";});
 
 
-let pricingBilling="monthly";
-document.querySelectorAll("[data-billing]").forEach(button=>button.addEventListener("click",()=>{
- pricingBilling=button.dataset.billing;
- document.querySelectorAll("[data-billing]").forEach(item=>item.classList.toggle("active",item===button));
- document.querySelectorAll(".plan-price").forEach(price=>{price.textContent=price.dataset[pricingBilling]});
- document.querySelectorAll("[data-saving]").forEach(note=>{note.textContent=pricingBilling==="yearly"?note.dataset.saving:""});
- document.querySelectorAll(".plan-period").forEach((period,index)=>{if(index===0)period.textContent=pricingBilling==="yearly"?"per year after 7-day free trial":"per month after 7-day free trial";else if(index===1)period.textContent=pricingBilling==="yearly"?"per year":"per month";});
-}));
-document.querySelector("#pricing").addEventListener("click",event=>{
- const button=event.target.closest("[data-plan]");
- if(!button)return;
- const plan=button.dataset.plan;
- $("pricingActionStatus").textContent=plan==="Enterprise"
-  ?"Enterprise selected. A sales contact form will be connected before launch."
-  :plan+" selected. Account registration and secure checkout are not connected yet; no payment has been taken.";
-});
+// Pricing, plan requests, billing records and entitlement previews are handled by VEXTBilling.
 
 
 const VEXT_CHAT_ENDPOINT="https://flat-star-50c3.rkabiitex.workers.dev/";
@@ -527,6 +512,7 @@ const vextNotifications = window.VEXTNotifications.init({ $, read, write, naviga
 const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });
 const vextSalesIntelligence = window.VEXTSalesIntelligence.init({ $, read, navigate });
 const vextAutomation = window.VEXTAutomation.init({ $, read, write, writeAndSync, id, log });
+const vextBilling = window.VEXTBilling.init({ $, read, write, writeAndSync, navigate });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
   const tasks=Array.isArray(all)?all:[];
