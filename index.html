@@ -350,7 +350,26 @@
    <div class="marketing-guardrail"><strong>Human approval and accuracy</strong><p>VEXT does not publish ads, spend money or contact customers. Verify product claims, prices, targeting, usage rights, budget and platform policies before launch. No testimonials, statistics or guaranteed results are invented.</p></div>
   </section>
  </div>
- <section class="card marketing-library-card"><div class="marketing-section-heading"><div><span class="dashboard-eyebrow">03 / CAMPAIGN LIBRARY</span><h2>Saved campaigns</h2><p class="muted small">Your saved campaign drafts follow your signed-in VEXT workspace across devices.</p></div></div><div id="marketingHistory" class="marketing-history notice">No saved campaigns yet.</div></section>
+ <section class="card marketing-video-studio-card">
+  <div class="marketing-section-heading"><div><span class="dashboard-eyebrow">03 / AI VIDEO STUDIO</span><h2>Create an actual video</h2><p class="muted small">Generate an MP4 from a written scene brief. Rendering uses paid provider credits.</p></div><span class="employee-state beta">AI RENDERING</span></div>
+  <div class="marketing-video-layout">
+   <div>
+    <label for="marketingVideoPrompt">Describe the video you want</label>
+    <textarea id="marketingVideoPrompt" rows="5" maxlength="2000" placeholder="Example: A premium cinematic advertisement for a modern smartphone. Close-up rotating product shot on a dark reflective surface, crisp studio highlights, smooth camera movement, elegant transitions, realistic materials, polished commercial look. Do not add text or logos that are not supplied."></textarea>
+    <div class="marketing-field-grid">
+     <div><label for="marketingVideoDuration">Video length</label><select id="marketingVideoDuration"><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="15">15 seconds</option></select></div>
+     <div><label for="marketingVideoAspect">Format</label><select id="marketingVideoAspect"><option value="9:16">Vertical · Reels / TikTok</option><option value="16:9">Widescreen · YouTube / website</option><option value="1:1">Square · Social feed</option></select></div>
+    </div>
+    <label class="marketing-video-audio"><input id="marketingVideoAudio" type="checkbox" checked> Generate native AI audio</label>
+    <button class="primary marketing-generate-button" id="generateMarketingVideo" type="button">Generate professional video</button>
+    <p class="chat-status" id="marketingVideoStatus" role="status" aria-live="polite">Video generation requires a fal.ai API key configured as a Cloudflare Worker secret. No render starts until you click Generate.</p>
+   </div>
+   <aside class="marketing-video-info"><strong>Professional video workflow</strong><p>Text-to-video rendering powered by Kling 3.0 Standard. Choose a format, duration and optional generated audio. Your finished MP4 appears in the library below.</p><p><strong>Cost protection:</strong> VEXT asks before every render and limits each account to 3 submitted renders per UTC day. Provider charges are separate from VEXT.</p><p><strong>Review before publishing:</strong> Check product accuracy, brand rights, generated audio and platform requirements. VEXT does not automatically publish videos.</p></aside>
+  </div>
+  <div class="marketing-video-library-heading"><strong>Generated video library</strong><span class="muted small">Saved to your signed-in workspace</span></div>
+  <div id="marketingVideoLibrary" class="marketing-video-library">No videos generated yet.</div>
+ </section>
+ <section class="card marketing-library-card"><div class="marketing-section-heading"><div><span class="dashboard-eyebrow">04 / CAMPAIGN LIBRARY</span><h2>Saved campaigns</h2><p class="muted small">Your saved campaign drafts follow your signed-in VEXT workspace across devices.</p></div></div><div id="marketingHistory" class="marketing-history notice">No saved campaigns yet.</div></section>
 </section>
 
 <section class="page" id="employees">

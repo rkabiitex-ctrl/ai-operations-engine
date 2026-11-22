@@ -2,6 +2,8 @@ const DASHBOARD_ORIGIN = "https://rkabiitex-ctrl.github.io";
 const SUPABASE_URL = "https://nakydtwssxlbtpocxmwh.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_jOxJl50SORuiYbTZ2Gq7yw_KiySZ56e";
 const DEFAULT_MODEL = "gpt-6-astra";
+const FAL_VIDEO_MODEL = "fal-ai/kling-video/v3/standard/text-to-video";
+const VIDEO_DAILY_LIMIT = 3;
 
 function isDashboardPath(path) {
   return path === "/" || path === "/api/chat" || path.startsWith("/api/admin/");
@@ -154,6 +156,72 @@ export default {
         return json({ reply }, 200, cors);
       }
 
+
+      if (path === "/api/admin/video/generate" && request.method === "POST") {
+        if (!env.VEXT_DB) return json({ error: "D1 database binding VEXT_DB is not configured." }, 503, cors);
+        if (!env.FAL_KEY) return json({ error: "Video generation is not configured yet. Add the FAL_KEY secret to the Cloudflare Worker." }, 503, cors);
+        const body = await readJson(request);
+        const prompt = clean(body && body.prompt, 2000);
+        const duration = String(body && body.duration || "5");
+        const aspectRatio = clean(body && body.aspectRatio, 8);
+        const generateAudio = body && body.generateAudio === true;
+        if (prompt.length < 20) return json({ error: "Please provide a video description of at least 20 characters." }, 400, cors);
+        if (!["5", "10", "15"].includes(duration)) return json({ error: "Choose a supported video duration." }, 400, cors);
+        if (!["9:16", "16:9", "1:1"].includes(aspectRatio)) return json({ error: "Choose a supported video format." }, 400, cors);
+        const today = new Date().toISOString().slice(0, 10);
+        await env.VEXT_DB.prepare("CREATE TABLE IF NOT EXISTS video_generation_usage (owner_user_id TEXT NOT NULL, usage_date TEXT NOT NULL, job_count INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(owner_user_id, usage_date))").run();
+        await env.VEXT_DB.prepare("CREATE TABLE IF NOT EXISTS video_generation_jobs (owner_user_id TEXT NOT NULL, request_id TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(owner_user_id, request_id))").run();
+        const reserved = await env.VEXT_DB.prepare(
+          "INSERT INTO video_generation_usage (owner_user_id, usage_date, job_count) VALUES (?, ?, 1) ON CONFLICT(owner_user_id, usage_date) DO UPDATE SET job_count = job_count + 1 WHERE job_count < ? RETURNING job_count"
+        ).bind(user.id, today, VIDEO_DAILY_LIMIT).first();
+        if (!reserved) return json({ error: "Daily video limit reached. Each account can submit up to 3 video renders per UTC day." }, 429, cors);
+        try {
+          const providerResponse = await fetch("https://queue.fal.run/" + FAL_VIDEO_MODEL, {
+            method: "POST",
+            headers: { "Authorization": "Key " + env.FAL_KEY, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt,
+              duration,
+              aspect_ratio: aspectRatio,
+              generate_audio: generateAudio,
+              enable_safety_checker: true,
+              shot_type: "intelligent",
+              negative_prompt: "blurry, distorted, low quality, unreadable text, watermark, malformed product"
+            })
+          });
+          const providerData = await providerResponse.json().catch(() => ({}));
+          if (!providerResponse.ok || !providerData.request_id) {
+            throw new Error(providerData.detail || providerData.error || "The video provider could not accept the render request.");
+          }
+          await env.VEXT_DB.prepare("INSERT INTO video_generation_jobs (owner_user_id, request_id, created_at) VALUES (?, ?, ?)").bind(user.id, providerData.request_id, new Date().toISOString()).run();
+          return json({ requestId: providerData.request_id, status: providerData.status || "IN_QUEUE" }, 202, cors);
+        } catch (error) {
+          await env.VEXT_DB.prepare("UPDATE video_generation_usage SET job_count = CASE WHEN job_count > 0 THEN job_count - 1 ELSE 0 END WHERE owner_user_id = ? AND usage_date = ?").bind(user.id, today).run();
+          throw error;
+        }
+      }
+
+      if (path === "/api/admin/video/status" && request.method === "GET") {
+        if (!env.VEXT_DB) return json({ error: "D1 database binding VEXT_DB is not configured." }, 503, cors);
+        if (!env.FAL_KEY) return json({ error: "Video generation is not configured yet. Add the FAL_KEY secret to the Cloudflare Worker." }, 503, cors);
+        const requestId = clean(url.searchParams.get("requestId"), 100);
+        if (!requestId) return json({ error: "A video request ID is required." }, 400, cors);
+        await env.VEXT_DB.prepare("CREATE TABLE IF NOT EXISTS video_generation_jobs (owner_user_id TEXT NOT NULL, request_id TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(owner_user_id, request_id))").run();
+        const ownedJob = await env.VEXT_DB.prepare("SELECT request_id FROM video_generation_jobs WHERE owner_user_id = ? AND request_id = ?").bind(user.id, requestId).first();
+        if (!ownedJob) return json({ error: "Video render not found for this account." }, 404, cors);
+        const base = "https://queue.fal.run/" + FAL_VIDEO_MODEL + "/requests/" + encodeURIComponent(requestId);
+        const statusResponse = await fetch(base + "/status?logs=0", { headers: { "Authorization": "Key " + env.FAL_KEY } });
+        const statusData = await statusResponse.json().catch(() => ({}));
+        if (!statusResponse.ok) return json({ error: statusData.detail || "Could not retrieve video render status." }, 502, cors);
+        if (statusData.status !== "COMPLETED") return json({ status: statusData.status || "IN_PROGRESS" }, 200, cors);
+        const resultResponse = await fetch(base, { headers: { "Authorization": "Key " + env.FAL_KEY } });
+        const resultData = await resultResponse.json().catch(() => ({}));
+        if (!resultResponse.ok) return json({ error: resultData.detail || "The video completed but its MP4 result could not be retrieved." }, 502, cors);
+        const videoUrl = resultData && resultData.video && typeof resultData.video.url === "string" ? resultData.video.url : "";
+        if (!videoUrl) return json({ error: "The video provider completed the render but returned no MP4 URL." }, 502, cors);
+        return json({ status: "COMPLETED", videoUrl }, 200, cors);
+      }
+
       if (path.startsWith("/api/admin/")) {
         if (!env.VEXT_DB) return json({ error: "D1 database binding VEXT_DB is not configured." }, 503, cors);
 
@@ -175,12 +243,26 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts", "marketing_videos"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
             const value = body.workspace[key];
-            if (key === "marketing_drafts") {
+            if (key === "marketing_videos") {
+               if (!Array.isArray(value) || value.length > 20) return json({ error: "marketing_videos must be an array of up to 20 videos." }, 400, cors);
+               workspace[key] = value.map(video => ({
+                 id: clean(video && video.id, 100),
+                 requestId: clean(video && video.requestId, 100),
+                 prompt: clean(video && video.prompt, 2000),
+                 duration: clean(video && video.duration, 2),
+                 aspectRatio: clean(video && video.aspectRatio, 8),
+                 generateAudio: video && video.generateAudio === true,
+                 status: clean(video && video.status, 30),
+                 videoUrl: clean(video && video.videoUrl, 2000),
+                 error: clean(video && video.error, 500),
+                 createdAt: clean(video && video.createdAt, 40)
+               })).filter(video => video.id && video.prompt);
+             } else if (key === "marketing_drafts") {
                if (!Array.isArray(value) || value.length > 30) return json({ error: "marketing_drafts must be an array of up to 30 drafts." }, 400, cors);
                workspace[key] = value.map(draft => ({ title: clean(draft && draft.title, 100), content: clean(draft && draft.content, 30000), createdAt: clean(draft && draft.createdAt, 40) })).filter(draft => draft.content);
              } else if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"].includes(key)) {

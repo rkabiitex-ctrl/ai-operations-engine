@@ -9,7 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","marketing_videos"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -24,7 +24,7 @@ function workspaceSnapshot(){
   audit_reports:read("audit_reports",[]),
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
   nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[]),
-  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[])
+  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[]),marketing_videos:read("marketing_videos",[])
  };
 }
 function getWorkspaceRecoveryHistory(){
@@ -274,7 +274,7 @@ function renderMarketingHistory(){
  drafts.slice(0,10).forEach((draft,index)=>{const row=document.createElement("div");row.className="marketing-history-row";const info=document.createElement("div");const title=document.createElement("strong");title.textContent=draft.title||"Campaign draft";const date=document.createElement("div");date.className="muted small";date.textContent=draft.createdAt?new Date(draft.createdAt).toLocaleString():"Saved campaign";info.append(title,date);const actions=document.createElement("div");actions.className="action-row";const open=document.createElement("button");open.className="secondary";open.type="button";open.textContent="Open";open.addEventListener("click",()=>{marketingCurrentDraft=draft.content||"";$("marketingResult").textContent=marketingCurrentDraft;$("copyMarketing").disabled=!marketingCurrentDraft;$("saveMarketing").disabled=true;$("marketingStatus").textContent="Saved campaign opened for review.";});const del=document.createElement("button");del.className="secondary";del.type="button";del.textContent="Delete";del.addEventListener("click",async()=>{const saved=await writeAndSync("marketing_drafts",marketingDrafts().filter((_,i)=>i!==index));renderMarketingHistory();$("marketingStatus").textContent=saved?"Campaign removed from your synced library.":"Campaign removed locally; cloud sync is pending.";});actions.append(open,del);row.append(info,actions);area.append(row);});
 }
 let marketingCurrentDraft="";
-function openMarketingManager(){const settings=getSupportSettings();$("marketingBusinessName").textContent=settings.business||"Your business";$("marketingResult").textContent="Your campaign strategy, content and execution plan will appear here.";$("marketingStatus").textContent="Complete the brief, then build your campaign pack.";marketingCurrentDraft="";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;renderMarketingHistory();}
+function openMarketingManager(){const settings=getSupportSettings();$("marketingBusinessName").textContent=settings.business||"Your business";$("marketingResult").textContent="Your campaign strategy, content and execution plan will appear here.";$("marketingStatus").textContent="Complete the brief, then build your campaign pack.";marketingCurrentDraft="";$("copyMarketing").disabled=true;$("saveMarketing").disabled=true;renderMarketingHistory();renderMarketingVideos();}
 $("openMarketingManager").addEventListener("click",()=>{navigate("marketing");openMarketingManager();});
 async function generateMarketingCampaign(){
  const offer=$("marketingOffer").value.trim(),objective=$("marketingObjective").value,audience=$("marketingAudience").value.trim(),channel=$("marketingChannel").value,tone=$("marketingTone").value,notes=$("marketingNotes").value.trim(),deliverable=$("marketingDeliverable").value,region=$("marketingRegion").value.trim(),budget=$("marketingBudget").value.trim(),duration=$("marketingDuration").value,cta=$("marketingCTA").value.trim(),button=$("generateMarketing");
@@ -301,6 +301,70 @@ async function generateMarketingCampaign(){
 $("generateMarketing").addEventListener("click",generateMarketingCampaign);
 $("copyMarketing").addEventListener("click",()=>{if(marketingCurrentDraft)navigator.clipboard.writeText(marketingCurrentDraft).then(()=>$("marketingStatus").textContent="Campaign copied to clipboard.").catch(()=>$("marketingStatus").textContent="Copy was blocked by the browser.");});
 $("saveMarketing").addEventListener("click",async()=>{if(!marketingCurrentDraft)return;const drafts=marketingDrafts();drafts.unshift({title:$("marketingOffer").value.trim().slice(0,65)||"Campaign draft",content:marketingCurrentDraft,createdAt:new Date().toISOString()});const saved=await writeAndSync("marketing_drafts",drafts.slice(0,30));$("saveMarketing").disabled=true;$("marketingStatus").textContent=saved?"Campaign saved to your VEXT workspace.":"Campaign saved on this device; cloud sync is pending.";renderMarketingHistory();});
+
+
+function marketingVideos(){const items=read("marketing_videos",[]);return Array.isArray(items)?items:[];}
+function renderMarketingVideos(){
+ const area=$("marketingVideoLibrary");if(!area)return;area.replaceChildren();
+ const jobs=marketingVideos().slice(0,20);
+ if(!jobs.length){area.textContent="No videos generated yet.";return;}
+ jobs.forEach(job=>{
+  const card=document.createElement("article");card.className="marketing-video-job";
+  const top=document.createElement("div");top.className="marketing-video-job-top";
+  const title=document.createElement("strong");title.textContent=(job.prompt||"AI video").slice(0,90);
+  const status=document.createElement("span");status.className="marketing-video-status";status.textContent=job.status||"IN_QUEUE";
+  top.append(title,status);card.append(top);
+  const meta=document.createElement("p");meta.className="muted small";meta.textContent=(job.duration||"5")+" seconds · "+(job.aspectRatio||"9:16")+" · "+(job.generateAudio?"AI audio":"No audio")+" · "+(job.createdAt?new Date(job.createdAt).toLocaleString():"");card.append(meta);
+  if(job.videoUrl){
+   const player=document.createElement("video");player.className="marketing-video-player";player.controls=true;player.playsInline=true;player.preload="metadata";player.src=job.videoUrl;card.append(player);
+   const link=document.createElement("a");link.href=job.videoUrl;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Open / save MP4";link.className="marketing-video-link";card.append(link);
+  }else if(job.error){const error=document.createElement("p");error.className="marketing-video-error";error.textContent=job.error;card.append(error);}
+  const actions=document.createElement("div");actions.className="action-row";
+  if(!job.videoUrl&&job.requestId){const refresh=document.createElement("button");refresh.type="button";refresh.className="secondary";refresh.textContent="Check render status";refresh.dataset.videoRefresh=job.id;actions.append(refresh);}
+  const remove=document.createElement("button");remove.type="button";remove.className="secondary";remove.textContent="Remove";remove.dataset.videoRemove=job.id;actions.append(remove);
+  if(actions.children.length)card.append(actions);
+  area.append(card);
+ });
+}
+async function saveMarketingVideos(items){const saved=await writeAndSync("marketing_videos",items.slice(0,20));renderMarketingVideos();return saved;}
+async function generateMarketingVideo(){
+ const prompt=$("marketingVideoPrompt").value.trim(),duration=$("marketingVideoDuration").value,aspectRatio=$("marketingVideoAspect").value,generateAudio=$("marketingVideoAudio").checked,button=$("generateMarketingVideo");
+ if(prompt.length<20){$("marketingVideoStatus").textContent="Describe the scene and product in at least 20 characters.";return;}
+ if(prompt.length>2000){$("marketingVideoStatus").textContent="Keep the video description under 2,000 characters.";return;}
+ if(!confirm("This sends a paid video-generation request to fal.ai. Charges may apply even if you later remove the video. Continue?"))return;
+ button.disabled=true;button.textContent="Submitting render…";$("marketingVideoStatus").textContent="Sending your video brief to the secure rendering service…";
+ try{
+  const token=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/video/generate",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({prompt,duration,aspectRatio,generateAudio})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Video request failed ("+response.status+")."));
+  const jobs=marketingVideos();const job={id:id(),requestId:data.requestId,prompt,duration,aspectRatio,generateAudio,status:data.status||"IN_QUEUE",videoUrl:"",createdAt:new Date().toISOString()};
+  await saveMarketingVideos([job,...jobs]);
+  $("marketingVideoStatus").textContent="Render submitted. VEXT will check for the finished MP4 while this page stays open.";
+  pollMarketingVideo(job.id);
+ }catch(error){$("marketingVideoStatus").textContent=error.message||"Video generation could not start. Check the provider setup.";}
+ finally{button.disabled=false;button.textContent="Generate professional video";}
+}
+async function pollMarketingVideo(jobId){
+ const jobs=marketingVideos(),job=jobs.find(item=>item.id===jobId);if(!job||!job.requestId||job.videoUrl)return;
+ try{
+  const token=await getVextAccessToken();
+  const response=await fetch(VEXT_CHAT_ENDPOINT+"api/admin/video/status?requestId="+encodeURIComponent(job.requestId),{headers:{"Authorization":"Bearer "+token}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(data.error||("Status check failed ("+response.status+")."));
+  const updated=marketingVideos().map(item=>item.id===jobId?{...item,status:data.status||item.status,videoUrl:data.videoUrl||item.videoUrl,error:data.error||""}:item);
+  await saveMarketingVideos(updated);
+  const current=updated.find(item=>item.id===jobId);
+  if(current&&current.videoUrl){$("marketingVideoStatus").textContent="Your AI video is ready. Preview it below and open the MP4 to save it.";}
+  else if(data.status==="FAILED"){$("marketingVideoStatus").textContent=data.error||"The video render failed. Review the brief and try again.";}
+  else if(current){$("marketingVideoStatus").textContent="Video render status: "+(data.status||"processing")+". VEXT will check again shortly.";setTimeout(()=>pollMarketingVideo(jobId),8000);}
+ }catch(error){$("marketingVideoStatus").textContent=(error.message||"Could not check video status.")+" Use Check render status to retry.";}
+}
+$("generateMarketingVideo").addEventListener("click",generateMarketingVideo);
+$("marketingVideoLibrary").addEventListener("click",async event=>{
+ const refresh=event.target.closest("[data-video-refresh]");if(refresh){refresh.disabled=true;await pollMarketingVideo(refresh.dataset.videoRefresh);return;}
+ const remove=event.target.closest("[data-video-remove]");if(remove){const next=marketingVideos().filter(item=>item.id!==remove.dataset.videoRemove);await saveMarketingVideos(next);$("marketingVideoStatus").textContent="Video removed from your VEXT library. This does not cancel or refund provider charges.";}
+});
 
 $("openAuditor").addEventListener("click",()=>{navigate("audit");renderAuditCentre();});
 $("openBusinessAnalyst").addEventListener("click",()=>{navigate("analytics");$("analystResult").innerHTML="";$("analystStatus").textContent="Choose a reporting period, then generate your business analysis.";});
