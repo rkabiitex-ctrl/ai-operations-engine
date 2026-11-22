@@ -9,7 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","life_tasks","life_goals","life_study","life_career","life_finance","life_habits","life_chat"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","life_tasks","life_goals","life_study","life_career","life_finance","life_habits","life_chat","life_reflection"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -25,7 +25,7 @@ function workspaceSnapshot(){
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
   nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[]),
   automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[]),
-  life_tasks:read("life_tasks",[]), life_goals:read("life_goals",[]), life_study:read("life_study",[]), life_career:read("life_career",[]), life_finance:read("life_finance",[]), life_habits:read("life_habits",[]), life_chat:read("life_chat",[])
+  life_tasks:read("life_tasks",[]), life_goals:read("life_goals",[]), life_study:read("life_study",[]), life_career:read("life_career",[]), life_finance:read("life_finance",[]), life_habits:read("life_habits",[]), life_chat:read("life_chat",[]), life_reflection:read("life_reflection",{})
  };
 }
 function getWorkspaceRecoveryHistory(){
