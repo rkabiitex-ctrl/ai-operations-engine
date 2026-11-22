@@ -9,6 +9,7 @@ const auth = readFileSync("assets/js/auth.js", "utf8");
 const utilsSource = readFileSync("assets/js/core/utils.js", "utf8");
 const crm = readFileSync("assets/js/features/crm.js", "utf8");
 const management = readFileSync("assets/js/features/management.js", "utf8");
+const automation = readFileSync("assets/js/features/automation.js", "utf8");
 const intelligenceContext = readFileSync("assets/js/core/intelligence-context.js", "utf8");
 const worker = readFileSync("cloudflare-worker.js", "utf8");
 
@@ -16,6 +17,8 @@ assert.match(html, /\.\/assets\/css\/app\.css/, "HTML must load the extracted st
 assert.match(html, /\.\/assets\/js\/core\/utils\.js" defer/, "HTML must load core utilities with defer");
 assert.match(html, /\.\/assets\/js\/features\/crm\.js" defer/, "HTML must load CRM feature module with defer");
 assert.match(html, /\.\/assets\/js\/app\.js" defer/, "HTML must load the application script with defer");
+assert.match(html, /\.\/assets\/js\/features\/automation\.js" defer/, "HTML must load the automation module");
+assert.ok(html.indexOf("./assets/js/features/automation.js") < html.indexOf("./assets/js/app.js"), "Automation module must load before app initialization");
 assert.match(html, /\.\/assets\/js\/auth\.js" defer/, "HTML must load the auth script with defer");
 assert.ok(html.indexOf("cdn.jsdelivr.net/npm/@supabase/supabase-js") < html.indexOf("./assets/js/app.js"), "Supabase client must load before app scripts");
 assert.ok(html.indexOf("./assets/js/core/utils.js") < html.indexOf("./assets/js/features/crm.js"), "Core utilities must load before CRM");
@@ -100,6 +103,8 @@ assert.match(worker, /"management_actions", "nexus_tasks", "notifications"\]\.in
 assert.match(app, /data-nexus-create-action/, "Approved NEXUS tasks must expose the action bridge");
 assert.match(app, /function extractNexusActionTitle/, "Action bridge must derive a reviewable action title");
 assert.ok(management.includes("sourceNexusTaskId"), "Management actions created from NEXUS must retain their source task");
+assert.ok(automation.includes("async function handleNewLead"), "Automation must process newly created client events");
+assert.ok(automation.includes("writeAndSync(\"management_actions\",actions)"), "Automation-created follow-ups must be persisted");
 assert.ok(management.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
 
 console.log("VEXT architecture smoke checks passed.");
