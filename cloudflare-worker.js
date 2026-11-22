@@ -175,7 +175,7 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
@@ -185,6 +185,13 @@ export default {
               const maxItems = key === "nexus_tasks" ? 100 : key === "management_actions" ? 1000 : (key === "chat_history" || key === "audit_reports" || key === "business_analysis_reports") ? 50 : key === "notifications" ? 150 : 5000;
               if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
               workspace[key] = value;
+            } else if (key === "automation_runs") {
+              if (!Array.isArray(value)) return json({ error: "automation_runs must be an array." }, 400, cors);
+              if (value.length > 100) return json({ error: "automation_runs contains too many items." }, 400, cors);
+              workspace[key] = value;
+            } else if (key === "automation_settings") {
+              if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "automation_settings must be an object." }, 400, cors);
+              workspace[key] = { newLeadFollowup: value.newLeadFollowup === true, updatedAt: clean(value.updatedAt, 40) };
             } else if (key === "active_chat_id") {
               workspace[key] = clean(value, 100);
             } else if (key === "support_settings") {

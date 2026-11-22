@@ -22,6 +22,7 @@ jobs:
         run: |
           node --check assets/js/app.js
           node --check assets/js/auth.js
+          node --check assets/js/features/automation.js
       - name: Check Cloudflare Worker module syntax
         run: node --input-type=module --check < cloudflare-worker.js
       - name: Run architecture smoke checks
