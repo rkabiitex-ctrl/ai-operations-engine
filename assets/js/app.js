@@ -524,7 +524,8 @@ const vextAnalytics = window.VEXTAnalytics.init({
 const renderAnalytics = () => vextAnalytics.renderAnalytics();
 const renderAnalystHistory = () => vextAnalytics.renderAnalystHistory();
 const vextNotifications = window.VEXTNotifications.init({ $, read, write, navigate });
-const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });\nconst vextSalesIntelligence = window.VEXTSalesIntelligence.init({ $, read, navigate });
+const vextIntelligence = window.VEXTIntelligence.init({ $, read, currentCurrency, formatMoney, navigate });
+const vextSalesIntelligence = window.VEXTSalesIntelligence.init({ $, read, navigate });
 const vextAutomation = window.VEXTAutomation.init({ $, read, write, writeAndSync, id, log });
 function renderMissionControl(){
   const all=read("nexus_tasks",[]);
