@@ -18,6 +18,7 @@
 </script>
 <link rel="stylesheet" href="./assets/css/app.css">
 <link rel="stylesheet" href="./assets/css/life-suite.css">
+<link rel="stylesheet" href="./assets/css/sales-intelligence.css">
 
 </head>
 <body>
@@ -89,6 +90,7 @@
  <button class="nav" data-page="ai" data-workspace-nav="business">✧ &nbsp; AI Workspace</button>
  <button class="nav" data-page="chat" data-workspace-nav="business">◉ &nbsp; VEXT AI Chat</button>
  <button class="nav" data-page="support" data-workspace-nav="business">✧ &nbsp; Sales Agent</button>
+ <button class="nav" data-page="sales-intelligence" data-workspace-nav="business">▥ &nbsp; Sales Intelligence</button>
  <button class="nav" data-page="customer-support" data-workspace-nav="business">♡ &nbsp; Customer Support</button>
  <button class="nav" data-page="marketing" data-workspace-nav="business">✧ &nbsp; Marketing Studio</button>
  <button class="nav" data-page="employees" data-workspace-nav="business">♙ &nbsp; AI Employees</button>
@@ -303,6 +305,21 @@
  </div>
 </section>
 
+
+<section class="page" id="sales-intelligence">
+ <div class="card"><div class="crm-card-heading"><div><span class="dashboard-eyebrow">VEXT SALES INTELLIGENCE</span><h2>Sales opportunities</h2><p class="muted small">Understand your pipeline, prioritise follow-ups and see which customer records need attention.</p></div><button class="secondary" id="salesIntelOpenCrm" type="button">Open Client Management</button></div></div>
+ <div class="sales-intel-metrics">
+  <div class="sales-intel-metric"><span>CLIENT RECORDS</span><strong id="salesIntelTotal">0</strong></div>
+  <div class="sales-intel-metric"><span>QUALIFIED / PROPOSAL</span><strong id="salesIntelQualified">0</strong></div>
+  <div class="sales-intel-metric"><span>FOLLOW-UPS SCHEDULED</span><strong id="salesIntelFollowups">0</strong></div>
+  <div class="sales-intel-metric"><span>WON CLIENTS</span><strong id="salesIntelWon">0</strong></div>
+ </div>
+ <div class="sales-intel-grid">
+  <div class="card"><h2>Pipeline overview</h2><div id="salesIntelPipeline"></div></div>
+  <div class="card"><h2>Priority opportunities</h2><p class="muted small">Ranked using visible CRM engagement signals.</p><div id="salesIntelOpportunities"></div><p id="salesIntelNote" class="muted small"></p></div>
+ </div>
+ <div class="card"><h2>How opportunity scores work</h2><p class="muted small">Scores use saved contact details, stated interest, sales stage, scheduled follow-up and enquiry history. The score is a prioritisation aid only; it does not assess a person's creditworthiness or guarantee a sale.</p></div>
+</section>
 
 <section class="page" id="customer-support">
  <div class="audit-hero"><div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / CUSTOMER EXPERIENCE</span><h2>AI Customer Support Desk</h2><p class="muted small">A live support assistant for product questions, service guidance and customer issue triage.</p></div><div class="audit-hero-side"><span class="audit-status-dot">● AI SERVICE READY</span><span class="pill">CUSTOMER SUPPORT · BETA</span><div class="audit-hero-mark">♡</div></div></div>
@@ -812,7 +829,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./assets/js/core/utils.js" defer></script>
 <script src="./assets/js/core/intelligence-context.js" defer></script>
-<script src="./assets/js/features/crm.js" defer></script>
+<script src="./assets/js/features/crm.js" defer></script>\n<script src="./assets/js/features/sales-intelligence.js" defer></script>
 <script src="./assets/js/features/invoices.js" defer></script>
 <script src="./assets/js/features/analytics.js" defer></script>
 <script src="./assets/js/features/audit.js" defer></script>
