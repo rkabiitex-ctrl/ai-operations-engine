@@ -14,6 +14,10 @@ const intelligenceContext = readFileSync("assets/js/core/intelligence-context.js
 const worker = readFileSync("cloudflare-worker.js", "utf8");
 
 assert.match(html, /\.\/assets\/css\/app\.css/, "HTML must load the extracted stylesheet");
+assert.match(html, /data-workspace-switch="business"/, "Sidebar must expose VEXT BUSINESS workspace switch");
+assert.match(html, /data-workspace-switch="life"/, "Sidebar must expose VEXT LIFE workspace switch");
+assert.match(html, /id="marketingDeliverable"/, "Marketing Studio must offer campaign deliverable types");
+assert.match(html, /id="marketingRegion"/, "Marketing Studio must capture target market");
 assert.match(html, /\.\/assets\/js\/core\/utils\.js" defer/, "HTML must load core utilities with defer");
 assert.match(html, /\.\/assets\/js\/features\/crm\.js" defer/, "HTML must load CRM feature module with defer");
 assert.match(html, /\.\/assets\/js\/app\.js" defer/, "HTML must load the application script with defer");
@@ -97,6 +101,7 @@ for (const key of frontendKeys) {
   assert.ok(workerKeys.has(key), `Worker workspace allowlist is missing frontend field: ${key}`);
 }
 assert.match(worker, /key === "nexus_tasks" \? 100/, "NEXUS task count must be bounded");
+assert.match(worker, /key === "marketing_drafts"/, "Worker must validate marketing drafts");
 assert.match(worker, /key === "management_actions" \? 1000/, "Management action count must be bounded");
 assert.match(worker, /"management_actions", "nexus_tasks", "notifications"\]\.includes\(key\)/, "Worker must validate action and NEXUS task data as arrays");
 

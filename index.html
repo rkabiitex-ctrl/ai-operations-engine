@@ -77,26 +77,31 @@
 <aside class="sidebar">
  <div class="brand">VEXT<span> AI</span></div>
  <div class="tagline">GLOBAL AI ECOSYSTEM</div>
- <div class="nav-label">WORKSPACE</div>
- <button class="nav" data-page="nexus">✧ &nbsp; VEXT NEXUS</button>
- <button class="nav active" data-page="dashboard">◈ &nbsp; Dashboard</button>
- <button class="nav" data-page="ai">✧ &nbsp; AI Workspace</button>
- <button class="nav" data-page="chat">◉ &nbsp; VEXT AI Chat</button>
- <button class="nav" data-page="support">✧ &nbsp; Sales Agent</button>
- <button class="nav" data-page="customer-support">♡ &nbsp; Customer Support</button>
- <button class="nav" data-page="marketing">✧ &nbsp; Marketing Manager</button>
- <button class="nav" data-page="employees">♙ &nbsp; AI Employees</button>
- <button class="nav" data-page="automation">⌘ &nbsp; Automation Engine</button>
- <button class="nav" data-page="leads">◎ &nbsp; Client Management</button>
- <button class="nav" data-page="invoices">▤ &nbsp; Invoices</button>
- <div class="nav-label">MANAGEMENT</div>
- <button class="nav" data-page="intelligence">✧ &nbsp; Intelligence Centre</button>
- <button class="nav" data-page="analytics">▥ &nbsp; Analytics</button>
- <button class="nav" data-page="audit">⌕ &nbsp; Audit Centre</button>
- <button class="nav" data-page="settings">⚙ &nbsp; Settings</button>
- <button class="nav" data-page="pricing">＄ &nbsp; Pricing</button>
- <div class="nav-label">PERSONAL</div>
- <button class="nav" data-page="life">✦ &nbsp; VEXT LIFE</button>
+ <div class="workspace-switcher" role="group" aria-label="Choose your VEXT workspace">
+  <button class="workspace-switch active" type="button" data-workspace-switch="business" aria-pressed="true">VEXT BUSINESS</button>
+  <button class="workspace-switch" type="button" data-workspace-switch="life" aria-pressed="false">VEXT LIFE</button>
+ </div>
+ <div class="nav-label" data-workspace-nav="shared">SHARED INTELLIGENCE</div>
+ <button class="nav" data-page="nexus" data-workspace-nav="shared">✧ &nbsp; VEXT NEXUS</button>
+ <div class="nav-label" data-workspace-nav="business">BUSINESS WORKSPACE</div>
+ <button class="nav active" data-page="dashboard" data-workspace-nav="business">◈ &nbsp; Dashboard</button>
+ <button class="nav" data-page="ai" data-workspace-nav="business">✧ &nbsp; AI Workspace</button>
+ <button class="nav" data-page="chat" data-workspace-nav="business">◉ &nbsp; VEXT AI Chat</button>
+ <button class="nav" data-page="support" data-workspace-nav="business">✧ &nbsp; Sales Agent</button>
+ <button class="nav" data-page="customer-support" data-workspace-nav="business">♡ &nbsp; Customer Support</button>
+ <button class="nav" data-page="marketing" data-workspace-nav="business">✧ &nbsp; Marketing Studio</button>
+ <button class="nav" data-page="employees" data-workspace-nav="business">♙ &nbsp; AI Employees</button>
+ <button class="nav" data-page="automation" data-workspace-nav="business">⌘ &nbsp; Automation Engine</button>
+ <button class="nav" data-page="leads" data-workspace-nav="business">◎ &nbsp; Client Management</button>
+ <button class="nav" data-page="invoices" data-workspace-nav="business">▤ &nbsp; Invoices</button>
+ <div class="nav-label" data-workspace-nav="business">MANAGEMENT</div>
+ <button class="nav" data-page="intelligence" data-workspace-nav="business">✧ &nbsp; Intelligence Centre</button>
+ <button class="nav" data-page="analytics" data-workspace-nav="business">▥ &nbsp; Analytics</button>
+ <button class="nav" data-page="audit" data-workspace-nav="business">⌕ &nbsp; Audit Centre</button>
+ <button class="nav" data-page="settings" data-workspace-nav="business">⚙ &nbsp; Settings</button>
+ <button class="nav" data-page="pricing" data-workspace-nav="business">＄ &nbsp; Pricing</button>
+ <div class="nav-label" data-workspace-nav="life">PERSONAL WORKSPACE</div>
+ <button class="nav" data-page="life" data-workspace-nav="life">✦ &nbsp; Personal AI Assistant</button>
  <div class="sidebar-bottom">
   <span class="pill">● SYSTEM ACTIVE</span>
   <p>VEXT AI Global Edition</p>
@@ -108,7 +113,7 @@
 <div class="topbar">
  <div>
   <h1 id="pageTitle">Business Overview</h1>
-  <div class="muted small">Your business. One intelligent workspace.</div>
+  <div class="muted small" id="workspaceSubtitle">Your business. One intelligent workspace.</div>
  </div>
  <div class="top-actions">
   <span id="workspaceSyncStatus" class="muted small" role="status" aria-live="polite">Secure cloud storage ready</span>
@@ -322,34 +327,30 @@
 
 
 <section class="page" id="marketing">
- <div class="audit-hero"><div><span class="dashboard-eyebrow">VEXT AI WORKFORCE / GROWTH & BRAND</span><h2>AI Marketing Studio</h2><p class="muted small">Build practical campaigns, channel plans and ready-to-review marketing content for your business.</p></div><div class="audit-hero-side"><span class="audit-status-dot">● AI SERVICE READY</span><span class="pill">MARKETING MANAGER · BETA</span><div class="audit-hero-mark">✧</div></div></div>
- <div class="stats">
-  <div class="card"><div class="stat-title">AI connection</div><div class="stat-number" style="font-size:20px">Live AI</div><div class="stat-foot">Uses your VEXT AI service</div></div>
-  <div class="card"><div class="stat-title">Business profile</div><div class="stat-number" style="font-size:20px" id="marketingBusinessName">Your business</div><div class="stat-foot">Shared business context</div></div>
-  <div class="card"><div class="stat-title">Campaign drafts</div><div class="stat-number" id="marketingDraftCount">0</div><div class="stat-foot">Saved in this browser</div></div>
- </div>
- <div class="grid">
-  <div class="card">
-   <span class="dashboard-eyebrow">CAMPAIGN BRIEF</span><h2>What do you want to promote?</h2><p class="muted small">Give the Marketing Manager a clear brief. It will create a draft for your review—not publish anything.</p>
-   <label for="marketingOffer">Product, service or offer</label><textarea id="marketingOffer" rows="3" maxlength="1500" placeholder="Describe what you sell and the offer you want to promote…"></textarea>
-   <label for="marketingObjective" style="margin-top:12px">Campaign objective</label><select id="marketingObjective"><option>Generate qualified leads</option><option>Increase sales</option><option>Build brand awareness</option><option>Promote a new product</option><option>Re-engage existing customers</option><option>Drive website visits</option></select>
-   <label for="marketingAudience" style="margin-top:12px">Target audience</label><input id="marketingAudience" maxlength="500" placeholder="e.g. Small business owners in the United States"/>
-   <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
-    <div><label for="marketingChannel">Main channel</label><select id="marketingChannel"><option>Social media</option><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>TikTok</option><option>Email</option><option>Google Ads</option><option>Multi-channel</option></select></div>
+ <div class="marketing-hero"><div><span class="dashboard-eyebrow">VEXT BUSINESS / GROWTH INTELLIGENCE</span><h2>Marketing Studio</h2><p>Build campaign strategy, channel-ready content, execution plans and measurement checklists from one structured brief.</p><div class="marketing-hero-meta"><span>✦ AI CAMPAIGN BUILDER</span><span>HUMAN APPROVAL REQUIRED</span></div></div><div class="marketing-hero-mark">✧</div></div>
+ <div class="stats marketing-stats"><div class="card"><div class="stat-title">AI connection</div><div class="stat-number" style="font-size:20px">Live AI</div><div class="stat-foot">Connected VEXT AI service</div></div><div class="card"><div class="stat-title">Business profile</div><div class="stat-number" style="font-size:20px" id="marketingBusinessName">Your business</div><div class="stat-foot">Shared business context</div></div><div class="card"><div class="stat-title">Saved campaigns</div><div class="stat-number" id="marketingDraftCount">0</div><div class="stat-foot">Synced to your workspace</div></div></div>
+ <div class="marketing-layout">
+  <section class="card marketing-brief-card"><div class="marketing-section-heading"><div><span class="dashboard-eyebrow">01 / CAMPAIGN BRIEF</span><h2>Set the direction</h2><p class="muted small">The more accurate the brief, the more useful the campaign.</p></div><span class="marketing-step">01</span></div>
+   <label for="marketingOffer">Product, service or offer</label><textarea id="marketingOffer" rows="3" maxlength="1500" placeholder="What exactly are you promoting? Include verified features and customer value…"></textarea>
+   <label for="marketingObjective">Primary objective</label><select id="marketingObjective"><option>Generate qualified leads</option><option>Increase sales</option><option>Build brand awareness</option><option>Promote a new product</option><option>Re-engage existing customers</option><option>Drive website visits</option><option>Grow an email list</option></select>
+   <label for="marketingAudience">Target audience</label><input id="marketingAudience" maxlength="500" placeholder="e.g. Independent retailers, 25–45, interested in…"/>
+   <div class="marketing-field-grid">
+    <div><label for="marketingChannel">Primary channel</label><select id="marketingChannel"><option>Multi-channel</option><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>TikTok</option><option>Email</option><option>Google Ads</option><option>Website / landing page</option></select></div>
+    <div><label for="marketingDeliverable">Content deliverable</label><select id="marketingDeliverable"><option>Complete campaign pack</option><option>Social content pack</option><option>Paid advertising pack</option><option>Email campaign</option><option>Product launch campaign</option></select></div>
     <div><label for="marketingTone">Brand tone</label><select id="marketingTone"><option>Professional and trustworthy</option><option>Friendly and conversational</option><option>Bold and energetic</option><option>Premium and refined</option><option>Educational and helpful</option></select></div>
+    <div><label for="marketingDuration">Campaign duration</label><select id="marketingDuration"><option>7 days</option><option>14 days</option><option>30 days</option><option>60 days</option></select></div>
    </div>
-   <label for="marketingNotes" style="margin-top:12px">Extra details (optional)</label><textarea id="marketingNotes" rows="2" maxlength="1000" placeholder="Budget, location, deadline, brand rules or details to avoid…"></textarea>
-   <button class="primary" id="generateMarketing" type="button" style="margin-top:16px">Generate campaign plan ✧</button>
-   <div class="chat-status" id="marketingStatus" role="status" aria-live="polite">Complete the brief, then generate your campaign draft.</div>
-  </div>
-  <div class="card">
-   <div class="employee-section-heading"><div><span class="dashboard-eyebrow">AI-GENERATED WORK</span><h2>Campaign output</h2><p class="muted small">Review, edit and approve all content before publishing.</p></div><span class="employee-state live">DRAFT ONLY</span></div>
-   <div id="marketingResult" class="notice" style="min-height:340px;white-space:pre-wrap">Your campaign strategy and content will appear here.</div>
-   <div class="action-row" style="margin-top:12px"><button class="secondary" id="copyMarketing" type="button" disabled>Copy campaign</button><button class="secondary" id="saveMarketing" type="button" disabled>Save draft</button></div>
-   <div class="notice" style="margin-top:18px"><strong>Marketing safeguards</strong><p class="small">The assistant must not invent testimonials, customer results, product claims, prices or guarantees. It does not publish ads, spend money or send messages. Verify claims, audience targeting and platform policies before launch.</p></div>
-  </div>
+   <div class="marketing-field-grid"><div><label for="marketingRegion">Target market / location</label><input id="marketingRegion" maxlength="180" placeholder="e.g. United States, Miami"/></div><div><label for="marketingBudget">Budget guidance (optional)</label><input id="marketingBudget" maxlength="120" placeholder="e.g. Organic only or USD 300 total"/></div></div>
+   <label for="marketingCTA">Preferred call to action (optional)</label><input id="marketingCTA" maxlength="160" placeholder="e.g. Book a demo, shop now, request a quote"/>
+   <label for="marketingNotes">Brand rules and extra details</label><textarea id="marketingNotes" rows="3" maxlength="1500" placeholder="Website, verified pricing, offer dates, shipping area, brand rules, competitors to avoid…"></textarea>
+   <button class="primary marketing-generate-button" id="generateMarketing" type="button">Build campaign pack <span aria-hidden="true">✧</span></button><div class="chat-status" id="marketingStatus" role="status" aria-live="polite">Complete the brief to generate a campaign draft for review.</div>
+  </section>
+  <section class="card marketing-output-card"><div class="marketing-section-heading"><div><span class="dashboard-eyebrow">02 / CAMPAIGN WORKSPACE</span><h2>Your campaign output</h2><p class="muted small">Review the strategy and every asset before using it.</p></div><span class="employee-state live">DRAFT ONLY</span></div>
+   <div id="marketingResult" class="marketing-result">Your campaign strategy, content and execution plan will appear here.</div><div class="action-row marketing-output-actions"><button class="secondary" id="copyMarketing" type="button" disabled>Copy campaign</button><button class="secondary" id="saveMarketing" type="button" disabled>Save campaign</button></div>
+   <div class="marketing-guardrail"><strong>Human approval and accuracy</strong><p>VEXT does not publish ads, spend money or contact customers. Verify product claims, prices, targeting, usage rights, budget and platform policies before launch. No testimonials, statistics or guaranteed results are invented.</p></div>
+  </section>
  </div>
- <div class="card" style="margin-top:18px"><div class="employee-section-heading"><div><span class="dashboard-eyebrow">WORKSPACE LIBRARY</span><h2>Saved campaign drafts</h2><p class="muted small">Drafts are stored locally in this browser.</p></div></div><div id="marketingHistory" class="notice">No saved campaigns yet.</div></div>
+ <section class="card marketing-library-card"><div class="marketing-section-heading"><div><span class="dashboard-eyebrow">03 / CAMPAIGN LIBRARY</span><h2>Saved campaigns</h2><p class="muted small">Your saved campaign drafts follow your signed-in VEXT workspace across devices.</p></div></div><div id="marketingHistory" class="marketing-history notice">No saved campaigns yet.</div></section>
 </section>
 
 <section class="page" id="employees">
