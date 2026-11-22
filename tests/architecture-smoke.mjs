@@ -173,5 +173,6 @@ assert.doesNotMatch(html, /7-day free trial/, "Pricing must not advertise a seve
 assert.ok(html.includes("features/billing.js"), "Billing module must load before app initialization");
 assert.ok(app.includes("billing_subscription") && app.includes("billing_events"), "Billing data must be included in workspace snapshots");
 assert.ok(worker.includes('"billing_subscription", "billing_events"'), "Worker must allow only the billing workspace fields");
-assert.ok(billing.includes("request_pending") && billing.includes("provider-confirmed"), "Billing must not treat requests as successful payments");
+assert.match(worker, /value\.status === "request_pending" \? "request_pending" : "inactive"/, "Client data must never activate paid subscriptions");
+assert.ok(billing.includes("request_pending") && billing.includes("No paid features are being granted"), "Billing must not treat requests as successful payments");
 assert.ok(billingCss.length > 500, "Billing UI must have dedicated responsive styling");
