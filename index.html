@@ -17,6 +17,7 @@
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"VEXT AI","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"An AI-powered workspace for managing customer enquiries, clients, invoices and business performance.","url":"https://rkabiitex-ctrl.github.io/ai-operations-engine/"}
 </script>
 <link rel="stylesheet" href="./assets/css/app.css">
+<link rel="stylesheet" href="./assets/css/life-suite.css">
 
 </head>
 <body>
@@ -729,7 +730,63 @@
  <p class="automation-disclaimer">VEXT Automation Engine v1 runs this rule inside your signed-in workspace when a new client is saved. It creates a task for human follow-up; it does not send messages or contact customers automatically.</p>
 </section>
 
-<section class="page" id="life">
+<section class="page life-suite-ready" id="life">
+ <div class="life-suite" id="lifeSuite">
+  <header class="life-suite-hero"><div><span class="life-kicker">VEXT AI / PERSONAL INTELLIGENCE</span><h2>Make progress in every part of life.</h2><p>One personal workspace to plan your days, learn faster, grow your career, manage money habits and build healthier routines.</p><div class="life-suite-meta"><span>✦ PERSONAL AI</span><span>◈ PRIVATE WORKSPACE</span><span>⌁ YOUR PROGRESS, SAVED</span></div></div><div class="life-suite-orb" aria-hidden="true">V</div></header>
+  <nav class="life-suite-nav" aria-label="VEXT LIFE tools">
+   <button type="button" data-life-tab="overview" class="active">Overview</button><button type="button" data-life-tab="planner">Life Planner</button><button type="button" data-life-tab="learning">Study Coach</button><button type="button" data-life-tab="career">Career Coach</button><button type="button" data-life-tab="finance">Personal Finance</button><button type="button" data-life-tab="wellness">Wellness & Habits</button><button type="button" data-life-tab="assistant">AI Assistant</button>
+  </nav>
+  <section class="life-suite-panel active" data-life-panel="overview">
+   <div class="life-suite-heading"><div><span class="life-kicker">YOUR PERSONAL COMMAND CENTRE</span><h3>Welcome to VEXT LIFE.</h3><p>Small, consistent actions add up. Choose an area and take your next step.</p></div><span class="life-status">● PERSONAL SPACE READY</span></div>
+   <div class="life-suite-stats"><article><span>OPEN TASKS</span><strong id="lifeStatTasks">0</strong><small>Things on your list</small></article><article><span>ACTIVE GOALS</span><strong id="lifeStatGoals">0</strong><small>Goals you're working on</small></article><article><span>HABITS TODAY</span><strong id="lifeStatHabits">0</strong><small>Completed check-ins</small></article><article><span>RECORDED BALANCE</span><strong id="lifeStatBalance">$0</strong><small>From entries you record</small></article></div>
+   <div class="life-suite-quick-grid">
+    <button type="button" data-life-open="planner"><span>◷</span><strong>Organise your life</strong><small>Tasks, goals and deadlines</small><b>Open planner →</b></button>
+    <button type="button" data-life-open="learning"><span>✧</span><strong>Learn something new</strong><small>Study plans, explanations and practice</small><b>Open study coach →</b></button>
+    <button type="button" data-life-open="career"><span>↗</span><strong>Grow your career</strong><small>CVs, interviews and career direction</small><b>Open career coach →</b></button>
+    <button type="button" data-life-open="finance"><span>＄</span><strong>Understand your money</strong><small>Manual budgets and spending records</small><b>Open finance →</b></button>
+    <button type="button" data-life-open="wellness"><span>♡</span><strong>Build better routines</strong><small>Daily habits and personal check-ins</small><b>Open wellness →</b></button>
+    <button type="button" data-life-open="assistant"><span>✦</span><strong>Talk to your AI</strong><small>Think through anything with VEXT LIFE</small><b>Open assistant →</b></button>
+   </div>
+   <section class="life-suite-card"><div class="life-suite-heading"><div><span class="life-kicker">YOUR NEXT STEPS</span><h3>Today's focus</h3></div></div><div id="lifeOverviewTasks" class="life-suite-list"><p class="life-empty">Your tasks and habits will appear here.</p></div></section>
+  </section>
+  <section class="life-suite-panel" data-life-panel="planner">
+   <div class="life-suite-heading"><div><span class="life-kicker">PERSONAL PRODUCTIVITY</span><h3>Life Planner</h3><p>Turn your priorities into manageable tasks and meaningful goals.</p></div></div>
+   <div class="life-suite-two-col"><section class="life-suite-card"><h4>Add a task</h4><form id="lifeTaskForm" class="life-suite-form"><label for="lifeTaskTitle">What needs to get done?</label><input id="lifeTaskTitle" maxlength="140" required placeholder="e.g. Complete my course module"><div class="life-suite-field-row"><div><label for="lifeTaskDue">Due date</label><input id="lifeTaskDue" type="date"></div><div><label for="lifeTaskPriority">Priority</label><select id="lifeTaskPriority"><option>Normal</option><option>High</option><option>Low</option></select></div></div><button class="primary" type="submit">Add task +</button></form></section>
+   <section class="life-suite-card"><h4>Set a goal</h4><form id="lifeGoalForm" class="life-suite-form"><label for="lifeGoalTitle">What do you want to achieve?</label><input id="lifeGoalTitle" maxlength="160" required placeholder="e.g. Become confident in Python"><label for="lifeGoalDate">Target date</label><input id="lifeGoalDate" type="date"><button class="primary" type="submit">Create goal +</button></form></section></div>
+   <section class="life-suite-card"><div class="life-suite-heading"><h4>Your tasks</h4><span id="lifeTaskCount" class="life-count">0 tasks</span></div><div id="lifeTaskList" class="life-suite-list"></div></section>
+   <section class="life-suite-card"><h4>Your goals</h4><div id="lifeGoalList" class="life-suite-list"></div></section>
+  </section>
+  <section class="life-suite-panel" data-life-panel="learning">
+   <div class="life-suite-heading"><div><span class="life-kicker">LEARNING & SKILL DEVELOPMENT</span><h3>Study Coach</h3><p>Get a clear explanation, a practical study plan or a short knowledge check.</p></div></div>
+   <section class="life-suite-card"><form id="lifeStudyForm" class="life-suite-form"><label for="lifeStudyTopic">What are you learning?</label><input id="lifeStudyTopic" required maxlength="180" placeholder="e.g. Algebra, Python, biology, English"><label for="lifeStudyGoal">What do you need help with?</label><select id="lifeStudyGoal"><option value="Explain this topic from beginner to advanced with examples.">Explain a topic</option><option value="Create a 7-day study plan with daily tasks and review sessions.">Create a study plan</option><option value="Quiz me with 10 questions, wait for my answers, then mark and explain them.">Practice with a quiz</option><option value="Give me a practical project and guide me through it step by step.">Build a practice project</option></select><button class="primary" type="submit" id="lifeStudyGenerate">Create learning support ✧</button></form><div id="lifeStudyOutput" class="life-ai-output" aria-live="polite">Your study support will appear here.</div><div class="life-suite-actions"><button class="secondary" id="lifeStudySave" type="button" disabled>Save to learning library</button><span id="lifeStudyStatus" role="status"></span></div></section>
+   <section class="life-suite-card"><h4>Saved learning library</h4><div id="lifeStudyLibrary" class="life-suite-list"></div></section>
+  </section>
+  <section class="life-suite-panel" data-life-panel="career">
+   <div class="life-suite-heading"><div><span class="life-kicker">CAREER & PROFESSIONAL GROWTH</span><h3>Career Coach</h3><p>Prepare your next career move with structured, practical guidance.</p></div></div>
+   <section class="life-suite-card"><form id="lifeCareerForm" class="life-suite-form"><label for="lifeCareerRequest">What would you like help with?</label><select id="lifeCareerType"><option value="Create a professional CV draft using only my supplied details. Mark missing information as placeholders.">Build or improve my CV</option><option value="Prepare me for a job interview with likely questions, strong answer structures and practice questions.">Prepare for an interview</option><option value="Create a realistic career roadmap with skills, portfolio projects and milestones.">Build a career roadmap</option><option value="Help me write a tailored, truthful cover letter for this role.">Write a cover letter</option><option value="Review my professional profile and suggest improvements.">Improve my professional profile</option></select><textarea id="lifeCareerRequest" rows="5" maxlength="5000" required placeholder="Share your experience, skills, target role or job description. Avoid including sensitive personal information."></textarea><button class="primary" type="submit" id="lifeCareerGenerate">Prepare career support ✧</button></form><div id="lifeCareerOutput" class="life-ai-output" aria-live="polite">Your career guidance will appear here.</div><div class="life-suite-actions"><button class="secondary" id="lifeCareerCopy" type="button" disabled>Copy result</button><span id="lifeCareerStatus" role="status"></span></div></section>
+   <section class="life-suite-card"><h4>Saved career drafts</h4><div id="lifeCareerLibrary" class="life-suite-list"></div></section>
+  </section>
+  <section class="life-suite-panel" data-life-panel="finance">
+   <div class="life-suite-heading"><div><span class="life-kicker">PERSONAL MONEY ORGANISATION</span><h3>Personal Finance</h3><p>Record your own income and spending, set a budget and understand your cash flow.</p></div></div>
+   <div class="life-finance-summary"><article><span>RECORDED INCOME</span><strong id="lifeFinanceIncome">$0.00</strong></article><article><span>RECORDED EXPENSES</span><strong id="lifeFinanceExpense">$0.00</strong></article><article><span>RECORDED BALANCE</span><strong id="lifeFinanceBalance">$0.00</strong></article></div>
+   <section class="life-suite-card"><h4>Monthly spending budget</h4><form id="lifeBudgetForm" class="life-suite-form"><div class="life-suite-field-row"><div><label for="lifeBudgetAmount">Monthly budget amount</label><input id="lifeBudgetAmount" type="number" min="0" step="0.01" placeholder="Set a spending limit"></div><div><label for="lifeBudgetCurrency">Budget currency</label><select id="lifeBudgetCurrency"><option>USD</option><option>UGX</option><option>EUR</option><option>GBP</option><option>KES</option><option>NGN</option><option>ZAR</option><option>CAD</option><option>AUD</option><option>INR</option><option>JPY</option><option>AED</option><option>GHS</option><option>TZS</option></select></div></div><button class="secondary" type="submit">Save monthly budget</button><div id="lifeBudgetProgress" class="life-budget-progress" aria-live="polite">Set a budget to track monthly spending.</div></form></section>
+   <section class="life-suite-card"><h4>Record a transaction</h4><form id="lifeFinanceForm" class="life-suite-form"><div class="life-suite-field-row"><div><label for="lifeFinanceType">Type</label><select id="lifeFinanceType"><option value="expense">Expense</option><option value="income">Income</option></select></div><div><label for="lifeFinanceAmount">Amount</label><input id="lifeFinanceAmount" type="number" min="0.01" step="0.01" required placeholder="0.00"></div><div><label for="lifeFinanceCurrency">Currency</label><select id="lifeFinanceCurrency"><option>USD</option><option>UGX</option><option>EUR</option><option>GBP</option><option>KES</option><option>NGN</option><option>ZAR</option><option>CAD</option><option>AUD</option><option>INR</option><option>JPY</option><option>AED</option><option>GHS</option><option>TZS</option></select></div></div><div class="life-suite-field-row"><div><label for="lifeFinanceCategory">Category</label><input id="lifeFinanceCategory" maxlength="80" required placeholder="e.g. Food, salary, transport"></div><div><label for="lifeFinanceDate">Date</label><input id="lifeFinanceDate" type="date" required></div></div><label for="lifeFinanceNote">Note (optional)</label><input id="lifeFinanceNote" maxlength="180" placeholder="Add a short note"><button class="primary" type="submit">Save transaction</button></form></section>
+   <section class="life-suite-card"><div class="life-suite-heading"><h4>Recent transactions</h4><span class="life-count">Manual entries only</span></div><div id="lifeFinanceList" class="life-suite-list"></div></section>
+   <p class="life-disclaimer">VEXT LIFE does not connect to your bank or verify transactions. This tool is for personal record-keeping and education, not regulated financial advice.</p>
+  </section>
+  <section class="life-suite-panel" data-life-panel="wellness">
+   <div class="life-suite-heading"><div><span class="life-kicker">PERSONAL WELLBEING</span><h3>Wellness & Habits</h3><p>Build consistent routines with simple daily check-ins.</p></div></div>
+   <section class="life-suite-card"><form id="lifeHabitForm" class="life-suite-form life-habit-add"><label for="lifeHabitName">Add a habit you want to build</label><div class="life-suite-field-row"><input id="lifeHabitName" maxlength="100" required placeholder="e.g. Read for 20 minutes"><button class="primary" type="submit">Add habit +</button></div></form></section>
+   <section class="life-suite-card"><div class="life-suite-heading"><h4>Today's habits</h4><span id="lifeHabitToday" class="life-count">0 completed</span></div><div id="lifeHabitList" class="life-suite-list"></div></section>
+   <section class="life-suite-card"><h4>Daily reflection</h4><label for="lifeReflection">What's one thing you're grateful for or proud of today?</label><textarea id="lifeReflection" rows="3" maxlength="1000" placeholder="Write a private note for yourself..."></textarea><div class="life-suite-actions"><button class="secondary" id="lifeReflectionSave" type="button">Save reflection</button><span id="lifeReflectionStatus" role="status"></span></div></section>
+   <p class="life-disclaimer">Wellness tools support everyday routines and reflection. They do not diagnose, treat or replace professional healthcare.</p>
+  </section>
+  <section class="life-suite-panel" data-life-panel="assistant">
+   <div class="life-suite-heading"><div><span class="life-kicker">YOUR PERSONAL AI COMPANION</span><h3>Talk it through.</h3><p>Ask questions, explore ideas and get practical help with everyday decisions.</p></div><span class="life-status">● READY</span></div>
+   <section class="life-suite-card"><div id="lifeSuiteMessages" class="life-suite-messages" aria-live="polite"><div class="life-empty">Hello. What would you like help with today?</div></div><form id="lifeSuiteChatForm" class="life-suite-chat"><textarea id="lifeSuiteChatInput" rows="2" maxlength="5000" required placeholder="Ask VEXT LIFE anything..."></textarea><button class="primary" id="lifeSuiteChatSend" type="submit">Send →</button></form><p class="life-disclaimer">Your personal chat is stored in your VEXT LIFE workspace. Do not share passwords, payment details or other highly sensitive information.</p></section>
+  </section>
+  <p class="life-suite-footer">VEXT LIFE · Personal workspace · Shared intelligence through VEXT NEXUS</p>
+ </div>
  <div class="life-hero">
   <div><span class="life-kicker">VEXT AI / PERSONAL INTELLIGENCE</span><h2>Your life, with more clarity.</h2><p>A personal AI space for thinking, learning, planning and moving your goals forward.</p><div class="life-hero-note">VEXT LIFE · First experience</div></div>
   <div class="life-orbit" aria-hidden="true"><span>✦</span></div>
@@ -765,6 +822,7 @@
 <script src="./assets/js/features/automation.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 <script src="./assets/js/features/life.js" defer></script>
+<script src="./assets/js/features/life-suite.js" defer></script>
 <script src="./assets/js/auth.js" defer></script>
 
 </body>

@@ -10,6 +10,8 @@ const utilsSource = readFileSync("assets/js/core/utils.js", "utf8");
 const crm = readFileSync("assets/js/features/crm.js", "utf8");
 const management = readFileSync("assets/js/features/management.js", "utf8");
 const automation = readFileSync("assets/js/features/automation.js", "utf8");
+const lifeSuite = readFileSync("assets/js/features/life-suite.js", "utf8");
+const lifeCss = readFileSync("assets/css/life-suite.css", "utf8");
 const intelligenceContext = readFileSync("assets/js/core/intelligence-context.js", "utf8");
 const worker = readFileSync("cloudflare-worker.js", "utf8");
 
@@ -18,6 +20,15 @@ assert.match(html, /data-workspace-switch="business"/, "Sidebar must expose VEXT
 assert.match(html, /data-workspace-switch="life"/, "Sidebar must expose VEXT LIFE workspace switch");
 assert.match(html, /id="marketingDeliverable"/, "Marketing Studio must offer campaign deliverable types");
 assert.match(html, /id="marketingRegion"/, "Marketing Studio must capture target market");
+assert.match(html, /data-life-tab="planner"/, "VEXT LIFE must expose the Life Planner");
+assert.match(html, /data-life-tab="learning"/, "VEXT LIFE must expose the Study Coach");
+assert.match(html, /data-life-tab="career"/, "VEXT LIFE must expose the Career Coach");
+assert.match(html, /data-life-tab="finance"/, "VEXT LIFE must expose Personal Finance");
+assert.match(html, /data-life-tab="wellness"/, "VEXT LIFE must expose Wellness and Habits");
+assert.match(html, /assets\/css\/life-suite\.css/, "VEXT LIFE suite stylesheet must load");
+assert.match(html, /assets\/js\/features\/life-suite\.js" defer/, "VEXT LIFE suite module must load");
+assert.ok(lifeSuite.includes("window.VEXTLifeRefresh"), "VEXT LIFE must refresh after account workspace hydration");
+assert.ok(lifeCss.length > 1000, "VEXT LIFE suite must include its own responsive styles");
 assert.match(html, /\.\/assets\/js\/core\/utils\.js" defer/, "HTML must load core utilities with defer");
 assert.match(html, /\.\/assets\/js\/features\/crm\.js" defer/, "HTML must load CRM feature module with defer");
 assert.match(html, /\.\/assets\/js\/app\.js" defer/, "HTML must load the application script with defer");

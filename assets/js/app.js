@@ -9,7 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
-const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts"];
+const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","life_tasks","life_goals","life_study","life_career","life_finance","life_habits","life_chat","life_reflection","life_budget"];
 function workspaceSnapshot(){
  return {
   leads:read("leads",[]),invoices:read("invoices",[]),logs:read("logs",[]),
@@ -24,7 +24,8 @@ function workspaceSnapshot(){
   audit_reports:read("audit_reports",[]),
   business_analysis_reports:read("business_analysis_reports",[]), management_actions:read("management_actions",[]),
   nexus_tasks:read("nexus_tasks",[]), notifications:read("notifications",[]),
-  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[])
+  automation_settings:read("automation_settings",{}), automation_runs:read("automation_runs",[]), marketing_drafts:read("marketing_drafts",[]),
+  life_tasks:read("life_tasks",[]), life_goals:read("life_goals",[]), life_study:read("life_study",[]), life_career:read("life_career",[]), life_finance:read("life_finance",[]), life_habits:read("life_habits",[]), life_chat:read("life_chat",[]), life_reflection:read("life_reflection",{}), life_budget:read("life_budget",{})
  };
 }
 function getWorkspaceRecoveryHistory(){
@@ -125,6 +126,7 @@ async function writeAndSync(k,v){
  clearTimeout(vextWorkspaceSyncTimer);
  return await syncWorkspaceNow();
 }
+window.VEXTLifeStore=Object.freeze({read:(name,fallback=[])=>read("life_"+name,fallback),write:(name,value)=>write("life_"+name,value),writeAndSync:(name,value)=>writeAndSync("life_"+name,value),getAccessToken:()=>getVextAccessToken(),endpoint:()=>VEXT_CHAT_ENDPOINT});
 const {id,esc,formatMoney}=window.VEXTUtils;
 function currentCurrency(){return $("currency").value}
 function log(message){
@@ -743,6 +745,7 @@ window.vextActivateUserData=async function(user){
   $("supportBusinessId").textContent=supportBusinessId;
   $("supportWidgetCode").value="";
   renderChatHistory();renderSupportChat();render();
+  if(typeof window.VEXTLifeRefresh==="function")window.VEXTLifeRefresh();
   if(typeof vextNotifications!=="undefined")vextNotifications.resetBaseline();
   if(!hasRemote)await syncWorkspaceNow();
   else if(recoveredMissingFields){
