@@ -1,0 +1,46 @@
+/* VEXT LIFE complete personal workspace */
+#life.life-suite-ready>.life-hero,#life.life-suite-ready>.life-workspace-grid{display:none!important}
+.life-suite{display:grid;gap:16px;color:#e5f1fc}
+.life-suite-hero{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:205px;padding:30px 34px;border:1px solid rgba(70,175,220,.3);border-radius:17px;background:radial-gradient(circle at 82% 40%,rgba(22,145,190,.2),transparent 30%),linear-gradient(115deg,#10243a,#09192b 70%,#0b263d);box-shadow:0 16px 38px rgba(0,0,0,.16)}
+.life-suite-hero h2{margin:10px 0 8px;font-size:clamp(25px,3vw,35px);letter-spacing:-.8px;color:#f1f8ff}.life-suite-hero p{max-width:650px;margin:0;color:#a6bbce;font-size:13px;line-height:1.7}
+.life-suite-meta{display:flex;flex-wrap:wrap;gap:15px;margin-top:19px;color:#82dff5;font-size:9px;font-weight:800;letter-spacing:1px}
+.life-suite-orb{width:116px;height:116px;flex:0 0 116px;display:grid;place-items:center;border:1px solid rgba(94,207,244,.4);border-radius:50%;background:radial-gradient(circle at 35% 30%,#267da2,#102944 70%);box-shadow:0 0 55px rgba(26,160,211,.22),inset 0 0 30px rgba(112,224,255,.12);font-size:40px;font-weight:900;color:#d2f6ff}
+.life-suite-nav{display:flex;gap:7px;overflow-x:auto;padding:5px 1px 10px;scrollbar-width:thin}
+.life-suite-nav button{flex:0 0 auto;padding:10px 13px;border:1px solid rgba(91,154,190,.2);border-radius:8px;background:#0c1c30;color:#9db4c9;font-size:10px;font-weight:750;cursor:pointer}
+.life-suite-nav button:hover,.life-suite-nav button.active{color:#e7f8ff;border-color:rgba(74,193,231,.45);background:linear-gradient(130deg,rgba(22,105,145,.42),rgba(15,45,72,.8))}
+.life-suite-panel{display:none;gap:15px}.life-suite-panel.active{display:grid}
+.life-suite-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.life-suite-heading h3{margin:6px 0;font-size:21px;color:#edf7ff}.life-suite-heading p{margin:0;color:#94abc0;font-size:12px;line-height:1.65}
+.life-suite-stats,.life-finance-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.life-suite-stats article,.life-finance-summary article{padding:17px;border:1px solid rgba(87,155,194,.2);border-radius:12px;background:linear-gradient(145deg,#12263c,#0b192b)}
+.life-suite-stats article span,.life-finance-summary article span{display:block;color:#91abc2;font-size:9px;font-weight:800;letter-spacing:1px}
+.life-suite-stats article strong,.life-finance-summary article strong{display:block;margin:8px 0 4px;color:#e8f7ff;font-size:25px;overflow-wrap:anywhere}
+.life-suite-stats article small{color:#829bb2;font-size:10px}
+.life-suite-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.life-suite-quick-grid button{display:grid;justify-items:start;gap:7px;min-height:150px;padding:17px;border:1px solid rgba(83,154,194,.2);border-radius:12px;background:linear-gradient(145deg,#11253a,#0b192b);color:#dcecf8;text-align:left;cursor:pointer}
+.life-suite-quick-grid button>span{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1px solid rgba(65,183,225,.25);background:rgba(27,136,178,.12);color:#8de5ff;font-size:18px}
+.life-suite-quick-grid button strong{font-size:13px}.life-suite-quick-grid button small{color:#8fa8bf;font-size:10px}.life-suite-quick-grid button b{margin-top:auto;color:#79d9f2;font-size:10px}
+.life-suite-card{min-width:0;padding:20px;border:1px solid rgba(80,149,188,.2);border-radius:13px;background:linear-gradient(145deg,#102137,#0a1829)}
+.life-suite-card h4{margin:0 0 15px;color:#e8f5ff;font-size:14px}.life-suite-card .life-suite-heading h4{margin:0}
+.life-suite-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.life-suite-form{display:grid;gap:10px}.life-suite-form label,.life-suite-card>label{display:block;color:#a9bfd2;font-size:11px;font-weight:700}
+.life-suite-form input,.life-suite-form select,.life-suite-form textarea,.life-suite-card>textarea,.life-suite-chat textarea{width:100%;min-width:0;padding:11px 12px;border:1px solid rgba(100,163,194,.25);border-radius:8px;background:#071727;color:#e7f4fc;font:inherit;font-size:12px}
+.life-suite-form textarea{resize:vertical;line-height:1.6}.life-suite-field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.life-suite-field-row>div{min-width:0}.life-suite-field-row label{margin-bottom:6px}
+.life-suite-form button{justify-self:start;margin-top:3px}.life-suite-list{display:grid;gap:8px}.life-suite-list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid rgba(104,158,190,.14);border-radius:9px;background:rgba(5,16,29,.42)}
+.life-suite-list-row strong{display:block;color:#dcebf6;font-size:12px;overflow-wrap:anywhere}.life-suite-list-row small{display:block;margin-top:4px;color:#8fa8be;font-size:10px;line-height:1.5}
+.life-suite-list-row button{flex:0 0 auto;padding:7px 9px;font-size:10px}.life-suite-list-row .life-done{color:#68e2ad}
+.life-empty{padding:13px;color:#849db4;font-size:11px;line-height:1.6}.life-count{color:#83d8ee;font-size:10px}
+.life-ai-output{min-height:150px;max-height:560px;overflow:auto;margin-top:15px;padding:16px;border:1px solid rgba(87,153,188,.18);border-radius:9px;background:rgba(4,13,25,.52);color:#d7e8f5;font-size:12px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+.life-suite-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}.life-suite-actions span{color:#8fa8be;font-size:10px}
+.life-finance-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.life-finance-summary article strong{font-size:21px}
+.life-habit-add .life-suite-field-row{grid-template-columns:minmax(0,1fr) auto}.life-habit-add button{align-self:end}
+.life-disclaimer{margin:0;color:#829bb2;font-size:10px;line-height:1.6}
+.life-suite-messages{display:flex;flex-direction:column;gap:10px;min-height:260px;max-height:540px;overflow:auto;padding:8px 0 16px}
+.life-suite-message{max-width:88%;padding:12px 14px;border:1px solid rgba(77,148,183,.2);border-radius:11px;background:rgba(8,27,45,.8);color:#d8e9f4;font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.life-suite-message.user{align-self:flex-end;background:rgba(12,75,105,.35);border-color:rgba(34,211,238,.24)}
+.life-suite-message.assistant{align-self:flex-start}
+.life-suite-chat{display:flex;align-items:flex-end;gap:9px;padding-top:13px;border-top:1px solid rgba(86,145,174,.16)}
+.life-suite-chat textarea{flex:1;min-height:48px;max-height:150px;resize:vertical}.life-suite-chat button{min-height:45px}
+.life-suite-footer{margin:2px 0;color:#6f899f;text-align:center;font-size:9px;letter-spacing:.7px}
+@media(max-width:900px){.life-suite-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.life-suite-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.life-suite-hero{min-height:0;padding:22px}.life-suite-orb{width:70px;height:70px;flex-basis:70px;font-size:25px}.life-suite-two-col{grid-template-columns:1fr}.life-suite-quick-grid{grid-template-columns:1fr 1fr}.life-suite-card{padding:15px}.life-suite-chat{align-items:stretch;flex-direction:column}.life-suite-chat button{align-self:flex-end}}
+@media(max-width:430px){.life-suite-orb{display:none}.life-suite-stats{grid-template-columns:1fr 1fr}.life-finance-summary{grid-template-columns:1fr}.life-suite-quick-grid{grid-template-columns:1fr}.life-suite-field-row{grid-template-columns:1fr}.life-habit-add .life-suite-field-row{grid-template-columns:1fr}}
