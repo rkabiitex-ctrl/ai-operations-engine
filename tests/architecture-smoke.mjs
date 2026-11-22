@@ -155,7 +155,7 @@ assert.ok(worker.includes("INSERT OR IGNORE INTO billing_webhook_events"), "Webh
 assert.ok(worker.includes("sandbox-api.paddle.com"), "Checkout must use the Paddle Sandbox API");
 assert.ok(paddleMigration.includes("CREATE TABLE IF NOT EXISTS billing_subscriptions"), "D1 migration must create subscription storage");
 assert.ok(paddleMigration.includes("CREATE TABLE IF NOT EXISTS billing_webhook_events"), "D1 migration must create webhook idempotency storage");
-\nconsole.log("VEXT architecture smoke checks passed.");
+console.log("VEXT architecture smoke checks passed.");
 
 assert.match(app, /async function writeAndSync/, "Critical Management Action writes must support immediate cloud persistence");
 assert.match(app, /if\(!Object\.prototype\.hasOwnProperty\.call\(workspace,name\)\)return/, "Older cloud snapshots must not delete newer local workspace fields");
