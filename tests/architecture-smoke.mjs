@@ -102,6 +102,14 @@ for (const key of frontendKeys) {
 }
 assert.match(worker, /key === "nexus_tasks" \? 100/, "NEXUS task count must be bounded");
 assert.match(worker, /key === "marketing_drafts"/, "Worker must validate marketing drafts");
+assert.match(html, /id="generateMarketingVideo"/, "Marketing Studio must expose actual video generation");
+assert.match(html, /id="marketingVideoLibrary"/, "Marketing Studio must expose a generated video library");
+assert.match(app, /api\/admin\/video\/generate/, "Frontend must submit video renders through the authenticated Worker");
+assert.match(app, /api\/admin\/video\/status/, "Frontend must retrieve video render results through the Worker");
+assert.match(worker, /FAL_VIDEO_MODEL/, "Worker must use the configured hosted video model");
+assert.match(worker, /env\.FAL_KEY/, "Video provider credentials must remain server-side");
+assert.match(worker, /VIDEO_DAILY_LIMIT = 3/, "Video rendering must have a per-account daily usage limit");
+assert.match(worker, /video_generation_jobs/, "Worker must bind render status checks to the requesting account");
 assert.match(worker, /key === "management_actions" \? 1000/, "Management action count must be bounded");
 assert.match(worker, /"management_actions", "nexus_tasks", "notifications"\]\.includes\(key\)/, "Worker must validate action and NEXUS task data as arrays");
 
