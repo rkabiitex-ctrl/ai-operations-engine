@@ -140,7 +140,7 @@ assert.match(app, /data-nexus-create-action/, "Approved NEXUS tasks must expose 
 assert.match(app, /function extractNexusActionTitle/, "Action bridge must derive a reviewable action title");
 assert.ok(management.includes("sourceNexusTaskId"), "Management actions created from NEXUS must retain their source task");
 assert.ok(automation.includes("async function handleNewLead"), "Automation must process newly created client events");
-assert.ok(automation.includes("writeAndSync(\"management_actions\",actions)"), "Automation-created follow-ups must be persisted");
+assert.ok(automation.includes('persist("management_actions",actions)'), "Automation-created follow-ups must be persisted");
 assert.ok(management.includes('sourceTask.status!=="Approved"'), "Only approved NEXUS tasks may create management actions");
 
 console.log("VEXT architecture smoke checks passed.");
