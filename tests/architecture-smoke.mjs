@@ -154,3 +154,12 @@ assert.match(app, /Local data found before cloud refresh/, "Local records must b
 assert.match(app, /function restoreWorkspaceRecovery/, "Users must be able to restore a recovery checkpoint");
 assert.ok(app.includes("if(!Object.prototype.hasOwnProperty.call(mergedRemote,name)&&"), "Missing cloud fields must be recovered from the local snapshot");
 assert.ok(html.includes('id="workspaceRecoveryStatus"')&&html.includes('id="restoreWorkspaceRecovery"'), "Settings must expose the recovery status and restore control");
+
+assert.match(html, /id="automationCondition"/, "Automation must expose conditional workflow rules");
+assert.match(html, /id="automationRequireApproval"/, "Automation must expose human approval gates");
+assert.match(html, /id="automationRetryCount"/, "Automation must expose bounded retry settings");
+assert.match(automation, /async function executeRun/, "Automation must execute multi-step workflows");
+assert.match(automation, /status==="awaiting_approval"/, "Automation runs must wait for human approval");
+assert.match(automation, /maxRetries=Math\.min\(2/, "Automation retries must be bounded to two retries");
+assert.match(automation, /sourceAutomationRunId/, "Workflow steps must be idempotent across retries");
+assert.match(worker, /workflowEnabled: value\.workflowEnabled === true/, "Worker must validate advanced automation settings");
