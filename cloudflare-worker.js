@@ -175,7 +175,7 @@ export default {
           if (!body || !body.workspace || typeof body.workspace !== "object" || Array.isArray(body.workspace)) {
             return json({ error: "A workspace object is required." }, 400, cors);
           }
-          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts"];
+          const allowed = ["leads", "invoices", "logs", "currency", "business", "country", "support_settings", "support_business_id", "chat_history", "chat_conversations", "active_chat_id", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications", "automation_settings", "automation_runs", "marketing_drafts", "life_tasks", "life_goals", "life_study", "life_career", "life_finance", "life_habits", "life_chat", "life_reflection", "life_budget"];
           const workspace = {};
           for (const key of allowed) {
             if (!Object.prototype.hasOwnProperty.call(body.workspace, key)) continue;
@@ -183,7 +183,23 @@ export default {
             if (key === "marketing_drafts") {
                if (!Array.isArray(value) || value.length > 30) return json({ error: "marketing_drafts must be an array of up to 30 drafts." }, 400, cors);
                workspace[key] = value.map(draft => ({ title: clean(draft && draft.title, 100), content: clean(draft && draft.content, 30000), createdAt: clean(draft && draft.createdAt, 40) })).filter(draft => draft.content);
-             } else if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"].includes(key)) {
+             } else if (["life_tasks", "life_goals", "life_study", "life_career", "life_finance", "life_habits", "life_chat"].includes(key)) {
+              if (!Array.isArray(value)) return json({ error: key + " must be an array." }, 400, cors);
+              const limits = { life_tasks: 300, life_goals: 100, life_study: 100, life_career: 100, life_finance: 500, life_habits: 100, life_chat: 60 };
+              if (value.length > limits[key]) return json({ error: key + " contains too many items." }, 400, cors);
+              if (key === "life_chat") {
+                workspace[key] = value.map(item => ({ role: item && item.role === "assistant" ? "assistant" : "user", content: clean(item && item.content, 5000) })).filter(item => item.content);
+              } else {
+                workspace[key] = value;
+              }
+            } else if (key === "life_reflection") {
+              if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "life_reflection must be an object." }, 400, cors);
+              workspace[key] = Object.fromEntries(Object.entries(value).slice(-60).map(([day, note]) => [clean(day, 10), clean(note, 1000)]).filter(([day, note]) => day && note));
+            } else if (key === "life_budget") {
+              if (!value || typeof value !== "object" || Array.isArray(value)) return json({ error: "life_budget must be an object." }, 400, cors);
+              const amount = Number(value.amount);
+              workspace[key] = { amount: Number.isFinite(amount) && amount > 0 ? amount : 0, currency: clean(value.currency, 5), month: clean(value.month, 7) };
+            } else if (["leads", "invoices", "logs", "chat_history", "chat_conversations", "audit_reports", "business_analysis_reports", "management_actions", "nexus_tasks", "notifications"].includes(key)) {
               if (!Array.isArray(value)) return json({ error: key + " must be an array." }, 400, cors);
               const maxItems = key === "nexus_tasks" ? 100 : key === "management_actions" ? 1000 : (key === "chat_history" || key === "audit_reports" || key === "business_analysis_reports") ? 50 : key === "notifications" ? 150 : 5000;
               if (value.length > maxItems) return json({ error: key + " contains too many items." }, 400, cors);
