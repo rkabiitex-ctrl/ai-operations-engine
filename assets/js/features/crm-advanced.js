@@ -7,7 +7,7 @@ window.VEXTCRMAdvanced=(()=>{
   if(!deps)return;
   const leads=deps.read("leads",[]),clients=Array.isArray(leads)?leads:[];
   const today=new Date();today.setHours(0,0,0,0);
-  const recent=clients.filter(c=>{const d=safeDate(c.lastInteractionAt||c.created||c.createdAt);return d&&today-d<30*86400000;}).length;
+  const recent=clients.filter(c=>{const d=safeDate(c.lastInteractionAt||c.created||c.createdAt);return d&&today-d>=0&&today-d<30*86400000;}).length;
   const atRisk=clients.filter(c=>c.segment==="At risk"||(()=>{const d=safeDate(c.lastInteractionAt||c.created||c.createdAt);return d&&today-d>45*86400000;})()).length;
   const active=clients.filter(c=>c.segment==="Active"||c.segment==="High value").length;
   const segments=["New","Active","High value","At risk","Partner"];
@@ -59,6 +59,7 @@ window.VEXTCRMAdvanced=(()=>{
     client.lastInteractionAt=now;
    }
    deps.write("leads",all);
+   if(deps.renderClientProfile&&$("clientProfilePanel").dataset.clientId===client.id)deps.renderClientProfile(client.id);
    $("crmRelationshipInteraction").value="";
    $("crmRelationshipStatus").textContent="Relationship profile saved"+(interaction?" and interaction added to timeline.":".");
    render();
