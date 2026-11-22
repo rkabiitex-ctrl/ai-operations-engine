@@ -44,3 +44,5 @@
 @media(max-width:900px){.life-suite-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.life-suite-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.life-suite-hero{min-height:0;padding:22px}.life-suite-orb{width:70px;height:70px;flex-basis:70px;font-size:25px}.life-suite-two-col{grid-template-columns:1fr}.life-suite-quick-grid{grid-template-columns:1fr 1fr}.life-suite-card{padding:15px}.life-suite-chat{align-items:stretch;flex-direction:column}.life-suite-chat button{align-self:flex-end}}
 @media(max-width:430px){.life-suite-orb{display:none}.life-suite-stats{grid-template-columns:1fr 1fr}.life-finance-summary{grid-template-columns:1fr}.life-suite-quick-grid{grid-template-columns:1fr}.life-suite-field-row{grid-template-columns:1fr}.life-habit-add .life-suite-field-row{grid-template-columns:1fr}}
+
+.life-budget-progress{margin-top:8px;padding:10px;border-radius:8px;background:rgba(6,25,41,.7);border:1px solid rgba(85,158,192,.18);color:#91dff2;font-size:11px;line-height:1.6}
