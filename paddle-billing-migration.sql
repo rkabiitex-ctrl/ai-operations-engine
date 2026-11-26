@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS billing_subscriptions (
   price_id TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('active', 'trialing', 'past_due', 'paused', 'canceled', 'inactive')),
   next_billed_at TEXT NOT NULL DEFAULT '',
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_event_at TEXT NOT NULL DEFAULT ''
 );
 
 CREATE INDEX IF NOT EXISTS idx_billing_subscriptions_status
