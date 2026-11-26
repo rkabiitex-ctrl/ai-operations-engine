@@ -152,6 +152,9 @@ assert.ok(worker.includes("/api/billing/status"), "Worker must expose account-ow
 assert.ok(worker.includes("/api/billing/webhook"), "Worker must expose Paddle webhook handling");
 assert.ok(worker.includes("verifyPaddleSignature") && worker.includes("Paddle-Signature"), "Webhook handler must verify Paddle signatures");
 assert.ok(worker.includes("INSERT OR IGNORE INTO billing_webhook_events"), "Webhook processing must be idempotent");
+assert.ok(worker.includes("Date.parse(event.occurred_at"), "Subscription webhooks must validate provider event timestamps");
+assert.ok(worker.includes("excluded.last_event_at >= billing_subscriptions.last_event_at"), "Older subscription events must not overwrite newer state");
+assert.ok(paddleMigration.includes("last_event_at TEXT NOT NULL DEFAULT ''"), "Subscription storage must retain the last provider event timestamp");
 assert.ok(worker.includes("sandbox-api.paddle.com"), "Checkout must use the Paddle Sandbox API");
 assert.ok(paddleMigration.includes("CREATE TABLE IF NOT EXISTS billing_subscriptions"), "D1 migration must create subscription storage");
 assert.ok(paddleMigration.includes("CREATE TABLE IF NOT EXISTS billing_webhook_events"), "D1 migration must create webhook idempotency storage");
