@@ -9,6 +9,7 @@ let vextWorkspaceSyncBusy=false;
 let vextWorkspaceSyncQueued=false;
 let vextWorkspaceLoadPromise=null;
 let vextPreserveRecoveryCheckpoint=false;
+let vextBusinessMemory=null;
 const VEXT_WORKSPACE_KEYS=["leads","invoices","logs","currency","business","country","support_settings","support_business_id","chat_history","chat_conversations","active_chat_id","audit_reports","business_analysis_reports","management_actions","nexus_tasks","notifications","automation_settings","automation_runs","marketing_drafts","life_tasks","life_goals","life_study","life_career","life_finance","life_habits","life_chat","life_reflection","life_budget","billing_subscription","billing_events"];
 function workspaceSnapshot(){
  return {
@@ -175,7 +176,7 @@ $("nexusTaskForm").addEventListener("submit",async e=>{
  const workspaceContext=window.VEXTContext.build({read,currentCurrency,business:localStorage.getItem(key+"business")||"VEXT AI",country:localStorage.getItem(key+"country")||""});
  const message=(NEXUS_AGENT_GUIDANCE[agent]||NEXUS_AGENT_GUIDANCE["Business Analyst"])+"\n\nCURRENT WORKSPACE CONTEXT (aggregated records; may be incomplete and are not independently verified):\n"+JSON.stringify(workspaceContext)+"\n\nVEXT NEXUS RULES:\n- Use only facts supplied in this request. State assumptions and missing information.\n- For Management Actions reviews, use governance.managementActionRecords for each saved action and governance.actionExecution for calculated counts. Do not claim owner or due-date fields are missing when they are present in those records.\n- Produce a structured, actionable professional deliverable.\n- Do not claim access to external accounts, websites, private databases or live data.\n- Do not claim to have executed actions, contacted people, published content, changed records or spent money.\n- Identify material risks and where human verification is required.\n\nPRIORITY: "+priority+"\nUSER TASK:\n"+prompt;
  try{
-  const token=await getVextAccessToken(),response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:2400,history:[]})}),data=await response.json().catch(()=>({}));
+  const token=await getVextAccessToken(),response=await fetch(VEXT_CHAT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({message,maxOutputTokens:2400,history:[],businessId:supportBusinessId})}),data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("AI request failed ("+response.status+")"));
   const result=typeof data.reply==="string"?data.reply.trim():(typeof data.output_text==="string"?data.output_text.trim():"");if(!result)throw new Error("The AI service returned an empty response.");
   const current=read("nexus_tasks",[]),saved=current.find(x=>x.id===task.id);if(saved){saved.result=result;saved.status="Awaiting review";saved.completedAt=new Date().toISOString();write("nexus_tasks",current);}
@@ -229,9 +230,9 @@ function navigate(page){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".nav[data-page]").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
  const target=$(page);if(!target)return;target.classList.add("active");
- const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","sales-intelligence":"Sales Intelligence","customer-support":"AI Customer Support Desk",marketing:"VEXT Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre",life:"VEXT LIFE · Personal Intelligence"};
+ const titles={dashboard:"Business Overview",nexus:"VEXT NEXUS Command Centre",ai:"AI Workspace",leads:"Client Management",invoices:"Invoice Management",chat:"VEXT AI Chat",support:"Sales Agent","sales-intelligence":"Sales Intelligence","customer-support":"AI Customer Support Desk",marketing:"VEXT Marketing Studio",employees:"AI Employees",analytics:"Business Analytics",audit:"AI Audit Centre",settings:"Platform Settings",pricing:"VEXT AI Pricing",intelligence:"VEXT AI Intelligence Centre","business-memory":"Business Memory",life:"VEXT LIFE · Personal Intelligence"};
  $("pageTitle").textContent=titles[page]||(page==="notifications"?"Notification Centre":"VEXT AI");
- if(page==="pricing")vextBilling.render();if(page==="sales-intelligence")vextSalesIntelligence.render();if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
+ if(page==="pricing")vextBilling.render();if(page==="business-memory"&&vextBusinessMemory)vextBusinessMemory.render();if(page==="sales-intelligence")vextSalesIntelligence.render();if(page==="notifications")vextNotifications.render();if(page==="intelligence")vextIntelligence.render();if(page==="automation")vextAutomation.render();if(page==="marketing")renderMarketingHistory();
 }
 applyVextWorkspace("business");
 document.querySelectorAll(".nav[data-page]").forEach(n=>n.addEventListener("click",()=>navigate(n.dataset.page)));
@@ -431,7 +432,7 @@ async function sendChatMessage(){
   const response=await fetch(VEXT_CHAT_ENDPOINT,{
    method:"POST",
    headers:{"Content-Type":"application/json","Authorization":"Bearer "+accessToken},
-   body:JSON.stringify({message,history:history.slice(-12)})
+   body:JSON.stringify({message,history:history.slice(-12),businessId:supportBusinessId})
   });
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||("Request failed ("+response.status+")"));
@@ -652,6 +653,7 @@ function getSupportBusinessId(){
 let supportBusinessId=getSupportBusinessId();
 let cloudSupportLeads=[];
 $("supportBusinessId").textContent=supportBusinessId;
+vextBusinessMemory=window.VEXTBusinessMemory.init({$: $,getAccessToken:getVextAccessToken,endpoint:VEXT_CHAT_ENDPOINT,getBusinessId:()=>supportBusinessId,getBusinessName:()=>getSupportSettings().business});
 function renderSupportChat(){
  const area=$("supportMessages");area.replaceChildren();
  const settings=getSupportSettings();
