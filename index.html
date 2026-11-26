@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="./assets/css/life-suite.css">
 <link rel="stylesheet" href="./assets/css/sales-intelligence.css">
 <link rel="stylesheet" href="./assets/css/billing.css">
+<link rel="stylesheet" href="./assets/css/business-memory.css">
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js" defer></script>
 
 </head>
@@ -101,6 +102,7 @@
  <button class="nav" data-page="invoices" data-workspace-nav="business">▤ &nbsp; Invoices</button>
  <div class="nav-label" data-workspace-nav="business">MANAGEMENT</div>
  <button class="nav" data-page="intelligence" data-workspace-nav="business">✧ &nbsp; Intelligence Centre</button>
+ <button class="nav" data-page="business-memory" data-workspace-nav="business">▤ &nbsp; Business Memory</button>
  <button class="nav" data-page="analytics" data-workspace-nav="business">▥ &nbsp; Analytics</button>
  <button class="nav" data-page="audit" data-workspace-nav="business">⌕ &nbsp; Audit Centre</button>
  <button class="nav" data-page="settings" data-workspace-nav="business">⚙ &nbsp; Settings</button>
@@ -622,6 +624,34 @@
  <p class="intel-disclaimer">DATA INTEGRITY · Invoice totals represent amounts issued, not accounting revenue. Payment status reflects records marked Paid and is not independently verified. Currency totals are not combined or converted. No unsupported growth or profit forecast is displayed.</p>
 </section>
 
+<section class="page" id="business-memory">
+ <div class="memory-hero">
+  <div><span class="memory-kicker">VEXT AI / PRIVATE BUSINESS KNOWLEDGE</span><h2>Business Memory</h2><p>Keep important business facts, policies and reference notes in one owner-controlled library. VEXT AI Chat and NEXUS can use these notes as context for internal work.</p></div>
+  <div class="memory-hero-mark" aria-hidden="true">▤</div>
+ </div>
+ <div class="memory-safety-note"><strong>Private workspace knowledge</strong><span>Entries are user-maintained and may be outdated. They are not independently verified and are not shared with the public website Sales Agent. Never store passwords, payment details or private customer records here.</span></div>
+ <div class="memory-layout">
+  <section class="memory-panel">
+   <div class="memory-panel-heading"><div><span class="memory-kicker">ADD / EDIT</span><h3 id="memoryEditorTitle">Add a knowledge note</h3><p>Save a useful fact, product detail, process or company policy.</p></div></div>
+   <form id="memoryForm">
+    <input id="memoryEntryId" type="hidden">
+    <div class="memory-field"><label for="memoryTitle">Title</label><input id="memoryTitle" maxlength="120" required placeholder="e.g. Refund policy"></div>
+    <div class="memory-field-grid">
+     <div class="memory-field"><label for="memorySourceType">Source type</label><select id="memorySourceType"><option value="manual">Owner note</option><option value="website">Website</option><option value="document">Document</option><option value="meeting">Meeting</option><option value="other">Other source</option></select></div>
+     <div class="memory-field"><label for="memorySourceLabel">Source label (optional)</label><input id="memorySourceLabel" maxlength="160" placeholder="e.g. company website / product handbook"></div>
+    </div>
+    <div class="memory-field"><label for="memoryContent">Knowledge</label><textarea id="memoryContent" rows="7" maxlength="4000" required placeholder="Write the business information VEXT AI should remember..."></textarea><small>Up to 4,000 characters per entry.</small></div>
+    <div class="memory-form-actions"><button class="primary" id="memorySaveButton" type="submit">Save knowledge</button><button class="secondary" id="memoryCancelEdit" type="button" hidden>Cancel edit</button></div>
+    <p id="memoryStatus" class="memory-status" role="status" aria-live="polite"></p>
+   </form>
+  </section>
+  <section class="memory-panel">
+   <div class="memory-library-heading"><div><span class="memory-kicker">KNOWLEDGE LIBRARY</span><h3>Saved business knowledge</h3><p id="memoryLibraryHint">Load your business notes.</p></div><div class="memory-library-actions"><span id="memoryCount" class="memory-count">0 entries</span><button class="secondary" id="memoryDeleteAll" type="button" disabled>Delete all</button></div></div>
+   <div id="memoryList" class="memory-list" aria-live="polite"><div class="memory-empty">Save your Sales Agent business profile first, then add knowledge here.</div></div>
+  </section>
+ </div>
+</section>
+
 <section class="page" id="notifications">
  <div class="notifications-hero"><div><span class="notifications-kicker">VEXT AI / WORKSPACE ACTIVITY</span><h2>Notification Centre</h2><p>Stay informed about customer activity and NEXUS work that needs your attention.</p></div><div class="notifications-hero-mark">♧</div></div>
  <div class="notifications-toolbar"><div><strong id="notificationUnread">0 unread</strong><span id="notificationTotal">0 total</span></div><div><button class="secondary" id="notificationMarkAll" type="button">Mark all as read</button><button class="secondary" id="notificationClearAll" type="button">Clear all</button></div></div>
@@ -804,6 +834,7 @@
 <script src="./assets/js/features/intelligence.js" defer></script>
 <script src="./assets/js/features/automation.js" defer></script>
 <script src="./assets/js/features/billing.js" defer></script>
+<script src="./assets/js/features/business-memory.js" defer></script>
 <script src="./assets/js/app.js" defer></script>
 <script src="./assets/js/features/life.js" defer></script>
 <script src="./assets/js/features/life-suite.js" defer></script>
