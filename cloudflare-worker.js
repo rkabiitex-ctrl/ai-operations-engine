@@ -118,12 +118,15 @@ async function handlePaddleWebhook(request,env) {
  if(!userId||!subId.startsWith("sub_"))return json({error:"Missing VEXT account reference."},400);
  const first=Array.isArray(data.items)?data.items[0]:null,priceId=clean(first&&first.price&&first.price.id,80),plan=PADDLE_PRICE_MAP[priceId];
  if(!plan)return json({error:"Unrecognised VEXT price."},400);
- const now=new Date().toISOString();
+ const eventTime=Date.parse(event.occurred_at||"");
+ if(!Number.isFinite(eventTime))return json({error:"Subscription event timestamp is missing or invalid."},400);
+ const occurredAt=new Date(eventTime).toISOString(),now=new Date().toISOString();
  try{
   const inserted=await env.VEXT_DB.prepare("INSERT OR IGNORE INTO billing_webhook_events (event_id,event_type,received_at) VALUES (?,?,?)").bind(eventId,type,now).run();
   if(inserted.meta&&inserted.meta.changes===0)return json({ok:true,duplicate:true},200);
   const status=["active","trialing","past_due","paused","canceled"].includes(data.status)?data.status:"inactive";
-  await env.VEXT_DB.prepare("INSERT INTO billing_subscriptions (owner_user_id,paddle_customer_id,paddle_subscription_id,plan,billing_period,price_id,status,next_billed_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(owner_user_id) DO UPDATE SET paddle_customer_id=excluded.paddle_customer_id,paddle_subscription_id=excluded.paddle_subscription_id,plan=excluded.plan,billing_period=excluded.billing_period,price_id=excluded.price_id,status=excluded.status,next_billed_at=excluded.next_billed_at,updated_at=excluded.updated_at").bind(userId,clean(data.customer_id,80),subId,plan.plan,plan.period,priceId,status,clean(data.next_billed_at,40),now).run();
+  const updated=await env.VEXT_DB.prepare("INSERT INTO billing_subscriptions (owner_user_id,paddle_customer_id,paddle_subscription_id,plan,billing_period,price_id,status,next_billed_at,updated_at,last_event_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(owner_user_id) DO UPDATE SET paddle_customer_id=excluded.paddle_customer_id,paddle_subscription_id=excluded.paddle_subscription_id,plan=excluded.plan,billing_period=excluded.billing_period,price_id=excluded.price_id,status=excluded.status,next_billed_at=excluded.next_billed_at,updated_at=excluded.updated_at,last_event_at=excluded.last_event_at WHERE excluded.last_event_at >= billing_subscriptions.last_event_at").bind(userId,clean(data.customer_id,80),subId,plan.plan,plan.period,priceId,status,clean(data.next_billed_at,40),now,occurredAt).run();
+  if(updated.meta&&updated.meta.changes===0)return json({ok:true,stale:true},200);
   return json({ok:true},200);
  }catch(error){await env.VEXT_DB.prepare("DELETE FROM billing_webhook_events WHERE event_id=?").bind(eventId).run().catch(()=>{});throw error}
 }
